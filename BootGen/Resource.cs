@@ -40,11 +40,11 @@ namespace BootGen
             {
                 case "string":
                   return BuiltInType.String;
-                case "int":
+                case "int32":
                   return BuiltInType.Int32;
-                case "long":
+                case "int64":
                   return BuiltInType.Int64;
-                case "bool":
+                case "boolean":
                   return BuiltInType.Bool;
                 default:
                   return BuiltInType.Object;
