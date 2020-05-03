@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "/kfV/Cuv98TmkKkuTDOgD3BPsWjpeUqs41Y3U1swHf1mLZWXRZi9crQ5IcA/3iM8MKiScyi8qGGBjrzncvU4pA==",
+  "success": true,
+  "projectFilePath": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
+  "expectedPackageFiles": [
+    "/usr/share/dotnet/sdk/NuGetFallbackFolder/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "/usr/share/dotnet/sdk/NuGetFallbackFolder/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
