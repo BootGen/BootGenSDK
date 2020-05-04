@@ -152,6 +152,21 @@ namespace BootGenTest
             }
             Assert.Fail();
         }
+
+        [TestMethod]
+        public void TestIndirectRecursion()
+        {
+            try
+            {
+                var resource = Resource.FromClass<IndirectRecursion>();
+            }
+            catch (RecursionException e)
+            {
+                Assert.IsNotNull(e);
+                return;
+            }
+            Assert.Fail();
+        }
         [TestMethod]
         public void TestNestedRecursive()
         {
@@ -166,6 +181,22 @@ namespace BootGenTest
             }
             Assert.Fail();
         }
+
+        [TestMethod]
+        public void TestNestedIndirectRecursion()
+        {
+            try
+            {
+                var resource = Resource.FromClass<NestedIndirectRecursion>();
+            }
+            catch (RecursionException e)
+            {
+                Assert.IsNotNull(e);
+                return;
+            }
+            Assert.Fail();
+        }
+        
         [TestMethod]
         public void TestTreeResource()
         {
@@ -249,6 +280,27 @@ namespace BootGenTest
             public Entity Entity { get; set; }
             public Complex Complex { get; set; }
             public ComplexList ComplexList { get; set; }
+        }
+
+        class IndirectRecursion
+        {
+            public IndirestRecursion2 IndirestRecursion2 { get; set; }
+        }
+
+        class IndirestRecursion2
+        {
+            public IndirectRecursion IndirestRecursion { get; set; }
+        }
+        class NestedIndirectRecursion
+        {
+            [Resource]
+            public NestedIndirestRecursion2 NestedIndirestRecursion2 { get; set; }
+        }
+
+        class NestedIndirestRecursion2
+        {
+            [Resource]
+            public NestedIndirectRecursion NestedIndirestRecursion { get; set; }
         }
     }
 }
