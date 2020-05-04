@@ -22,7 +22,7 @@ namespace BootGen
         public string Name { get; internal set; }
         public List<Property> Properties { get; internal set; }
 
-        internal static Schema FromType(Type type, List<Type> parentResourceTypes = null)
+        internal static Schema FromType(Type type, bool resourceAllowed, List<Type> parentResourceTypes = null)
         {
             var schema = new Schema();
             schema.Name = type.Name.Split('.').Last();
@@ -33,7 +33,9 @@ namespace BootGen
             {
                 if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
                 {
+                    if (resourceAllowed)
                     continue;
+                    throw new IllegalNestingException();
                 }
                 Property property = new Property { Name = p.Name };
                 var propertyType = p.PropertyType;
@@ -49,7 +51,7 @@ namespace BootGen
                 property.Type = GetType(propertyType);
                 if (property.Type == BuiltInType.Object)
                 {
-                    property.Schema = FromType(propertyType);
+                    property.Schema = FromType(propertyType, false, list);
                 }
                 schema.Properties.Add(property);
             }

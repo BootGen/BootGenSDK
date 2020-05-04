@@ -30,7 +30,7 @@ namespace BootGen
                 type = type.GetGenericArguments()[0];
             }
 
-            result.Schema = Schema.FromType(type);
+            result.Schema = Schema.FromType(type, true);
             result.Resoursces = new List<Resource>();
             var list = new List<Type>(parentResourceTypes ?? new List<Type>());
             list.Add(type);
@@ -42,7 +42,7 @@ namespace BootGen
                     {
                         throw new RecursionException("Recursive resources are not allowed.");
                     }
-                    result.Resoursces.Add(FromType(p.PropertyType));
+                    result.Resoursces.Add(FromType(p.PropertyType, list));
                 }
             }
             return result;
@@ -52,6 +52,14 @@ namespace BootGen
     public class RecursionException : Exception
     {
         public RecursionException(string message) : base(message)
+        {
+
+        }
+    }
+
+    public class IllegalNestingException : Exception
+    {
+        public IllegalNestingException() : base("Parent of a nested resource must also be a resource.")
         {
 
         }

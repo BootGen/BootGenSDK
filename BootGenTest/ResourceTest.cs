@@ -50,7 +50,14 @@ namespace BootGenTest
             var resource = Resource.FromClass<Complex>();
             Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(0, resource.Resoursces.Count);
-            Property property = resource.Schema.Properties.Last();
+            Schema schema = resource.Schema;
+            TestComplexSchema(schema);
+        }
+
+        private static void TestComplexSchema(Schema schema)
+        {
+            Assert.AreEqual("Complex", schema.Name);
+            Property property = schema.Properties.Last();
             Assert.AreEqual("Entity", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.Type);
             Assert.IsFalse(property.IsCollection);
@@ -60,7 +67,12 @@ namespace BootGenTest
         [TestMethod]
         public void TestNestedResource()
         {
-            var resource = Resource.FromClass<Nested>();
+            TestNestedResource(Resource.FromClass<Nested>());
+        }
+
+        private static void TestNestedResource(Resource resource)
+        {
+            Assert.AreEqual("Nested", resource.Name);
             Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(1, resource.Resoursces.Count);
             Resource nestedResource = resource.Resoursces.First();
@@ -70,6 +82,28 @@ namespace BootGenTest
             Assert.AreNotEqual("Entity", property.Name);
         }
 
+        [TestMethod]
+        public void TestDoubleNestedResource()
+        {
+            var resource = Resource.FromClass<DoubleNested>();
+            Assert.IsFalse(resource.IsCollection);
+            Assert.AreEqual(1, resource.Resoursces.Count);
+            TestNestedResource(resource.Resoursces.First());
+        }
+        [TestMethod]
+        public void TestIllegalNesting()
+        {
+            try
+            {
+                var resource = Resource.FromClass<IllegalNesting>();
+            }
+            catch (IllegalNestingException e)
+            {
+                Assert.IsNotNull(e);
+                return;
+            }
+            Assert.Fail();
+        }
 
         [TestMethod]
         public void TestComplexListResource()
@@ -77,7 +111,14 @@ namespace BootGenTest
             var resource = Resource.FromClass<ComplexList>();
             Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(0, resource.Resoursces.Count);
-            Property property = resource.Schema.Properties.Last();
+            Schema schema = resource.Schema;
+            TestComplexListSchema(schema);
+        }
+
+        private static void TestComplexListSchema(Schema schema)
+        {
+            Assert.AreEqual("ComplexList", schema.Name);
+            Property property = schema.Properties.Last();
             Assert.AreEqual("Entities", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.Type);
             Assert.IsTrue(property.IsCollection);
@@ -125,6 +166,20 @@ namespace BootGenTest
             }
             Assert.Fail();
         }
+        [TestMethod]
+        public void TestTreeResource()
+        {
+            var resource = Resource.FromClass<Tree>();
+            Assert.IsFalse(resource.IsCollection);
+            Assert.AreEqual(0, resource.Resoursces.Count);
+            Property property = resource.Schema.Properties[2];
+            Assert.AreEqual("Entity", property.Name);
+            Assert.AreEqual(BuiltInType.Object, property.Type);
+            Assert.IsFalse(property.IsCollection);
+            TestEntitySchema(property.Schema);
+            TestComplexSchema(resource.Schema.Properties[3].Schema);
+            TestComplexListSchema(resource.Schema.Properties[4].Schema);
+        }
         class Entity
         {
             public string Name { get; set; }
@@ -145,6 +200,21 @@ namespace BootGenTest
             [Resource]
             public Entity Entity { get; set; }
         }
+        class DoubleNested
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
+            [Resource]
+            public Nested Nested { get; set; }
+        }
+
+        class IllegalNesting
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
+            public Nested Nested { get; set; }
+        }
+
         class ComplexList
         {
             public string Name { get; set; }
@@ -170,6 +240,15 @@ namespace BootGenTest
             public string Value { get; set; }
             [Resource]
             public NestedRecursive Entity { get; set; }
+        }
+
+        class Tree
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
+            public Entity Entity { get; set; }
+            public Complex Complex { get; set; }
+            public ComplexList ComplexList { get; set; }
         }
     }
 }
