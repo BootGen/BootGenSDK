@@ -21,10 +21,20 @@ namespace BootGen
     {
         public string Name { get; internal set; }
         public List<Property> Properties { get; internal set; }
+    }
 
-        internal static Schema FromType(Type type, bool resourceAllowed, List<Type> parentResourceTypes = null)
+    public class SchemaStore
+    {
+        private Dictionary<Type, Schema> schemas = new Dictionary<Type, Schema>();
+        public List<Schema> Schemas => schemas.Values.ToList();
+        internal Schema FromType(Type type, bool resourceAllowed, List<Type> parentResourceTypes = null)
         {
-            var schema = new Schema();
+            Schema schema;
+            if (schemas.TryGetValue(type, out schema))
+            {
+                return schema;
+            }
+            schema = new Schema();
             schema.Name = type.Name.Split('.').Last();
             schema.Properties = new List<Property>();
             var list = new List<Type>(parentResourceTypes ?? new List<Type>());
@@ -55,6 +65,7 @@ namespace BootGen
                 }
                 schema.Properties.Add(property);
             }
+            schemas.Add(type, schema);
             return schema;
         }
 

@@ -11,7 +11,8 @@ namespace BootGenTest
         [TestMethod]
         public void TestSimpleResource()
         {
-            var resource = Resource.FromClass<Entity>();
+            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resource = resourceStore.FromClass<Entity>();
             Assert.IsFalse(resource.IsCollection);
             TestEntityResource(resource);
         }
@@ -38,7 +39,8 @@ namespace BootGenTest
         [TestMethod]
         public void TestListResource()
         {
-            var resource = Resource.FromClass<List<Entity>>();
+            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resource = resourceStore.FromClass<List<Entity>>();
             Assert.IsTrue(resource.IsCollection);
             TestEntityResource(resource);
         }
@@ -47,7 +49,8 @@ namespace BootGenTest
         [TestMethod]
         public void TestComplexResource()
         {
-            var resource = Resource.FromClass<Complex>();
+            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resource = resourceStore.FromClass<Complex>();
             Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(0, resource.Resoursces.Count);
             Schema schema = resource.Schema;
@@ -67,7 +70,8 @@ namespace BootGenTest
         [TestMethod]
         public void TestNestedResource()
         {
-            TestNestedResource(Resource.FromClass<Nested>());
+            var resourceStore = new ResourceBuilder(new SchemaStore());
+            TestNestedResource(resourceStore.FromClass<Nested>());
         }
 
         private static void TestNestedResource(Resource resource)
@@ -85,7 +89,8 @@ namespace BootGenTest
         [TestMethod]
         public void TestDoubleNestedResource()
         {
-            var resource = Resource.FromClass<DoubleNested>();
+            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resource = resourceStore.FromClass<DoubleNested>();
             Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(1, resource.Resoursces.Count);
             TestNestedResource(resource.Resoursces.First());
@@ -95,7 +100,8 @@ namespace BootGenTest
         {
             try
             {
-                var resource = Resource.FromClass<IllegalNesting>();
+                var resourceStore = new ResourceBuilder(new SchemaStore());
+                var resource = resourceStore.FromClass<IllegalNesting>();
             }
             catch (IllegalNestingException e)
             {
@@ -108,7 +114,8 @@ namespace BootGenTest
         [TestMethod]
         public void TestComplexListResource()
         {
-            var resource = Resource.FromClass<ComplexList>();
+            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resource = resourceStore.FromClass<ComplexList>();
             Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(0, resource.Resoursces.Count);
             Schema schema = resource.Schema;
@@ -128,7 +135,8 @@ namespace BootGenTest
         [TestMethod]
         public void TestNestedListResource()
         {
-            var resource = Resource.FromClass<NestedList>();
+            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resource = resourceStore.FromClass<NestedList>();
             Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(1, resource.Resoursces.Count);
             Resource nestedResource = resource.Resoursces.First();
@@ -143,7 +151,8 @@ namespace BootGenTest
         {
             try
             {
-                var resource = Resource.FromClass<Recursive>();
+                var resourceStore = new ResourceBuilder(new SchemaStore());
+                var resource = resourceStore.FromClass<Recursive>();
             }
             catch (RecursionException e)
             {
@@ -158,7 +167,8 @@ namespace BootGenTest
         {
             try
             {
-                var resource = Resource.FromClass<IndirectRecursion>();
+                var resourceStore = new ResourceBuilder(new SchemaStore());
+                var resource = resourceStore.FromClass<IndirectRecursion>();
             }
             catch (RecursionException e)
             {
@@ -172,7 +182,8 @@ namespace BootGenTest
         {
             try
             {
-                var resource = Resource.FromClass<Recursive>();
+                var resourceStore = new ResourceBuilder(new SchemaStore());
+                var resource = resourceStore.FromClass<Recursive>();
             }
             catch (RecursionException e)
             {
@@ -187,7 +198,8 @@ namespace BootGenTest
         {
             try
             {
-                var resource = Resource.FromClass<NestedIndirectRecursion>();
+                var resourceStore = new ResourceBuilder(new SchemaStore());
+                var resource = resourceStore.FromClass<NestedIndirectRecursion>();
             }
             catch (RecursionException e)
             {
@@ -200,7 +212,8 @@ namespace BootGenTest
         [TestMethod]
         public void TestTreeResource()
         {
-            var resource = Resource.FromClass<Tree>();
+            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resource = resourceStore.FromClass<Tree>();
             Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(0, resource.Resoursces.Count);
             Property property = resource.Schema.Properties[2];
