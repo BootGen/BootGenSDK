@@ -5,13 +5,22 @@ namespace BootGen
 {
     public class Resource
     {
-        public string Name => Schema.Name;
+        public string Name
+        {
+            get
+            {
+                if (IsCollection)
+                    return Schema.Name + "s";
+                return Schema.Name;
+            }
+        }
+
         public bool IsCollection { get; internal set; }
         public Schema Schema { get; internal set; }
-        public bool Get { get; set; }
-        public bool Put { get; set; }
-        public bool Patch { get; set; }
-        public bool Delete { get; set; }
+        public bool Get { get; set; } = true;
+        public bool Put { get; set; } = true;
+        public bool Patch { get; set; } = true;
+        public bool Delete { get; set; } = true;
 
         public List<Resource> Resoursces { get; internal set; }
 

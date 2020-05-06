@@ -44,10 +44,6 @@
               "target": "Package",
               "version": "[2.0.3, )",
               "autoReferenced": true
-            },
-            "Scriban": {
-              "target": "Package",
-              "version": "[2.1.2, )"
             }
           },
           "imports": [

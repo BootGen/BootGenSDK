@@ -11,10 +11,13 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.0" />
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
+    <PackageReference Include="Scriban" Version="2.1.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BootGen\BootGen.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <None Update="oas3template.sbn" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

@@ -1,0 +1,51 @@
+openapi: "3.0.0"
+info:
+  version: {{ api.version }}
+  title: {{ api.title }}
+  license:
+    name: {{ api.licence }}
+servers:
+  - url: {{ api.url }}
+paths:
+  {{~ for route in api.routes ~}}
+  {{ route.path }}:
+  {{~ for operation in route.operations ~}}
+    {{ operation.method }}:
+      summary: {{ operation.summary }}
+      operationId: {{ operation.name }}
+      {{~ if operation.body ~}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/{{operation.body}}'
+      {{~ end ~}}
+      responses:
+        '200':
+          description: A paged array of pets
+          {{~ if operation.response ~}}
+          content:
+            application/json:    
+              schema:
+                $ref: '#/components/schemas/{{operation.response}}'
+          {{~ end ~}}
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    {{~ end ~}}
+    {{~ end ~}}
+components:
+  schemas:
+  {{~ for schema in api.schemas ~}}
+    {{ schema.name }}:
+      type: object
+      properties:
+      {{~ for property in schema.properties ~}}
+        {{ property.name }}:
+          type: {{ property.type }}
+      {{~ end ~}}
+  {{~ end ~}}

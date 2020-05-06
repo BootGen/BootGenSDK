@@ -15,7 +15,7 @@ namespace BootGen
             schemaStore = new SchemaStore();
             resourceBuilder = new ResourceBuilder(schemaStore);
         }
-        public Resource AddResurce<T>()
+        public Resource AddResource<T>()
         {
             Resource resource = resourceBuilder.FromClass<T>();
             Resources.Add(resource);

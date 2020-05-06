@@ -111,6 +111,10 @@
               "target": "Package",
               "version": "[16.5.0, )"
             },
+            "Scriban": {
+              "target": "Package",
+              "version": "[2.1.2, )"
+            },
             "coverlet.collector": {
               "target": "Package",
               "version": "[1.2.0, )"
