@@ -14,8 +14,29 @@ namespace BootGen
         }
         public Resource FromClass<T>()
         {
-            return FromType(typeof(T));
+            Resource resource = FromType(typeof(T));
+            CheckDanglingResources(typeof(T));
+            return resource;
         }
+
+        private void CheckDanglingResources(Type type, bool parentIsResource = true)
+        {
+            foreach (var p in type.GetProperties())
+            {
+                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
+                {
+                    if (parentIsResource)
+                    {
+                        CheckDanglingResources(p.PropertyType, true);
+                    } else {
+                        throw new IllegalNestingException();
+                    }
+                } else {
+                        CheckDanglingResources(p.PropertyType, false);
+                }
+            }
+        }
+
         private Resource FromType(Type type, List<Type> parentResourceTypes = null)
         {
             var result = new Resource();
@@ -25,7 +46,7 @@ namespace BootGen
                 type = type.GetGenericArguments()[0];
             }
 
-            result.Schema = schemaStore.FromType(type, true);
+            result.Schema = schemaStore.GetSchemaForResource(type);
             result.Resoursces = new List<Resource>();
             var list = new List<Type>(parentResourceTypes ?? new List<Type>());
             list.Add(type);

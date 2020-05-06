@@ -20,6 +20,7 @@ namespace BootGen
     {
         public string Name { get; internal set; }
         public List<Property> Properties { get; internal set; }
+        public bool IsResource { get; internal set; }
     }
 
     public enum BuiltInType { String, Int32, Int64, Bool, Object }
