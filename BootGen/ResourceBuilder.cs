@@ -21,6 +21,10 @@ namespace BootGen
 
         private void CheckDanglingResources(Type type, bool parentIsResource = true)
         {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                type = type.GetGenericArguments()[0];
+            }
             foreach (var p in type.GetProperties())
             {
                 if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
@@ -28,11 +32,15 @@ namespace BootGen
                     if (parentIsResource)
                     {
                         CheckDanglingResources(p.PropertyType, true);
-                    } else {
+                    }
+                    else
+                    {
                         throw new IllegalNestingException();
                     }
-                } else {
-                        CheckDanglingResources(p.PropertyType, false);
+                }
+                else
+                {
+                    CheckDanglingResources(p.PropertyType, false);
                 }
             }
         }
