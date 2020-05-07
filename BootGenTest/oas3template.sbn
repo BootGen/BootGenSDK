@@ -13,6 +13,19 @@ paths:
     {{ operation.method }}:
       summary: {{ operation.summary }}
       operationId: {{ operation.name }}
+      {{~ if operation.has_parameters ~}}
+      parameters:
+      {{~ for parameter in operation.parameters ~}}
+        - name: {{ parameter.name }}
+          in: {{ parameter.kind }}
+          required: {{ parameter.required }}
+          schema:
+            type: {{ parameter.type }}
+            {{~ if parameter.format ~}}
+            format: {{ parameter.format }}
+            {{~ end ~}}
+        {{~ end ~}}
+      {{~ end ~}}
       {{~ if operation.body ~}}
       requestBody:
         required: true

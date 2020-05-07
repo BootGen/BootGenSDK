@@ -55,6 +55,10 @@ namespace BootGen
                     property.Schema = FromType(propertyType);
                 }
                 schema.Properties.Add(property);
+                if (property.Name.ToLower() == "id")
+                {
+                    schema.IdProperty = property;
+                }
             }
             typeStack.Pop();
 

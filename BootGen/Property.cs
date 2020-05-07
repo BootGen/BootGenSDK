@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 
 namespace BootGen
@@ -16,13 +17,6 @@ namespace BootGen
     public class ResourceAttribute : Attribute
     {
 
-    }
-
-    public class Schema
-    {
-        public string Name { get; internal set; }
-        public List<Property> Properties { get; internal set; }
-        public bool IsResource { get; internal set; }
     }
 
     public enum BuiltInType { String, Int32, Int64, Bool, Object }
@@ -107,6 +101,17 @@ namespace BootGen
         public bool ResponseIsCollection { get; internal set; }
         public int SuccessCode { get; internal set; }
         public string SuccessDescription { get; internal set; }
+        public List<Parameter> Parameters { get; internal set; } = new List<Parameter>();
+        public bool HasParameters => Parameters.Any();
+    }
+
+    public class Parameter : IOASProperty
+    {
+        public string Name { get; set; }
+        public string Kind { get; set; }
+        public string Type { get; set; }
+        public string Format { get; set; }
+        public bool Required { get; set; }
     }
 
     public enum Method {

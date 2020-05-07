@@ -25,39 +25,38 @@ namespace BootGen
 
         private OASSchema ConvertSchema(Schema schema)
         {
-            var result = new OASSchema {
+            return new OASSchema {
                 Name = schema.Name,
-                Properties = new List<OASProperty>()
+                Properties = schema.Properties.Select(ConvertProperty<OASProperty>).ToList()
             };
+        }
 
-            foreach (var property in schema.Properties)
+        private static T ConvertProperty<T>(Property property) where T: IOASProperty, new()
+        {
+            var oasProp = new T { Name = property.Name.ToLower() };
+            switch (property.Type)
             {
-                var oasProp = new OASProperty{ Name = property.Name.ToLower() };
-                switch (property.Type)
-                {
-                    case BuiltInType.Bool:
+                case BuiltInType.Bool:
                     oasProp.Required = true;
                     oasProp.Type = "boolean";
                     break;
-                    case BuiltInType.Int32:
+                case BuiltInType.Int32:
                     oasProp.Required = true;
                     oasProp.Type = "integer";
                     oasProp.Format = "int32";
                     break;
-                    case BuiltInType.Int64:
+                case BuiltInType.Int64:
                     oasProp.Required = true;
                     oasProp.Type = "integer";
                     oasProp.Format = "int64";
                     break;
-                    case BuiltInType.String:
+                case BuiltInType.String:
                     oasProp.Required = false;
                     oasProp.Type = "string";
                     break;
-                }
-                result.Properties.Add(oasProp);
             }
 
-            return result;
+            return oasProp;
         }
 
         private static List<Route> CreateRouteForResource(Resource resource, Path basePath)
@@ -73,11 +72,12 @@ namespace BootGen
             {
                 AddCollectionOperations(resource, route);
                 var subRoute = new Route();
-                basePath = basePath.Adding(new PathComponent { IsVariable = true, Name = resourceName.ToLower() + "Id" });
+                string itemIdName = resourceName.ToLower() + "Id";
+                basePath = basePath.Adding(new PathComponent { IsVariable = true, Name = itemIdName });
                 subRoute.Path = basePath.ToString();
                 subRoute.Operations = new List<Operation>();
                 result.Add(subRoute);
-                AddItemOperations(resource, subRoute);
+                AddItemOperations(resource, subRoute, itemIdName);
             } else {
                 AddBaseOperations(resource, route);
             }
@@ -154,9 +154,12 @@ namespace BootGen
                 });
         }
 
-        private static void AddItemOperations(Resource resource, Route subRoute)
+        private static void AddItemOperations(Resource resource, Route subRoute, string itemIdName)
         {
             string resourceName = resource.Name.ToLower();
+            Parameter idParameter = ConvertProperty<Parameter>(resource.Schema.IdProperty);
+            idParameter.Name = itemIdName;
+            idParameter.Kind = "path";
             if (resource.Get)
                 subRoute.Operations.Add(new Operation(Method.Get)
                 {
@@ -164,7 +167,8 @@ namespace BootGen
                     Summary = $"retrieve {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful query",
-                    Response = resource.Name
+                    Response = resource.Name,
+                    Parameters = new List<Parameter> { idParameter }
                 });
             if (resource.Put)
                 subRoute.Operations.Add(new Operation(Method.Put)
@@ -173,7 +177,8 @@ namespace BootGen
                     Summary = $"update {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful update",
-                    Body = resource.Name
+                    Body = resource.Name,
+                    Parameters = new List<Parameter> { idParameter }
                 });
             if (resource.Delete)
                 subRoute.Operations.Add(new Operation(Method.Delete)
@@ -181,22 +186,9 @@ namespace BootGen
                     Name = "delete" + resource.Name,
                     Summary = $"delete {resourceName} resource",
                     SuccessCode = 200,
-                    SuccessDescription = $"successful deletion"
+                    SuccessDescription = $"successful deletion",
+                    Parameters = new List<Parameter> { idParameter }
                 });
         }
-    }
-
-    public class OASSchema 
-    {
-        public string Name { get; set; }
-        public List<OASProperty> Properties { get; set; }
-        public bool HasRequiredProperties => Properties.Any(p => p.Required);
-    }
-    public class OASProperty
-    {
-        public string Name { get; set; }
-        public bool Required { get; set; }
-        public string Type { get; set; }
-        public string Format { get; set; }
     }
 }

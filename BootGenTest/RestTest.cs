@@ -22,8 +22,8 @@ namespace BootGenTest
             restModel.Url = "http://petstore.swagger.io/v1";
             var scribanFilePath = "oas3template.sbn";
             var template = Template.Parse(File.ReadAllText(scribanFilePath), scribanFilePath);
-            var tmp = template.Render(new { api = restModel });
-            Assert.AreEqual(tmp, File.ReadAllText("simple-api.yml"));
+            var renderedApi = template.Render(new { api = restModel });
+            Assert.AreEqual(renderedApi, File.ReadAllText("simple-api.yml"));
         }
 
         [TestMethod]
@@ -38,8 +38,9 @@ namespace BootGenTest
             restModel.Url = "http://petstore.swagger.io/v1";
             var scribanFilePath = "oas3template.sbn";
             var template = Template.Parse(File.ReadAllText(scribanFilePath), scribanFilePath);
-            var tmp = template.Render(new { api = restModel });
-            Assert.AreEqual(tmp, File.ReadAllText("collection-api.yml"));
+            var renderedApi = template.Render(new { api = restModel });
+            Assert.AreEqual(renderedApi, File.ReadAllText("collection-api.yml"));
+            //File.WriteAllText("/home/agabor/Documents/BootGen/BootGenTest/collection-api.yml", renderedApi);
         }
 
         class Pet

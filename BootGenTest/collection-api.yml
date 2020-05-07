@@ -82,6 +82,13 @@ paths:
     get:
       summary: retrieve pet resource
       operationId: getPet
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         '200':
           description: successful query
@@ -98,6 +105,13 @@ paths:
     put:
       summary: update pet resource
       operationId: updatePet
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       requestBody:
         required: true
         content:
@@ -116,6 +130,13 @@ paths:
     delete:
       summary: delete pet resource
       operationId: deletePet
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         '200':
           description: successful deletion
