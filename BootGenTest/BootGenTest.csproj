@@ -19,5 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="oas3template.sbn" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="simple-api.yml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

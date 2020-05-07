@@ -103,6 +103,8 @@ namespace BootGen
         public string Summary { get; internal set; }
         public string Body { get; internal set; }
         public string Response { get; internal set; }
+        public int SuccessCode { get; internal set; }
+        public string SuccessDescription { get; internal set; }
     }
 
     public enum Method {

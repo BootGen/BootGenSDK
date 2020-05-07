@@ -23,6 +23,7 @@ namespace BootGenTest
             var scribanFilePath = "oas3template.sbn";
             var template = Template.Parse(File.ReadAllText(scribanFilePath), scribanFilePath);
             var tmp = template.Render(new { api = restModel });
+            Assert.AreEqual(tmp, File.ReadAllText("simple-api.yml"));
         }
 
         class Pet

@@ -1,4 +1,4 @@
-openapi: "3.0.0"
+openapi: '3.0.0'
 info:
   version: {{ api.version }}
   title: {{ api.title }}
@@ -22,8 +22,8 @@ paths:
               $ref: '#/components/schemas/{{operation.body}}'
       {{~ end ~}}
       responses:
-        '200':
-          description: A paged array of pets
+        '{{ operation.success_code }}':
+          description: {{ operation.success_description }}
           {{~ if operation.response ~}}
           content:
             application/json:    
@@ -35,7 +35,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
     {{~ end ~}}
     {{~ end ~}}
 components:
@@ -43,9 +43,31 @@ components:
   {{~ for schema in api.schemas ~}}
     {{ schema.name }}:
       type: object
+      {{~ if schema.has_required_properties ~}}
+      required:
+        {{~ for property in schema.properties ~}}
+        {{~ if property.required ~}}
+        - {{ property.name }}
+        {{~ end ~}}
+        {{~ end ~}}
+      {{~ end ~}}
       properties:
       {{~ for property in schema.properties ~}}
         {{ property.name }}:
           type: {{ property.type }}
+          {{~ if property.format ~}}
+          format: {{ property.format }}
+          {{~ end ~}}
       {{~ end ~}}
   {{~ end ~}}
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
