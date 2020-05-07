@@ -19,16 +19,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/{{operation.body}}'
+            {{~ if operation.body_is_collection ~}}
+                type: array
+                items:
+                  $ref: '#/components/schemas/{{operation.body}}'
+            {{~ else ~}}
+                $ref: '#/components/schemas/{{operation.body}}'
+            {{~ end ~}}
       {{~ end ~}}
       responses:
         '{{ operation.success_code }}':
           description: {{ operation.success_description }}
           {{~ if operation.response ~}}
           content:
-            application/json:    
+            application/json:
               schema:
+            {{~ if operation.response_is_collection ~}}
+                type: array
+                items:
+                  $ref: '#/components/schemas/{{operation.response}}'
+            {{~ else ~}}
                 $ref: '#/components/schemas/{{operation.response}}'
+            {{~ end ~}}
           {{~ end ~}}
         default:
           description: unexpected error

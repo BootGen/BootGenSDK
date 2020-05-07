@@ -65,19 +65,21 @@ namespace BootGen
             var result = new List<Route>();
             var route = new Route();
             string resourceName = resource.Name.ToLower();
-            basePath = basePath.Adding(new PathComponent { IsVariable = false, Name = resourceName.ToLower() });
+            basePath = basePath.Adding(new PathComponent { IsVariable = false, Name = resourceName.ToLower() + (resource.IsCollection ? "s" : "") });
             route.Path = basePath.ToString();
             result.Add(route);
             route.Operations = new List<Operation>();
-            AddBaseOperations(resource, route);
             if (resource.IsCollection)
             {
                 AddCollectionOperations(resource, route);
                 var subRoute = new Route();
                 basePath = basePath.Adding(new PathComponent { IsVariable = true, Name = resourceName.ToLower() + "Id" });
                 subRoute.Path = basePath.ToString();
+                subRoute.Operations = new List<Operation>();
                 result.Add(subRoute);
                 AddItemOperations(resource, subRoute);
+            } else {
+                AddBaseOperations(resource, route);
             }
             foreach (var subResource in resource.Resoursces)
             {
@@ -89,19 +91,41 @@ namespace BootGen
         private static void AddCollectionOperations(Resource resource, Route route)
         {
             string resourceName = resource.Name.ToLower();
+            if (resource.Get)
+                route.Operations.Add(new Operation(Method.Get)
+                {
+                    Name = "get" + resource.Name + "s",
+                    Summary = $"retrieve list of {resourceName}s",
+                    Response = resource.Name,
+                    ResponseIsCollection = true,
+                    SuccessCode = 200,
+                    SuccessDescription = $"successful query"
+                });
+            if (resource.Put)
+                route.Operations.Add(new Operation(Method.Put)
+                {
+                    Name = "update" + resource.Name + "s",
+                    Summary = $"update list of {resourceName}s",
+                    Body = resource.Name,
+                    BodyIsCollection = true,
+                    SuccessCode = 200,
+                    SuccessDescription = $"successful update"
+                });
             if (resource.Patch)
                 route.Operations.Add(new Operation(Method.Patch)
                 {
-                    Name = "update" + resource.Name + "elements",
-                    Summary = $"update elements of {resourceName} resource",
+                    Name = "update" + resource.Name + "ListElements",
+                    Summary = $"update elements of {resourceName} list",
+                    Body = resource.Name,
+                    BodyIsCollection = true,
                     SuccessCode = 200,
                     SuccessDescription = $"successful update"
                 });
             if (resource.Delete)
-                route.Operations.Add(new Operation(Method.Patch)
+                route.Operations.Add(new Operation(Method.Delete)
                 {
-                    Name = "delete all" + resource.Name + "elements",
-                    Summary = $"delete all elements of {resourceName} resource",
+                    Name = "delete" + resource.Name + "s",
+                    Summary = $"delete all elements of {resourceName}s",
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion"
                 });
@@ -139,7 +163,8 @@ namespace BootGen
                     Name = "get" + resource.Name,
                     Summary = $"retrieve {resourceName} resource",
                     SuccessCode = 200,
-                    SuccessDescription = $"successful query"
+                    SuccessDescription = $"successful query",
+                    Response = resource.Name
                 });
             if (resource.Put)
                 subRoute.Operations.Add(new Operation(Method.Put)
@@ -147,7 +172,8 @@ namespace BootGen
                     Name = "update" + resource.Name,
                     Summary = $"update {resourceName} resource",
                     SuccessCode = 200,
-                    SuccessDescription = $"successful update"
+                    SuccessDescription = $"successful update",
+                    Body = resource.Name
                 });
             if (resource.Delete)
                 subRoute.Operations.Add(new Operation(Method.Delete)

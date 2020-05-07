@@ -5,16 +5,7 @@ namespace BootGen
 {
     public class Resource
     {
-        public string Name
-        {
-            get
-            {
-                if (IsCollection)
-                    return Schema.Name + "s";
-                return Schema.Name;
-            }
-        }
-
+        public string Name => Schema.Name;
         public bool IsCollection { get; internal set; }
         public Schema Schema { get; internal set; }
         public bool Get { get; set; } = true;
