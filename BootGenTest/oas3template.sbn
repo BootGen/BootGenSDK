@@ -79,9 +79,13 @@ components:
       properties:
       {{~ for property in schema.properties ~}}
         {{ property.name }}:
+          {{~ if property.reference ~}}
+          $ref: '#/components/schemas/{{ property.reference }}'
+          {{~ else ~}}
           type: {{ property.type }}
           {{~ if property.format ~}}
           format: {{ property.format }}
+          {{~ end ~}}
           {{~ end ~}}
       {{~ end ~}}
   {{~ end ~}}

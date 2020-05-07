@@ -55,6 +55,9 @@ namespace BootGen
                     oasProp.Required = false;
                     oasProp.Type = "string";
                     break;
+                case BuiltInType.Object:
+                    oasProp.Reference = property.Schema.Name;
+                    break;
             }
 
             return oasProp;
