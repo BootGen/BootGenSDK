@@ -79,12 +79,25 @@ components:
       properties:
       {{~ for property in schema.properties ~}}
         {{ property.name }}:
+          {{~ if property.is_collection ~}}
+          type: array
+          items:
+            {{~ if property.reference ~}}
+            $ref: '#/components/schemas/{{ property.reference }}'
+            {{~ else ~}}
+            type: {{ property.type }}
+            {{~ if property.format ~}}
+            format: {{ property.format }}
+            {{~ end ~}}
+            {{~ end ~}}
+          {{~ else ~}}
           {{~ if property.reference ~}}
           $ref: '#/components/schemas/{{ property.reference }}'
           {{~ else ~}}
           type: {{ property.type }}
           {{~ if property.format ~}}
           format: {{ property.format }}
+          {{~ end ~}}
           {{~ end ~}}
           {{~ end ~}}
       {{~ end ~}}

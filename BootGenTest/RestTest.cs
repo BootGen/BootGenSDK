@@ -80,6 +80,7 @@ namespace BootGenTest
             public string Name { get; set; }
             public int Id { get; set; }
             public Address Address { get; set; }
+            public List<string> PhoneNumbers  { get; set; }
             
             [Resource]
             public List<Pet> Pets  { get; set; }

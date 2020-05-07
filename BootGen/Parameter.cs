@@ -8,5 +8,6 @@ namespace BootGen
         public string Format { get; set; }
         public bool Required { get; set; }
         public string Reference { get; set; }
+        public bool IsCollection { get; set; }
     }
 }

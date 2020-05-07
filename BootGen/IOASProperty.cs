@@ -7,5 +7,6 @@ namespace BootGen
         string Type { get; set; }
         string Format { get; set; }
         string Reference { get; set; }
+        bool IsCollection { get; set; }
     }
 }

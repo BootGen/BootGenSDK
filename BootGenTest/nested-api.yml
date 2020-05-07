@@ -361,6 +361,10 @@ components:
           format: int32
         address:
           $ref: '#/components/schemas/Address'
+        phonenumbers:
+          type: array
+          items:
+            type: string
     Pet:
       type: object
       required:

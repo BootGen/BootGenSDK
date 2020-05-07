@@ -59,6 +59,7 @@ namespace BootGen
                     oasProp.Reference = property.Schema.Name;
                     break;
             }
+            oasProp.IsCollection = property.IsCollection;
 
             return oasProp;
         }
