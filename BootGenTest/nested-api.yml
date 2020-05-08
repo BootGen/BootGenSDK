@@ -336,17 +336,17 @@ components:
     Address:
       type: object
       required:
-        - zipcode
-        - housenumber
+        - zip_code
+        - house_number
       properties:
-        zipcode:
+        zip_code:
           type: integer
           format: int32
         city:
           type: string
         street:
           type: string
-        housenumber:
+        house_number:
           type: integer
           format: int32
     Owner:
@@ -361,7 +361,7 @@ components:
           format: int32
         address:
           $ref: '#/components/schemas/Address'
-        phonenumbers:
+        phone_numbers:
           type: array
           items:
             type: string

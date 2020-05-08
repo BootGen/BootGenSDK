@@ -24,6 +24,7 @@ namespace BootGenTest
             var template = Template.Parse(File.ReadAllText(scribanFilePath), scribanFilePath);
             var renderedApi = template.Render(new { api = restModel });
             Assert.AreEqual(renderedApi, File.ReadAllText("simple-api.yml"));
+            //File.WriteAllText("/home/agabor/Documents/BootGen/BootGenTest/simple-api.yml", renderedApi);
         }
 
         [TestMethod]
@@ -56,8 +57,8 @@ namespace BootGenTest
             var scribanFilePath = "oas3template.sbn";
             var template = Template.Parse(File.ReadAllText(scribanFilePath), scribanFilePath);
             var renderedApi = template.Render(new { api = restModel });
-            //Assert.AreEqual(renderedApi, File.ReadAllText("nested-api.yml"));
-            File.WriteAllText("/home/agabor/Documents/BootGen/BootGenTest/nested-api.yml", renderedApi);
+            Assert.AreEqual(renderedApi, File.ReadAllText("nested-api.yml"));
+            //File.WriteAllText("/home/agabor/Documents/BootGen/BootGenTest/nested-api.yml", renderedApi);
         }
 
         class Pet

@@ -34,7 +34,7 @@ namespace BootGen
 
         private static T ConvertProperty<T>(Property property) where T : IOASProperty, new()
         {
-            var oasProp = new T { Name = property.Name.ToLower() };
+            var oasProp = new T { Name = property.Name.ToSnakeCase() };
             switch (property.Type)
             {
                 case BuiltInType.Bool:
@@ -68,8 +68,8 @@ namespace BootGen
         {
             var result = new List<Route>();
             var route = new Route();
-            string resourceName = resource.Name.ToLower();
-            basePath = basePath.Adding(new PathComponent { Name = resourceName.ToLower() + (resource.IsCollection ? "s" : "") });
+            string resourceName = resource.Name.ToCamelCase();
+            basePath = basePath.Adding(new PathComponent { Name = resourceName + (resource.IsCollection ? "s" : "") });
             route.Path = basePath.ToString();
             result.Add(route);
             route.Operations = new List<Operation>();
@@ -77,7 +77,7 @@ namespace BootGen
             {
                 AddCollectionOperations(resource, route, basePath);
                 var subRoute = new Route();
-                string itemIdName = resourceName.ToLower() + "Id";
+                string itemIdName = resourceName + "Id";
                 Parameter idParameter = ConvertProperty<Parameter>(resource.Schema.IdProperty);
                 idParameter.Name = itemIdName;
                 idParameter.Kind = "path";
@@ -100,7 +100,7 @@ namespace BootGen
 
         private static void AddCollectionOperations(Resource resource, Route route, Path path)
         {
-            string resourceName = resource.Name.ToLower();
+            string resourceName = resource.Name.ToWords();
             if (resource.Get)
                 route.Operations.Add(new Operation(Method.Get)
                 {
@@ -147,7 +147,7 @@ namespace BootGen
 
         private static void AddBaseOperations(Resource resource, Route route, Path path)
         {
-            string resourceName = resource.Name.ToLower();
+            string resourceName = resource.Name.ToWords();
             if (resource.Get)
                 route.Operations.Add(new Operation(Method.Get)
                 {
@@ -172,7 +172,7 @@ namespace BootGen
 
         private static void AddItemOperations(Resource resource, Route subRoute, Path path)
         {
-            string resourceName = resource.Name.ToLower();
+            string resourceName = resource.Name.ToWords();
 
             if (resource.Get)
                 subRoute.Operations.Add(new Operation(Method.Get)
