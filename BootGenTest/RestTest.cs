@@ -15,7 +15,7 @@ namespace BootGenTest
         {
             var api = new BootGenApi();
             api.AddResource<Pet>();
-            var restModel = new RestModel(api);
+            var restModel = api.GetRestModel();
             restModel.Title = "Swagger Petstore";
             restModel.Licence = "MIT";
             restModel.Version = "1.0.0";
@@ -32,7 +32,7 @@ namespace BootGenTest
         {
             var api = new BootGenApi();
             api.AddResource<List<Pet>>();
-            var restModel = new RestModel(api);
+            var restModel = api.GetRestModel();
             restModel.Title = "Swagger Petstore";
             restModel.Licence = "MIT";
             restModel.Version = "1.0.0";
@@ -49,7 +49,7 @@ namespace BootGenTest
         {
             var api = new BootGenApi();
             api.AddResource<List<Owner>>();
-            var restModel = new RestModel(api);
+            var restModel = api.GetRestModel();
             restModel.Title = "Swagger Petstore";
             restModel.Licence = "MIT";
             restModel.Version = "1.0.0";
