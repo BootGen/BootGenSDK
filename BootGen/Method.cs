@@ -1,6 +1,6 @@
 namespace BootGen
 {
-    public enum Method {
+    public enum HttpMethod {
         Get,
         Post,
         Put,

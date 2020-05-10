@@ -61,6 +61,28 @@ namespace BootGenTest
             //File.WriteAllText("/home/agabor/Documents/BootGen/BootGenTest/nested-api.yml", renderedApi);
         }
 
+        [TestMethod]
+        public void TestApiWithAuth()
+        {
+            var api = new BootGenApi();
+            api.AddResource<List<Pet>>();
+            api.AddController<Authentication>();
+            var restModel = api.GetRestModel();
+            restModel.Title = "Swagger Petstore";
+            restModel.Licence = "MIT";
+            restModel.Version = "1.0.0";
+            restModel.Url = "http://petstore.swagger.io/v1";
+            var scribanFilePath = "oas3template.sbn";
+            var template = Template.Parse(File.ReadAllText(scribanFilePath), scribanFilePath);
+            var renderedApi = template.Render(new { api = restModel });
+            //Assert.AreEqual(renderedApi, File.ReadAllText("auth-api.yml"));
+            File.WriteAllText("/home/agabor/Documents/BootGen/BootGenTest/auth-api.yml", renderedApi);
+        }
+
+        interface Authentication {
+            bool Register(string email, string password);
+            bool Login(string email, string password);
+        }
         class Pet
         {
             public string Name { get; set; }

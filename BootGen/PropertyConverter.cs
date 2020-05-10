@@ -5,7 +5,7 @@ namespace BootGen
         public static T ConvertProperty<T>(this Property property) where T : IOASProperty, new()
         {
             var oasProp = new T { Name = property.Name.ToSnakeCase() };
-            switch (property.Type)
+            switch (property.BuiltInType)
             {
                 case BuiltInType.Bool:
                     oasProp.Required = true;

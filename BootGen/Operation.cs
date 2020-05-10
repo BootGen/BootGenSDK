@@ -5,23 +5,23 @@ namespace BootGen
 {
     public class Operation
     {
-        public Operation(Method method)
+        public Operation(HttpMethod method)
         { 
             switch(method)
             {
-                case BootGen.Method.Get:
+                case BootGen.HttpMethod.Get:
                 Method = "get";
                 break;
-                case BootGen.Method.Post:
+                case BootGen.HttpMethod.Post:
                 Method = "post";
                 break;
-                case BootGen.Method.Put:
+                case BootGen.HttpMethod.Put:
                 Method = "put";
                 break;
-                case BootGen.Method.Patch:
+                case BootGen.HttpMethod.Patch:
                 Method = "patch";
                 break;
-                case BootGen.Method.Delete:
+                case BootGen.HttpMethod.Delete:
                 Method = "delete";
                 break;
             }

@@ -42,7 +42,7 @@ namespace BootGen
         {
             string resourceName = resource.Name.ToWords();
             if (resource.Get)
-                route.Operations.Add(new Operation(Method.Get)
+                route.Operations.Add(new Operation(HttpMethod.Get)
                 {
                     Name = "get" + resource.Name + "s",
                     Summary = $"retrieve list of {resourceName}s",
@@ -53,7 +53,7 @@ namespace BootGen
                     Parameters = path.Parameters
                 });
             if (resource.Put)
-                route.Operations.Add(new Operation(Method.Put)
+                route.Operations.Add(new Operation(HttpMethod.Put)
                 {
                     Name = "update" + resource.Name + "s",
                     Summary = $"update list of {resourceName}s",
@@ -64,7 +64,7 @@ namespace BootGen
                     Parameters = path.Parameters
                 });
             if (resource.Patch)
-                route.Operations.Add(new Operation(Method.Patch)
+                route.Operations.Add(new Operation(HttpMethod.Patch)
                 {
                     Name = "update" + resource.Name + "ListElements",
                     Summary = $"update elements of {resourceName} list",
@@ -75,7 +75,7 @@ namespace BootGen
                     Parameters = path.Parameters
                 });
             if (resource.Delete)
-                route.Operations.Add(new Operation(Method.Delete)
+                route.Operations.Add(new Operation(HttpMethod.Delete)
                 {
                     Name = "delete" + resource.Name + "s",
                     Summary = $"delete all elements of {resourceName}s",
@@ -89,7 +89,7 @@ namespace BootGen
         {
             string resourceName = resource.Name.ToWords();
             if (resource.Get)
-                route.Operations.Add(new Operation(Method.Get)
+                route.Operations.Add(new Operation(HttpMethod.Get)
                 {
                     Name = "get" + resource.Name,
                     Summary = $"retrieve {resourceName} resource",
@@ -99,7 +99,7 @@ namespace BootGen
                     Parameters = path.Parameters
                 });
             if (resource.Put)
-                route.Operations.Add(new Operation(Method.Put)
+                route.Operations.Add(new Operation(HttpMethod.Put)
                 {
                     Name = "update" + resource.Name,
                     Summary = $"update {resourceName} resource",
@@ -115,7 +115,7 @@ namespace BootGen
             string resourceName = resource.Name.ToWords();
 
             if (resource.Get)
-                subRoute.Operations.Add(new Operation(Method.Get)
+                subRoute.Operations.Add(new Operation(HttpMethod.Get)
                 {
                     Name = "get" + resource.Name,
                     Summary = $"retrieve {resourceName} resource",
@@ -125,7 +125,7 @@ namespace BootGen
                     Parameters = path.Parameters
                 });
             if (resource.Put)
-                subRoute.Operations.Add(new Operation(Method.Put)
+                subRoute.Operations.Add(new Operation(HttpMethod.Put)
                 {
                     Name = "update" + resource.Name,
                     Summary = $"update {resourceName} resource",
@@ -135,7 +135,7 @@ namespace BootGen
                     Parameters = path.Parameters
                 });
             if (resource.Delete)
-                subRoute.Operations.Add(new Operation(Method.Delete)
+                subRoute.Operations.Add(new Operation(HttpMethod.Delete)
                 {
                     Name = "delete" + resource.Name,
                     Summary = $"delete {resourceName} resource",

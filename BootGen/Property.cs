@@ -4,12 +4,15 @@ using System.Linq;
 
 namespace BootGen
 {
-    public class Property
+    public class TypeDescription
     {
-        public string Name { get; internal set; }
-        public BuiltInType Type { get; internal set; }
+        public BuiltInType BuiltInType { get; internal set; }
         public bool IsCollection { get; internal set; }
         public Schema Schema { get; internal set; }
+    }
+    public class Property : TypeDescription
+    {
+        public string Name { get; internal set; }
     }
 
     public class ResourceAttribute : Attribute

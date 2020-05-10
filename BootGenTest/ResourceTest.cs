@@ -27,13 +27,13 @@ namespace BootGenTest
         {
             Assert.AreEqual(4, schema.Properties.Count);
             Assert.AreEqual("Name", schema.Properties[0].Name);
-            Assert.AreEqual(BuiltInType.String, schema.Properties[0].Type);
+            Assert.AreEqual(BuiltInType.String, schema.Properties[0].BuiltInType);
             Assert.AreEqual("Value", schema.Properties[1].Name);
-            Assert.AreEqual(BuiltInType.Int32, schema.Properties[1].Type);
+            Assert.AreEqual(BuiltInType.Int32, schema.Properties[1].BuiltInType);
             Assert.AreEqual("TimeStamp", schema.Properties[2].Name);
-            Assert.AreEqual(BuiltInType.Int64, schema.Properties[2].Type);
+            Assert.AreEqual(BuiltInType.Int64, schema.Properties[2].BuiltInType);
             Assert.AreEqual("Ok", schema.Properties[3].Name);
-            Assert.AreEqual(BuiltInType.Bool, schema.Properties[3].Type);
+            Assert.AreEqual(BuiltInType.Bool, schema.Properties[3].BuiltInType);
         }
 
         [TestMethod]
@@ -62,7 +62,7 @@ namespace BootGenTest
             Assert.AreEqual("Complex", schema.Name);
             Property property = schema.Properties.Last();
             Assert.AreEqual("Entity", property.Name);
-            Assert.AreEqual(BuiltInType.Object, property.Type);
+            Assert.AreEqual(BuiltInType.Object, property.BuiltInType);
             Assert.IsFalse(property.IsCollection);
             TestEntitySchema(property.Schema);
         }
@@ -127,7 +127,7 @@ namespace BootGenTest
             Assert.AreEqual("ComplexList", schema.Name);
             Property property = schema.Properties.Last();
             Assert.AreEqual("Entities", property.Name);
-            Assert.AreEqual(BuiltInType.Object, property.Type);
+            Assert.AreEqual(BuiltInType.Object, property.BuiltInType);
             Assert.IsTrue(property.IsCollection);
             TestEntitySchema(property.Schema);
         }
@@ -218,7 +218,7 @@ namespace BootGenTest
             Assert.AreEqual(0, resource.Resoursces.Count);
             Property property = resource.Schema.Properties[2];
             Assert.AreEqual("Entity", property.Name);
-            Assert.AreEqual(BuiltInType.Object, property.Type);
+            Assert.AreEqual(BuiltInType.Object, property.BuiltInType);
             Assert.IsFalse(property.IsCollection);
             TestEntitySchema(property.Schema);
             TestComplexSchema(resource.Schema.Properties[3].Schema);

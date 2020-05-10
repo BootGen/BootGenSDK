@@ -6,8 +6,6 @@ namespace BootGen
 {
     internal class SchemaBuilder
     {
-
-        private readonly Stack<Type> typeStack = new Stack<Type>();
         private readonly SchemaStore store;
 
         internal SchemaBuilder(SchemaStore store)
@@ -31,38 +29,39 @@ namespace BootGen
             Schema schema = new Schema();
             schema.Name = type.Name.Split('.').Last();
             schema.Properties = new List<Property>();
-            typeStack.Push(type);
             foreach (var p in type.GetProperties())
             {
                 if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
                 {
                     continue;
                 }
-                Property property = new Property { Name = p.Name };
                 var propertyType = p.PropertyType;
-                if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>))
-                {
-                    property.IsCollection = true;
-                    propertyType = propertyType.GetGenericArguments()[0];
-                }
-                if (typeStack.Contains(propertyType))
-                {
-                    throw new RecursionException("Recursive schemas are not allowed.");
-                }
-                property.Type = GetType(propertyType);
-                if (property.Type == BuiltInType.Object)
-                {
-                    property.Schema = FromType(propertyType);
-                }
+                var property = GetTypeDescription<Property>(propertyType);
+                property.Name = p.Name;
                 schema.Properties.Add(property);
                 if (property.Name.ToLower() == "id")
                 {
                     schema.IdProperty = property;
                 }
             }
-            typeStack.Pop();
 
             return schema;
+        }
+
+        public T GetTypeDescription<T>(Type propertyType) where T : TypeDescription, new()
+        {
+            T typeDescription = new T();
+            if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                typeDescription.IsCollection = true;
+                propertyType = propertyType.GetGenericArguments()[0];
+            }
+            typeDescription.BuiltInType = GetType(propertyType);
+            if (typeDescription.BuiltInType == BuiltInType.Object)
+            {
+                typeDescription.Schema = FromType(propertyType);
+            }
+            return typeDescription;
         }
 
         private static BuiltInType GetType(Type type)
