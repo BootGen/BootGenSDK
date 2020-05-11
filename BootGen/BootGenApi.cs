@@ -13,7 +13,8 @@ namespace BootGen
         public List<Controller> Controllers { get; } = new List<Controller>();
         public List<Schema> Schemas => schemaStore.Schemas;
 
-        public BootGenApi() {
+        public BootGenApi()
+        {
             schemaStore = new SchemaStore();
             resourceBuilder = new ResourceBuilder(schemaStore);
         }
@@ -69,11 +70,15 @@ namespace BootGen
                 Schema = new Schema
                 {
                     Name = name,
-                    Properties = new List<Property> { new Property {
-                                Name = "Value",
-                                BuiltInType = type.BuiltInType,
-                                IsCollection = type.IsCollection
-                            }}
+                    Properties = new List<Property>
+                    {
+                        new Property
+                        {
+                            Name = "Value",
+                            BuiltInType = type.BuiltInType,
+                            IsCollection = type.IsCollection
+                        }
+                    }
                 }
             };
         }
