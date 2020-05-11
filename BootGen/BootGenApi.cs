@@ -46,6 +46,21 @@ namespace BootGen
                 }
 
                 controllerMethod.ReturnType = new SchemaBuilder(schemaStore).GetTypeDescription<Property>(method.ReturnType);
+                if (controllerMethod.ReturnType.BuiltInType != BuiltInType.Object)
+                {
+                    controllerMethod.ReturnType = new TypeDescription {
+                        BuiltInType = BuiltInType.Object,
+                        IsCollection = false,
+                        Schema = new Schema {
+                            Name = method.Name + "Response",
+                            Properties = new List<Property> { new Property {
+                                Name = "Value",
+                                BuiltInType = controllerMethod.ReturnType.BuiltInType,
+                                IsCollection = controllerMethod.ReturnType.IsCollection
+                            }}
+                        }
+                    };
+                }
             }
             Controllers.Add(controller);
             return controller;

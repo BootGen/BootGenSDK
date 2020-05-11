@@ -22,5 +22,6 @@
     <None Update="simple-api.yml" CopyToOutputDirectory="PreserveNewest" />
     <None Update="collection-api.yml" CopyToOutputDirectory="PreserveNewest" />
     <None Update="nested-api.yml" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="auth-api.yml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

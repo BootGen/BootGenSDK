@@ -164,6 +164,10 @@ paths:
       responses:
         '200':
           description: Register success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
         default:
           description: unexpected error
           content:
@@ -188,6 +192,10 @@ paths:
       responses:
         '200':
           description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
         default:
           description: unexpected error
           content:
