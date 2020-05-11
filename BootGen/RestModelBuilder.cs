@@ -18,20 +18,33 @@ namespace BootGen
             foreach (var controller in api.Controllers)
             {
                 var path = new Path { new PathComponent { Name = controller.Name.ToKebabCase() } };
-                foreach (var method in controller.Methods) {
-                    result.Routes.Add(new Route {
-                        Path = path.Adding(new PathComponent{ Name = method.Name.ToKebabCase() }).ToString(),
+                foreach (var method in controller.Methods)
+                {
+                    result.Routes.Add(new Route
+                    {
+                        Path = path.Adding(new PathComponent { Name = method.Name.ToKebabCase() }).ToString(),
                         Operations = new List<Operation> {
                             new Operation(HttpMethod.Post)
                             {
                                 Name = method.Name.ToCamelCase(),
-                                Parameters = method.Parameters.Select(p => p.ConvertProperty<Parameter>()).ToList()
+                                Parameters = method.Parameters.Select(ToQueryParam).ToList(),
+                                Response = method.ReturnType.Schema?.Name,
+                                ResponseIsCollection = method.ReturnType.IsCollection,
+                                SuccessCode = 200,
+                                SuccessDescription = method.Name + " success"
                             }
                         }
                     });
                 }
             }
             return result;
+        }
+
+        private static Parameter ToQueryParam(Property p)
+        {
+            Parameter parameter = p.ConvertProperty<Parameter>();
+            parameter.Kind = "query";
+            return parameter;
         }
 
         private static OASSchema ConvertSchema(Schema schema)

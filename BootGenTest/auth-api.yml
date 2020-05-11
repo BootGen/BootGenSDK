@@ -152,18 +152,18 @@ paths:
       operationId: register
       parameters:
         - name: email
-          in: 
+          in: query
           required: false
           schema:
             type: string
         - name: password
-          in: 
+          in: query
           required: false
           schema:
             type: string
       responses:
-        '0':
-          description: 
+        '200':
+          description: Register success
         default:
           description: unexpected error
           content:
@@ -176,18 +176,18 @@ paths:
       operationId: login
       parameters:
         - name: email
-          in: 
+          in: query
           required: false
           schema:
             type: string
         - name: password
-          in: 
+          in: query
           required: false
           schema:
             type: string
       responses:
-        '0':
-          description: 
+        '200':
+          description: Login success
         default:
           description: unexpected error
           content:
