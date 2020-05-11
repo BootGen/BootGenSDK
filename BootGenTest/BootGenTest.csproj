@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PackageId>BootGen</PackageId>
+  <Version>0.0.1</Version>
+  <Authors>Gabor Angyal</Authors>
+  <Company>Code Sharp Kft.</Company>
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
