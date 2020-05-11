@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace BootGen
 {
@@ -45,25 +46,36 @@ namespace BootGen
                     controllerMethod.Parameters.Add(property);
                 }
 
-                controllerMethod.ReturnType = new SchemaBuilder(schemaStore).GetTypeDescription<Property>(method.ReturnType);
-                if (controllerMethod.ReturnType.BuiltInType != BuiltInType.Object)
+                TypeDescription responseType = new SchemaBuilder(schemaStore).GetTypeDescription<Property>(method.ReturnType);
+                if (responseType.BuiltInType == BuiltInType.Object)
                 {
-                    controllerMethod.ReturnType = new TypeDescription {
-                        BuiltInType = BuiltInType.Object,
-                        IsCollection = false,
-                        Schema = new Schema {
-                            Name = method.Name + "Response",
-                            Properties = new List<Property> { new Property {
-                                Name = "Value",
-                                BuiltInType = controllerMethod.ReturnType.BuiltInType,
-                                IsCollection = controllerMethod.ReturnType.IsCollection
-                            }}
-                        }
-                    };
+                    controllerMethod.ReturnType = responseType;
+                }
+                else
+                {
+                    controllerMethod.ReturnType = WrapType(method.Name + "Response", responseType);
                 }
             }
             Controllers.Add(controller);
             return controller;
+        }
+
+        private static TypeDescription WrapType(string name, TypeDescription type)
+        {
+            return new TypeDescription
+            {
+                BuiltInType = BuiltInType.Object,
+                IsCollection = false,
+                Schema = new Schema
+                {
+                    Name = name,
+                    Properties = new List<Property> { new Property {
+                                Name = "Value",
+                                BuiltInType = type.BuiltInType,
+                                IsCollection = type.IsCollection
+                            }}
+                }
+            };
         }
     }
 

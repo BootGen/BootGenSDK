@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BootGen
 {
@@ -38,6 +39,36 @@ namespace BootGen
             return result;
         }
 
+        public static IEnumerable<Route> GetRoutes(this Controller controller)
+        {
+
+                var path = new Path { new PathComponent { Name = controller.Name.ToKebabCase() } };
+                foreach (var method in controller.Methods)
+                {
+                    yield return new Route
+                    {
+                        Path = path.Adding(new PathComponent { Name = method.Name.ToKebabCase() }).ToString(),
+                        Operations = new List<Operation> {
+                            new Operation(HttpMethod.Post)
+                            {
+                                Name = method.Name.ToCamelCase(),
+                                Parameters = method.Parameters.Select(ToQueryParam).ToList(),
+                                Response = method.ReturnType.Schema?.Name,
+                                ResponseIsCollection = method.ReturnType.IsCollection,
+                                SuccessCode = 200,
+                                SuccessDescription = method.Name + " success"
+                            }
+                        }
+                    };
+                }
+        }
+
+        private static Parameter ToQueryParam(Property p)
+        {
+            Parameter parameter = p.ConvertProperty<Parameter>();
+            parameter.Kind = "query";
+            return parameter;
+        }
         private static void AddCollectionOperations(Resource resource, Route route, Path path)
         {
             string resourceName = resource.Name.ToWords();
