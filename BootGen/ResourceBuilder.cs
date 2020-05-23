@@ -59,7 +59,7 @@ namespace BootGen
             }
 
             result.Schema = schemaStore.GetSchemaForResource(type);
-            result.Resoursces = new List<Resource>();
+            result.Resources = new List<Resource>();
             var list = new List<Type>(parentResourceTypes ?? new List<Type>());
             list.Add(type);
             foreach (var p in type.GetProperties())
@@ -70,7 +70,7 @@ namespace BootGen
                     {
                         throw new RecursionException("Recursive resources are not allowed.");
                     }
-                    result.Resoursces.Add(FromType(p.PropertyType, list));
+                    result.Resources.Add(FromType(p.PropertyType, list));
                 }
             }
             return result;

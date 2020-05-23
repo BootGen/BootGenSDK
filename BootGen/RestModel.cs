@@ -11,5 +11,6 @@ namespace BootGen
         public string Url { get; set; }
         public List<OASSchema> Schemas { get; set; }
         public List<Route> Routes { get; set; }
+        public List<RestResource> Resources { get; set; }
     }
 }

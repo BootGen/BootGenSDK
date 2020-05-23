@@ -5,14 +5,15 @@ namespace BootGen
 {
     public static class RouteBuilder
     {
-        public static List<Route> GetRoutes(this Resource resource, Path basePath)
+        public static List<Route> GetRoutes(this RestResource resource, Path basePath)
         {
             var result = new List<Route>();
             var route = new Route();
             string resourceName = resource.Name.ToCamelCase();
             basePath = basePath.Adding(new PathComponent { Name = resourceName + (resource.IsCollection ? "s" : "") });
-            route.Path = basePath.ToString();
+            route.PathModel = basePath;
             result.Add(route);
+            resource.Route = route; 
             route.Operations = new List<Operation>();
             if (resource.IsCollection)
             {
@@ -23,7 +24,7 @@ namespace BootGen
                 idParameter.Name = itemIdName;
                 idParameter.Kind = "path";
                 basePath = basePath.Adding(new PathComponent { Parameter = idParameter, Name = itemIdName });
-                subRoute.Path = basePath.ToString();
+                subRoute.PathModel = basePath;
                 subRoute.Operations = new List<Operation>();
                 result.Add(subRoute);
                 AddItemOperations(resource, subRoute, basePath);
@@ -32,7 +33,7 @@ namespace BootGen
             {
                 AddBaseOperations(resource, route, basePath);
             }
-            foreach (var subResource in resource.Resoursces)
+            foreach (var subResource in resource.Resources)
             {
                 result.AddRange(subResource.GetRoutes(basePath));
             }
@@ -47,7 +48,7 @@ namespace BootGen
                 {
                     yield return new Route
                     {
-                        Path = path.Adding(new PathComponent { Name = method.Name.ToKebabCase() }).ToString(),
+                        PathModel = path.Adding(new PathComponent { Name = method.Name.ToKebabCase() }),
                         Operations = new List<Operation> {
                             new Operation(HttpMethod.Post)
                             {

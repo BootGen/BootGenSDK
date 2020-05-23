@@ -52,7 +52,7 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<Complex>();
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(0, resource.Resoursces.Count);
+            Assert.AreEqual(0, resource.Resources.Count);
             Schema schema = resource.Schema;
             TestComplexSchema(schema);
         }
@@ -78,8 +78,8 @@ namespace BootGenTest
         {
             Assert.AreEqual("Nested", resource.Name);
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(1, resource.Resoursces.Count);
-            Resource nestedResource = resource.Resoursces.First();
+            Assert.AreEqual(1, resource.Resources.Count);
+            Resource nestedResource = resource.Resources.First();
             Assert.IsFalse(nestedResource.IsCollection);
             TestEntityResource(nestedResource);
             Property property = resource.Schema.Properties.Last();
@@ -92,8 +92,8 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<DoubleNested>();
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(1, resource.Resoursces.Count);
-            TestNestedResource(resource.Resoursces.First());
+            Assert.AreEqual(1, resource.Resources.Count);
+            TestNestedResource(resource.Resources.First());
         }
         [TestMethod]
         public void TestIllegalNesting()
@@ -117,7 +117,7 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<ComplexList>();
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(0, resource.Resoursces.Count);
+            Assert.AreEqual(0, resource.Resources.Count);
             Schema schema = resource.Schema;
             TestComplexListSchema(schema);
         }
@@ -138,8 +138,8 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<NestedList>();
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(1, resource.Resoursces.Count);
-            Resource nestedResource = resource.Resoursces.First();
+            Assert.AreEqual(1, resource.Resources.Count);
+            Resource nestedResource = resource.Resources.First();
             Assert.IsTrue(nestedResource.IsCollection);
             TestEntityResource(nestedResource);
             Property property = resource.Schema.Properties.Last();
@@ -176,7 +176,7 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<Tree>();
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(0, resource.Resoursces.Count);
+            Assert.AreEqual(0, resource.Resources.Count);
             Property property = resource.Schema.Properties[2];
             Assert.AreEqual("Entity", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.BuiltInType);

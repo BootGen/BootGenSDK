@@ -11,9 +11,12 @@ namespace BootGen
             var result = new RestModel();
             result.Schemas = api.Schemas.Select(ConvertSchema).ToList();
             result.Routes = new List<Route>();
+            result.Resources = new List<RestResource>();
             foreach (var resource in api.Resources)
             {
-                result.Routes.AddRange(resource.GetRoutes(new Path()));
+                var restResource = new RestResource(resource);
+                result.Routes.AddRange(restResource.GetRoutes(new Path()));
+                result.Resources.Add(restResource);
             }
             foreach (var controller in api.Controllers)
             {

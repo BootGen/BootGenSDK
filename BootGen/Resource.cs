@@ -13,7 +13,7 @@ namespace BootGen
         public bool Patch { get; set; } = true;
         public bool Delete { get; set; } = true;
 
-        public List<Resource> Resoursces { get; internal set; }
+        public List<Resource> Resources { get; internal set; }
 
     }
 
