@@ -333,22 +333,6 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    Address:
-      type: object
-      required:
-        - zip_code
-        - house_number
-      properties:
-        zip_code:
-          type: integer
-          format: int32
-        city:
-          type: string
-        street:
-          type: string
-        house_number:
-          type: integer
-          format: int32
     Owner:
       type: object
       required:
@@ -365,6 +349,22 @@ components:
           type: array
           items:
             type: string
+    Address:
+      type: object
+      required:
+        - zip_code
+        - house_number
+      properties:
+        zip_code:
+          type: integer
+          format: int32
+        city:
+          type: string
+        street:
+          type: string
+        house_number:
+          type: integer
+          format: int32
     Pet:
       type: object
       required:

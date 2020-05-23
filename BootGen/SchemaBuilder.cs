@@ -19,9 +19,7 @@ namespace BootGen
             {
                 return schema;
             }
-            schema = CreateSchemaForType(type);
-            store.Add(type, schema);
-            return schema;
+            return CreateSchemaForType(type);
         }
 
         private Schema CreateSchemaForType(Type type)
@@ -29,6 +27,7 @@ namespace BootGen
             Schema schema = new Schema();
             schema.Name = type.Name.Split('.').Last();
             schema.Properties = new List<Property>();
+            store.Add(type, schema);
             foreach (var p in type.GetProperties())
             {
                 if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))

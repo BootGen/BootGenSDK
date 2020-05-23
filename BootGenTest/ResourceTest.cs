@@ -149,48 +149,9 @@ namespace BootGenTest
         [TestMethod]
         public void TestRecursive()
         {
-            try
-            {
-                var resourceStore = new ResourceBuilder(new SchemaStore());
-                var resource = resourceStore.FromClass<Recursive>();
-            }
-            catch (RecursionException e)
-            {
-                Assert.IsNotNull(e);
-                return;
-            }
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        public void TestIndirectRecursion()
-        {
-            try
-            {
-                var resourceStore = new ResourceBuilder(new SchemaStore());
-                var resource = resourceStore.FromClass<IndirectRecursion>();
-            }
-            catch (RecursionException e)
-            {
-                Assert.IsNotNull(e);
-                return;
-            }
-            Assert.Fail();
-        }
-        [TestMethod]
-        public void TestNestedRecursive()
-        {
-            try
-            {
-                var resourceStore = new ResourceBuilder(new SchemaStore());
-                var resource = resourceStore.FromClass<Recursive>();
-            }
-            catch (RecursionException e)
-            {
-                Assert.IsNotNull(e);
-                return;
-            }
-            Assert.Fail();
+            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resource = resourceStore.FromClass<Recursive>();
+            Assert.AreEqual(3, resource.Schema.Properties.Count);
         }
 
         [TestMethod]

@@ -19,8 +19,10 @@ namespace BootGen
             return resource;
         }
 
-        private void CheckDanglingResources(Type type, bool parentIsResource = true)
+        private void CheckDanglingResources(Type type, bool parentIsResource = true, HashSet<Type> checkedTypes = null)
         {
+            checkedTypes = checkedTypes == null ? new HashSet<Type>() : new HashSet<Type>(checkedTypes);
+            checkedTypes.Add(type);
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
                 type = type.GetGenericArguments()[0];
@@ -31,7 +33,8 @@ namespace BootGen
                 {
                     if (parentIsResource)
                     {
-                        CheckDanglingResources(p.PropertyType, true);
+                        if (!checkedTypes.Contains(p.PropertyType))
+                            CheckDanglingResources(p.PropertyType, true, checkedTypes);
                     }
                     else
                     {
@@ -40,7 +43,8 @@ namespace BootGen
                 }
                 else
                 {
-                    CheckDanglingResources(p.PropertyType, false);
+                    if (!checkedTypes.Contains(p.PropertyType))
+                        CheckDanglingResources(p.PropertyType, false, checkedTypes);
                 }
             }
         }
