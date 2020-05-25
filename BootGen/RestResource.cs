@@ -6,6 +6,7 @@ namespace BootGen
     public class RestResource : Resource
     {
         public Route Route { get; set; }
+        public Route ElementRoute { get; set; }
 
         public new List<RestResource> Resources => base.Resources.Select(r => (RestResource)r).ToList();
 

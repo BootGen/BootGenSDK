@@ -27,6 +27,7 @@ namespace BootGen
                 subRoute.PathModel = basePath;
                 subRoute.Operations = new List<Operation>();
                 result.Add(subRoute);
+                resource.ElementRoute = subRoute;
                 AddItemOperations(resource, subRoute, basePath);
             }
             else
