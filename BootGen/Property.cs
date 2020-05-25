@@ -6,14 +6,15 @@ namespace BootGen
 {
     public class TypeDescription
     {
-        public BuiltInType BuiltInType { get; internal set; }
-        public bool IsCollection { get; internal set; }
-        public Schema Schema { get; internal set; }
+        public BuiltInType BuiltInType { get; set; }
+        public bool IsCollection { get; set; }
+        public Schema Schema { get; set; }
     }
     public class Property : TypeDescription
     {
-        public string Name { get; internal set; }
-        public bool Required { get; internal set; }
+        public string Name { get; set; }
+        public bool IsRequired { get; set; }
+        public bool IsInternal { get; set; }
     }
 
     public class ResourceAttribute : Attribute

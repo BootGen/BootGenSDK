@@ -27,17 +27,17 @@ namespace BootGenTest
         {
             Assert.AreEqual(4, schema.Properties.Count);
             Assert.AreEqual("Name", schema.Properties[0].Name);
-            Assert.IsFalse(schema.Properties[0].Required);
+            Assert.IsFalse(schema.Properties[0].IsRequired);
             Assert.AreEqual(BuiltInType.String, schema.Properties[0].BuiltInType);
             Assert.AreEqual("Value", schema.Properties[1].Name);
             Assert.AreEqual(BuiltInType.Int32, schema.Properties[1].BuiltInType);
-            Assert.IsTrue(schema.Properties[1].Required);
+            Assert.IsTrue(schema.Properties[1].IsRequired);
             Assert.AreEqual("TimeStamp", schema.Properties[2].Name);
             Assert.AreEqual(BuiltInType.Int64, schema.Properties[2].BuiltInType);
-            Assert.IsTrue(schema.Properties[2].Required);
+            Assert.IsTrue(schema.Properties[2].IsRequired);
             Assert.AreEqual("Ok", schema.Properties[3].Name);
             Assert.AreEqual(BuiltInType.Bool, schema.Properties[3].BuiltInType);
-            Assert.IsTrue(schema.Properties[3].Required);
+            Assert.IsTrue(schema.Properties[3].IsRequired);
         }
 
         [TestMethod]
@@ -56,7 +56,7 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<Complex>();
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(0, resource.Resources.Count);
+            Assert.AreEqual(0, resource.NestedResources.Count);
             Schema schema = resource.Schema;
             TestComplexSchema(schema);
         }
@@ -82,8 +82,8 @@ namespace BootGenTest
         {
             Assert.AreEqual("Nested", resource.Name);
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(1, resource.Resources.Count);
-            Resource nestedResource = resource.Resources.First();
+            Assert.AreEqual(1, resource.NestedResources.Count);
+            Resource nestedResource = resource.NestedResources.First();
             Assert.IsFalse(nestedResource.IsCollection);
             TestEntityResource(nestedResource);
             Property property = resource.Schema.Properties.Last();
@@ -96,8 +96,8 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<DoubleNested>();
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(1, resource.Resources.Count);
-            TestNestedResource(resource.Resources.First());
+            Assert.AreEqual(1, resource.NestedResources.Count);
+            TestNestedResource(resource.NestedResources.First());
         }
         [TestMethod]
         public void TestIllegalNesting()
@@ -121,7 +121,7 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<ComplexList>();
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(0, resource.Resources.Count);
+            Assert.AreEqual(0, resource.NestedResources.Count);
             Schema schema = resource.Schema;
             TestComplexListSchema(schema);
         }
@@ -142,8 +142,8 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<NestedList>();
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(1, resource.Resources.Count);
-            Resource nestedResource = resource.Resources.First();
+            Assert.AreEqual(1, resource.NestedResources.Count);
+            Resource nestedResource = resource.NestedResources.First();
             Assert.IsTrue(nestedResource.IsCollection);
             TestEntityResource(nestedResource);
             Property property = resource.Schema.Properties.Last();
@@ -180,7 +180,7 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<Tree>();
             Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(0, resource.Resources.Count);
+            Assert.AreEqual(0, resource.NestedResources.Count);
             Property property = resource.Schema.Properties[2];
             Assert.AreEqual("Entity", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.BuiltInType);

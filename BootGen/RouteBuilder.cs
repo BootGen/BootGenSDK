@@ -34,7 +34,7 @@ namespace BootGen
             {
                 AddBaseOperations(resource, route, basePath);
             }
-            foreach (var subResource in resource.Resources)
+            foreach (var subResource in resource.NestedResources)
             {
                 result.AddRange(subResource.GetRoutes(basePath));
             }

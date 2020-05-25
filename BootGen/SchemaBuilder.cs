@@ -37,7 +37,7 @@ namespace BootGen
                 var propertyType = p.PropertyType;
                 var property = GetTypeDescription<Property>(propertyType);
                 property.Name = p.Name;
-                property.Required = propertyType.IsValueType;
+                property.IsRequired = propertyType.IsValueType;
                 schema.Properties.Add(property);
                 if (property.Name.ToLower() == "id")
                 {

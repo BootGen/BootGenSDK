@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BootGen
 {
@@ -14,7 +15,9 @@ namespace BootGen
         public bool Delete { get; set; } = true;
         public Route Route { get; set; }
         public Route ElementRoute { get; set; }
-        public List<Resource> Resources { get; internal set; }
+        public List<Resource> ParentResources { get; internal set; }
+        public Resource ParentResource => ParentResources.LastOrDefault();
+        public List<Resource> NestedResources { get; internal set; }
 
     }
 

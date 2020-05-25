@@ -49,7 +49,7 @@ namespace BootGen
             }
         }
 
-        private Resource FromType(Type type, List<Type> parentResourceTypes = null)
+        private Resource FromType(Type type, List<Resource> parentResources = null)
         {
             var result = new Resource();
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
@@ -59,18 +59,19 @@ namespace BootGen
             }
 
             result.Schema = schemaStore.GetSchemaForResource(type);
-            result.Resources = new List<Resource>();
-            var list = new List<Type>(parentResourceTypes ?? new List<Type>());
-            list.Add(type);
+            result.NestedResources = new List<Resource>();
+            result.ParentResources = parentResources ?? new List<Resource>();
+            parentResources = new List<Resource>(result.ParentResources);
+            parentResources.Add(result);
             foreach (var p in type.GetProperties())
             {
                 if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
                 {
-                    if (list.Contains(p.PropertyType))
+                    if (parentResources.Any(r => r.Name == p.PropertyType.Name.Split('.').Last()))
                     {
                         throw new RecursionException("Recursive resources are not allowed.");
                     }
-                    result.Resources.Add(FromType(p.PropertyType, list));
+                    result.NestedResources.Add(FromType(p.PropertyType, parentResources));
                 }
             }
             return result;
