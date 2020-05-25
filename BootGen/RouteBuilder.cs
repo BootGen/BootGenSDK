@@ -20,9 +20,9 @@ namespace BootGen
                 AddCollectionOperations(resource, route, basePath);
                 var subRoute = new Route();
                 string itemIdName = resourceName + "Id";
-                Parameter idParameter = resource.Schema.IdProperty.ConvertProperty<Parameter>();
+                Parameter idParameter = resource.Schema.IdProperty.ConvertToParameter();
                 idParameter.Name = itemIdName;
-                idParameter.Kind = "path";
+                idParameter.Kind = RestParamterKind.Path;
                 basePath = basePath.Adding(new PathComponent { Parameter = idParameter, Name = itemIdName });
                 subRoute.PathModel = basePath;
                 subRoute.Operations = new List<Operation>();
@@ -66,8 +66,8 @@ namespace BootGen
 
         private static Parameter ToQueryParam(Property p)
         {
-            Parameter parameter = p.ConvertProperty<Parameter>();
-            parameter.Kind = "query";
+            Parameter parameter = p.ConvertToParameter();
+            parameter.Kind = RestParamterKind.Query;
             return parameter;
         }
         private static void AddCollectionOperations(Resource resource, Route route, Path path)
