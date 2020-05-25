@@ -5,7 +5,7 @@ namespace BootGen
 {
     public static class RouteBuilder
     {
-        public static List<Route> GetRoutes(this RestResource resource, Path basePath)
+        public static List<Route> GetRoutes(this Resource resource, Path basePath)
         {
             var result = new List<Route>();
             var route = new Route();

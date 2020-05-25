@@ -12,6 +12,7 @@ namespace BootGen
         public List<Resource> Resources { get; } = new List<Resource>();
         public List<Controller> Controllers { get; } = new List<Controller>();
         public List<Schema> Schemas => schemaStore.Schemas;
+        public List<Route> Routes { get; } = new List<Route>();
 
         public BootGenApi()
         {
@@ -22,6 +23,7 @@ namespace BootGen
         {
             Resource resource = resourceBuilder.FromClass<T>();
             Resources.Add(resource);
+            Routes.AddRange(resource.GetRoutes(new Path()));
             return resource;
         }
         public Controller AddController<T>()
@@ -58,6 +60,7 @@ namespace BootGen
                 }
             }
             Controllers.Add(controller);
+            Routes.AddRange(controller.GetRoutes());
             return controller;
         }
 

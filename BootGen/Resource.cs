@@ -12,7 +12,8 @@ namespace BootGen
         public bool Put { get; set; } = true;
         public bool Patch { get; set; } = true;
         public bool Delete { get; set; } = true;
-
+        public Route Route { get; set; }
+        public Route ElementRoute { get; set; }
         public List<Resource> Resources { get; internal set; }
 
     }
