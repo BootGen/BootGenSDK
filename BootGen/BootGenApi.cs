@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace BootGen
 {
@@ -19,9 +21,15 @@ namespace BootGen
             schemaStore = new SchemaStore();
             resourceBuilder = new ResourceBuilder(schemaStore);
         }
-        public Resource AddResource<T>()
+        public Resource AddResource<T>(IEnumerable data = null)
         {
             Resource resource = resourceBuilder.FromClass<T>();
+            if (data != null) 
+            {
+                resource.DataSeed = new List<JObject>();
+                foreach (var item in data)
+                    resource.DataSeed.Add(JObject.FromObject(item));
+            }
             Resources.Add(resource);
             Routes.AddRange(resource.GetRoutes(new Path()));
             return resource;

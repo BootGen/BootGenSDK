@@ -10,9 +10,7 @@ namespace BootGen
         public List<Schema> Schemas => schemas.Values.ToList();
         public Schema GetSchemaForResource(Type type)
         {
-            Schema schema = new SchemaBuilder(this).FromType(type);
-            schema.IsResource = true;
-            return schema;
+            return new SchemaBuilder(this).FromType(type);
         }
         internal bool TryGetValue(Type type, out Schema schema)
         {

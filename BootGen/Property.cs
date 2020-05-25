@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -15,6 +16,8 @@ namespace BootGen
         public string Name { get; set; }
         public bool IsRequired { get; set; }
         public bool IsInternal { get; set; }
+        public List<string> Tags { get; } = new List<string>();
+        public bool HasTag(string tag) => Tags.Contains(tag);
     }
 
     public class ResourceAttribute : Attribute

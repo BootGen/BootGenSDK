@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "oFvImojEBqTsyHRgZqzw+3GMasU/TSO1NgWPhDGXK2NN4RhMQ46H12rxm6KIGNk1J2KOVDMlAzZAZ654/Gi3Yg==",
+  "dgSpecHash": "K9o2B6NMqOaeG9jGFoC3PhBEAvSsVyKHhmTL/9VFAWGNN5B0JwzuXbGH3zZmD2hZb7EpSwxkoEyM0a6kBrCQsw==",
   "success": true,
   "projectFilePath": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
   "expectedPackageFiles": [
     "/usr/share/dotnet/sdk/NuGetFallbackFolder/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "/usr/share/dotnet/sdk/NuGetFallbackFolder/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512"
+    "/usr/share/dotnet/sdk/NuGetFallbackFolder/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512",
+    "/home/agabor/.nuget/packages/newtonsoft.json/12.0.3/newtonsoft.json.12.0.3.nupkg.sha512"
   ],
   "logs": []
 }

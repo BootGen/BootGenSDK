@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace BootGen
 {
@@ -18,7 +19,7 @@ namespace BootGen
         public List<Resource> ParentResources { get; internal set; }
         public Resource ParentResource => ParentResources.LastOrDefault();
         public List<Resource> NestedResources { get; internal set; }
-
+        public List<JObject> DataSeed { get; set; }
     }
 
     public class RecursionException : Exception
