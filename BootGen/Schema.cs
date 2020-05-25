@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BootGen
 {
@@ -8,5 +9,6 @@ namespace BootGen
         public Property IdProperty { get; internal set; }
         public List<Property> Properties { get; internal set; }
         public bool IsResource { get; internal set; }
+        public bool HasRequiredProperties => Properties.Any(p => p.Required);
     }
 }

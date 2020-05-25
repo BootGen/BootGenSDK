@@ -13,6 +13,7 @@ namespace BootGen
     public class Property : TypeDescription
     {
         public string Name { get; internal set; }
+        public bool Required { get; internal set; }
     }
 
     public class ResourceAttribute : Attribute

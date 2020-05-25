@@ -27,13 +27,17 @@ namespace BootGenTest
         {
             Assert.AreEqual(4, schema.Properties.Count);
             Assert.AreEqual("Name", schema.Properties[0].Name);
+            Assert.IsFalse(schema.Properties[0].Required);
             Assert.AreEqual(BuiltInType.String, schema.Properties[0].BuiltInType);
             Assert.AreEqual("Value", schema.Properties[1].Name);
             Assert.AreEqual(BuiltInType.Int32, schema.Properties[1].BuiltInType);
+            Assert.IsTrue(schema.Properties[1].Required);
             Assert.AreEqual("TimeStamp", schema.Properties[2].Name);
             Assert.AreEqual(BuiltInType.Int64, schema.Properties[2].BuiltInType);
+            Assert.IsTrue(schema.Properties[2].Required);
             Assert.AreEqual("Ok", schema.Properties[3].Name);
             Assert.AreEqual(BuiltInType.Bool, schema.Properties[3].BuiltInType);
+            Assert.IsTrue(schema.Properties[3].Required);
         }
 
         [TestMethod]

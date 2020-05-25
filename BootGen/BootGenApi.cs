@@ -46,6 +46,7 @@ namespace BootGen
                 {
                     var property = new SchemaBuilder(schemaStore).GetTypeDescription<Property>(param.ParameterType);
                     property.Name = param.Name;
+                    property.Required = param.ParameterType.IsValueType;
                     controllerMethod.Parameters.Add(property);
                 }
 
