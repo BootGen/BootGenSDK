@@ -10,7 +10,7 @@ namespace BootGen
             var result = new List<Route>();
             var route = new Route();
             string resourceName = resource.Name.ToCamelCase();
-            basePath = basePath.Adding(new PathComponent { Name = resourceName + (resource.IsCollection ? "s" : "") });
+            basePath = basePath.Adding(new PathComponent { Name = resourceName });
             route.PathModel = basePath;
             result.Add(route);
             resource.Route = route; 
@@ -19,7 +19,7 @@ namespace BootGen
             {
                 AddCollectionOperations(resource, route, basePath);
                 var subRoute = new Route();
-                string itemIdName = resourceName + "Id";
+                string itemIdName = resource.Schema.Name.ToCamelCase() + "Id";
                 Parameter idParameter = resource.Schema.IdProperty.ConvertToParameter();
                 idParameter.Name = itemIdName;
                 idParameter.Kind = RestParamterKind.Path;
@@ -77,8 +77,8 @@ namespace BootGen
             if (resource.Get)
                 route.Operations.Add(new Operation(HttpMethod.Get)
                 {
-                    Name = "get" + resource.Name + "s",
-                    Summary = $"retrieve list of {resourceName}s",
+                    Name = "get" + resource.Name,
+                    Summary = $"retrieve list of {resourceName}",
                     Response = resource.Name,
                     ResponseIsCollection = true,
                     SuccessCode = 200,
@@ -88,9 +88,9 @@ namespace BootGen
             if (resource.Put)
                 route.Operations.Add(new Operation(HttpMethod.Put)
                 {
-                    Name = "update" + resource.Name + "s",
-                    Summary = $"update list of {resourceName}s",
-                    Body = resource.Name,
+                    Name = "update" + resource.Name,
+                    Summary = $"update list of {resourceName}",
+                    Body = resource.Schema.Name,
                     BodyIsCollection = true,
                     SuccessCode = 200,
                     SuccessDescription = $"successful update",
@@ -101,7 +101,7 @@ namespace BootGen
                 {
                     Name = "update" + resource.Name + "ListElements",
                     Summary = $"update elements of {resourceName} list",
-                    Body = resource.Name,
+                    Body = resource.Schema.Name,
                     BodyIsCollection = true,
                     SuccessCode = 200,
                     SuccessDescription = $"successful update",
@@ -110,8 +110,8 @@ namespace BootGen
             if (resource.Delete)
                 route.Operations.Add(new Operation(HttpMethod.Delete)
                 {
-                    Name = "delete" + resource.Name + "s",
-                    Summary = $"delete all elements of {resourceName}s",
+                    Name = "delete" + resource.Name,
+                    Summary = $"delete all elements of {resourceName}",
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion",
                     Parameters = path.Parameters
@@ -136,7 +136,7 @@ namespace BootGen
                 {
                     Name = "update" + resource.Name,
                     Summary = $"update {resourceName} resource",
-                    Body = resource.Name,
+                    Body = resource.Schema.Name,
                     SuccessCode = 200,
                     SuccessDescription = $"successful update",
                     Parameters = path.Parameters
@@ -164,7 +164,7 @@ namespace BootGen
                     Summary = $"update {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful update",
-                    Body = resource.Name,
+                    Body = resource.Schema.Name,
                     Parameters = path.Parameters
                 });
             if (resource.Delete)
