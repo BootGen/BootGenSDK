@@ -21,19 +21,35 @@ namespace BootGen
             schemaStore = new SchemaStore();
             resourceBuilder = new ResourceBuilder(schemaStore);
         }
-        public Resource AddResource<T>(IEnumerable data = null)
+        public Resource AddResource<T>(string name, List<T> data = null)
         {
             Resource resource = resourceBuilder.FromClass<T>();
-            if (data != null) 
+            resource.Name = name;
+            if (data != null)
             {
-                resource.DataSeed = new List<JObject>();
-                foreach (var item in data)
-                    resource.DataSeed.Add(JObject.FromObject(item));
+                resource.Schema.InitDataSeed(data);
+                resource.PushSeedDataToNestedResources();
             }
             Resources.Add(resource);
             Routes.AddRange(resource.GetRoutes(new Path()));
             return resource;
         }
+
+        public Resource AddResourceCollection<T>(string name, List<T> data = null)
+        {
+            Resource resource = resourceBuilder.FromClass<T>();
+            resource.Name = name;
+            resource.IsCollection = true;
+            if (data != null)
+            {
+                resource.Schema.InitDataSeed(data);
+                resource.PushSeedDataToNestedResources();
+            }
+            Resources.Add(resource);
+            Routes.AddRange(resource.GetRoutes(new Path()));
+            return resource;
+        }
+
         public Controller AddController<T>()
         {
             var type = typeof(T);

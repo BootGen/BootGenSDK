@@ -19,25 +19,26 @@ namespace BootGenTest
 
         private static void TestEntityResource(Resource resource)
         {
-            Assert.AreEqual("Entity", resource.Name);
             TestEntitySchema(resource.Schema);
         }
 
         private static void TestEntitySchema(Schema schema)
         {
-            Assert.AreEqual(4, schema.Properties.Count);
-            Assert.AreEqual("Name", schema.Properties[0].Name);
-            Assert.IsFalse(schema.Properties[0].IsRequired);
-            Assert.AreEqual(BuiltInType.String, schema.Properties[0].BuiltInType);
-            Assert.AreEqual("Value", schema.Properties[1].Name);
-            Assert.AreEqual(BuiltInType.Int32, schema.Properties[1].BuiltInType);
-            Assert.IsTrue(schema.Properties[1].IsRequired);
-            Assert.AreEqual("TimeStamp", schema.Properties[2].Name);
-            Assert.AreEqual(BuiltInType.Int64, schema.Properties[2].BuiltInType);
+            Assert.AreEqual(5, schema.Properties.Count);
+            Assert.AreEqual("Id", schema.Properties[0].Name);
+            Assert.IsTrue(schema.Properties[0].IsRequired);
+            Assert.AreEqual("Name", schema.Properties[1].Name);
+            Assert.IsFalse(schema.Properties[1].IsRequired);
+            Assert.AreEqual(BuiltInType.String, schema.Properties[1].BuiltInType);
+            Assert.AreEqual("Value", schema.Properties[2].Name);
+            Assert.AreEqual(BuiltInType.Int32, schema.Properties[2].BuiltInType);
             Assert.IsTrue(schema.Properties[2].IsRequired);
-            Assert.AreEqual("Ok", schema.Properties[3].Name);
-            Assert.AreEqual(BuiltInType.Bool, schema.Properties[3].BuiltInType);
+            Assert.AreEqual("TimeStamp", schema.Properties[3].Name);
+            Assert.AreEqual(BuiltInType.Int64, schema.Properties[3].BuiltInType);
             Assert.IsTrue(schema.Properties[3].IsRequired);
+            Assert.AreEqual("Ok", schema.Properties[4].Name);
+            Assert.AreEqual(BuiltInType.Bool, schema.Properties[4].BuiltInType);
+            Assert.IsTrue(schema.Properties[4].IsRequired);
         }
 
         [TestMethod]
@@ -80,7 +81,6 @@ namespace BootGenTest
 
         private static void TestNestedResource(Resource resource)
         {
-            Assert.AreEqual("Nested", resource.Name);
             Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(1, resource.NestedResources.Count);
             Resource nestedResource = resource.NestedResources.First();
@@ -155,7 +155,7 @@ namespace BootGenTest
         {
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<Recursive>();
-            Assert.AreEqual(3, resource.Schema.Properties.Count);
+            Assert.AreEqual(4, resource.Schema.Properties.Count);
         }
 
         [TestMethod]
@@ -181,16 +181,35 @@ namespace BootGenTest
             var resource = resourceStore.FromClass<Tree>();
             Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(0, resource.NestedResources.Count);
-            Property property = resource.Schema.Properties[2];
+            Property property = resource.Schema.Properties[3];
             Assert.AreEqual("Entity", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.BuiltInType);
             Assert.IsFalse(property.IsCollection);
             TestEntitySchema(property.Schema);
-            TestComplexSchema(resource.Schema.Properties[3].Schema);
-            TestComplexListSchema(resource.Schema.Properties[4].Schema);
+            TestComplexSchema(resource.Schema.Properties[4].Schema);
+            TestComplexListSchema(resource.Schema.Properties[5].Schema);
+        }
+        [TestMethod]
+        public void TestDataSeed()
+        {
+            var api = new BootGenApi();
+            api.AddResource("complex", new List<ComplexList>{ new ComplexList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
+            Assert.AreEqual(2, api.Schemas.Count);
+            Assert.AreEqual(1, api.Schemas[0].DataSeed.Count);
+            Assert.AreEqual(1, api.Schemas[1].DataSeed.Count);
+        }
+        [TestMethod]
+        public void TestDataSeedNestedResource()
+        {
+            var api = new BootGenApi();
+            api.AddResource("nested", new List<NestedList>{ new NestedList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
+            Assert.AreEqual(2, api.Schemas.Count);
+            Assert.AreEqual(1, api.Schemas[0].DataSeed.Count);
+            Assert.AreEqual(1, api.Schemas[1].DataSeed.Count);
         }
         class Entity
         {
+            public int Id { get; set; }
             public string Name { get; set; }
             public int Value { get; set; }
             public long TimeStamp { get; set; }
@@ -198,12 +217,14 @@ namespace BootGenTest
         }
         class Complex
         {
+            public int Id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
             public Entity Entity { get; set; }
         }
         class Nested
         {
+            public int Id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
             [Resource]
@@ -211,6 +232,7 @@ namespace BootGenTest
         }
         class DoubleNested
         {
+            public int Id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
             [Resource]
@@ -219,6 +241,7 @@ namespace BootGenTest
 
         class IllegalNesting
         {
+            public int Id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
             public Nested Nested { get; set; }
@@ -226,12 +249,14 @@ namespace BootGenTest
 
         class ComplexList
         {
+            public int Id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
             public List<Entity> Entities { get; set; }
         }
         class NestedList
         {
+            public int Id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
             [Resource]
@@ -239,12 +264,14 @@ namespace BootGenTest
         }
         class Recursive
         {
+            public int Id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
             public Recursive Entity { get; set; }
         }
         class NestedRecursive
         {
+            public int Id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
             [Resource]
@@ -253,6 +280,7 @@ namespace BootGenTest
 
         class Tree
         {
+            public int Id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
             public Entity Entity { get; set; }
@@ -262,21 +290,25 @@ namespace BootGenTest
 
         class IndirectRecursion
         {
+            public int Id { get; set; }
             public IndirestRecursion2 IndirestRecursion2 { get; set; }
         }
 
         class IndirestRecursion2
         {
+            public int Id { get; set; }
             public IndirectRecursion IndirestRecursion { get; set; }
         }
         class NestedIndirectRecursion
         {
+            public int Id { get; set; }
             [Resource]
             public NestedIndirestRecursion2 NestedIndirestRecursion2 { get; set; }
         }
 
         class NestedIndirestRecursion2
         {
+            public int Id { get; set; }
             [Resource]
             public NestedIndirectRecursion NestedIndirestRecursion { get; set; }
         }
