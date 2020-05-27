@@ -193,19 +193,23 @@ namespace BootGenTest
         public void TestDataSeed()
         {
             var api = new BootGenApi();
-            api.AddResource("complex", new List<ComplexList>{ new ComplexList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
+            var r = api.AddResource<ComplexList>("complex");
+            var seedStore = new DataSeedStore();
+            seedStore.Add(r, new List<ComplexList>{ new ComplexList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
             Assert.AreEqual(2, api.Schemas.Count);
-            Assert.AreEqual(1, api.Schemas[0].DataSeed.Count);
-            Assert.AreEqual(1, api.Schemas[1].DataSeed.Count);
+            Assert.AreEqual(1, seedStore.Get(api.Schemas[0]).Count);
+            Assert.AreEqual(1, seedStore.Get(api.Schemas[1]).Count);
         }
         [TestMethod]
         public void TestDataSeedNestedResource()
         {
             var api = new BootGenApi();
-            api.AddResource("nested", new List<NestedList>{ new NestedList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
+            var r = api.AddResource<NestedList>("nested");
+            var seedStore = new DataSeedStore();
+            seedStore.Add(r, new List<NestedList>{ new NestedList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
             Assert.AreEqual(2, api.Schemas.Count);
-            Assert.AreEqual(1, api.Schemas[0].DataSeed.Count);
-            Assert.AreEqual(1, api.Schemas[1].DataSeed.Count);
+            Assert.AreEqual(1, seedStore.Get(api.Schemas[0]).Count);
+            Assert.AreEqual(1, seedStore.Get(api.Schemas[1]).Count);
         }
         class Entity
         {

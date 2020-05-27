@@ -25,6 +25,7 @@ namespace BootGen
         private Schema CreateSchemaForType(Type type)
         {
             Schema schema = new Schema();
+            schema.Id = store.Schemas.Count;
             schema.Name = type.Name.Split('.').Last();
             schema.Properties = new List<Property>();
             store.Add(type, schema);

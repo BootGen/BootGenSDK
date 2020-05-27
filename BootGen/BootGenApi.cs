@@ -21,30 +21,20 @@ namespace BootGen
             schemaStore = new SchemaStore();
             resourceBuilder = new ResourceBuilder(schemaStore);
         }
-        public Resource AddResource<T>(string name, List<T> data = null)
+        public Resource AddResource<T>(string name)
         {
             Resource resource = resourceBuilder.FromClass<T>();
             resource.Name = name;
-            if (data != null)
-            {
-                resource.Schema.InitDataSeed(data);
-                resource.PushSeedDataToNestedResources();
-            }
             Resources.Add(resource);
             Routes.AddRange(resource.GetRoutes(new Path()));
             return resource;
         }
 
-        public Resource AddResourceCollection<T>(string name, List<T> data = null)
+        public Resource AddResourceCollection<T>(string name)
         {
             Resource resource = resourceBuilder.FromClass<T>();
             resource.Name = name;
             resource.IsCollection = true;
-            if (data != null)
-            {
-                resource.Schema.InitDataSeed(data);
-                resource.PushSeedDataToNestedResources();
-            }
             Resources.Add(resource);
             Routes.AddRange(resource.GetRoutes(new Path()));
             return resource;

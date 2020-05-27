@@ -20,31 +20,6 @@ namespace BootGen
         public Resource ParentResource => ParentResources.LastOrDefault();
         public List<Resource> NestedResources { get; set; }
         internal Type SourceType { get; set; }
-
-        internal void PushSeedDataToNestedResources()
-        {
-            foreach (var resource in NestedResources)
-            {
-                foreach (var item in Schema.DataSeed)
-                {
-                    var token = item.GetValue(resource.Name);
-                    item.Remove(resource.Name);
-                    if (token is JObject obj)
-                    {
-                        resource.Schema.DataSeed.Add(obj);
-                    }
-                    else if (token is JArray array)
-                    {
-                        foreach (var o in array)
-                        {
-                            resource.Schema.DataSeed.Add(o as JObject);
-                        }
-                    }
-                    resource.Schema.PushSeedDataToProperties();
-                    resource.PushSeedDataToNestedResources();
-                }
-            }
-        }
     }
 
     public class RecursionException : Exception
