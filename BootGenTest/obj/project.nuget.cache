@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "8OPyZ8ASt7iPm/SdwE1xMMkSgdJm1h6Jazko/KJzFNEvtSJHj9XKQGHiT+rHLLJYkf2V0RNApie06x1+9NZBFA==",
+  "dgSpecHash": "r6dN6WQRMbmyQSqepzgO247r4fpuS3I1xo6i1asMHsthxDiUSHmHEvJP0mXz2nOdJrf1DKdCOmhu2yWYAs+COw==",
   "success": true,
   "projectFilePath": "/home/agabor/Documents/BootGen/BootGenTest/BootGenTest.csproj",
   "expectedPackageFiles": [
@@ -90,7 +90,7 @@
     "/usr/share/dotnet/sdk/NuGetFallbackFolder/system.threading.timer/4.3.0/system.threading.timer.4.3.0.nupkg.sha512",
     "/usr/share/dotnet/sdk/NuGetFallbackFolder/system.xml.readerwriter/4.3.0/system.xml.readerwriter.4.3.0.nupkg.sha512",
     "/usr/share/dotnet/sdk/NuGetFallbackFolder/system.xml.xdocument/4.3.0/system.xml.xdocument.4.3.0.nupkg.sha512",
-    "/home/agabor/.nuget/packages/bootgen/0.0.28/bootgen.0.0.28.nupkg.sha512"
+    "/home/agabor/.nuget/packages/bootgen/0.0.29/bootgen.0.0.29.nupkg.sha512"
   ],
   "logs": []
 }

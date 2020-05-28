@@ -19,6 +19,7 @@ namespace BootGen
         public BootGenApi()
         {
             schemaStore = new SchemaStore();
+            schemaStore.SchemaAdded += OnSchemaAdded;
             resourceBuilder = new ResourceBuilder(schemaStore);
         }
         public Resource AddResource<T>(string name)
@@ -27,6 +28,7 @@ namespace BootGen
             resource.Name = name;
             Resources.Add(resource);
             Routes.AddRange(resource.GetRoutes(new Path()));
+            OnResourceAdded(resource);
             return resource;
         }
 
@@ -37,7 +39,15 @@ namespace BootGen
             resource.IsCollection = true;
             Resources.Add(resource);
             Routes.AddRange(resource.GetRoutes(new Path()));
+            OnResourceAdded(resource);
             return resource;
+        }
+
+        protected virtual void OnResourceAdded(Resource resource)
+        {
+        }
+        protected virtual void OnSchemaAdded(Schema schema)
+        {
         }
 
         public Controller AddController<T>()

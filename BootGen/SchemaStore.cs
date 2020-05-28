@@ -8,6 +8,8 @@ namespace BootGen
     {
         private Dictionary<Type, Schema> schemas = new Dictionary<Type, Schema>();
         public List<Schema> Schemas => schemas.Values.ToList();
+
+        internal event Action<Schema> SchemaAdded;
         public Schema GetSchemaForResource(Type type)
         {
             return new SchemaBuilder(this).FromType(type);
@@ -19,6 +21,7 @@ namespace BootGen
         internal void Add(Type type, Schema schema)
         {
             schemas.Add(type, schema);
+            SchemaAdded?.Invoke(schema);
         }
     }
 }

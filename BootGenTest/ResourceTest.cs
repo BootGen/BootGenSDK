@@ -194,7 +194,7 @@ namespace BootGenTest
         {
             var api = new BootGenApi();
             var r = api.AddResource<ComplexList>("complex");
-            var seedStore = new DataSeedStore();
+            var seedStore = new SeedDataStore();
             seedStore.Add(r, new List<ComplexList>{ new ComplexList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
             Assert.AreEqual(2, api.Schemas.Count);
             Assert.AreEqual(1, seedStore.Get(api.Schemas[0]).Count);
@@ -205,7 +205,7 @@ namespace BootGenTest
         {
             var api = new BootGenApi();
             var r = api.AddResource<NestedList>("nested");
-            var seedStore = new DataSeedStore();
+            var seedStore = new SeedDataStore();
             seedStore.Add(r, new List<NestedList>{ new NestedList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
             Assert.AreEqual(2, api.Schemas.Count);
             Assert.AreEqual(1, seedStore.Get(api.Schemas[0]).Count);
