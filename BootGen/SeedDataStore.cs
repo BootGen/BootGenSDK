@@ -35,6 +35,8 @@ namespace BootGen
                     case JTokenType.Constructor:
                     case JTokenType.Property:
                     case JTokenType.Comment:
+                    case JTokenType.Null:
+                    case JTokenType.Undefined:
                         continue;
                     case JTokenType.String:
                         record.Values.Add(new KeyValuePair<string, string>(property.Name, $"\"{property.Value.ToString()}\""));
@@ -58,6 +60,11 @@ namespace BootGen
         {
             Data.TryGetValue(schema.Id, out var data);
             return data.Select(t => t.SeedRecord).ToList() ?? new List<SeedRecord>();
+        }
+
+        public List<SeedRecord> All()
+        {
+            return Data.SelectMany(i => i.Value).Select(t => t.SeedRecord).ToList();
         }
 
         internal void PushSeedDataToProperties(Schema schema)
