@@ -18,7 +18,7 @@ namespace BootGen
         }
         private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
 
-        protected virtual void OnDataSplit(SeedRecord parent, SeedRecord current) {
+        protected virtual void OnDataSplit(SeedRecord parent, SeedRecord current, string propertyName, DataRelation relation) {
 
         }
 
@@ -93,7 +93,7 @@ namespace BootGen
             if (token is JObject obj)
             {
                 dataList.Add(new SeedData(obj, ToSeedRecord(schema.Name, obj)));
-                OnDataSplit(item.SeedRecord, dataList.Last().SeedRecord);
+                OnDataSplit(item.SeedRecord, dataList.Last().SeedRecord, propertyName, DataRelation.ManyToOne);
             }
             else if (token is JArray array)
             {
@@ -101,7 +101,7 @@ namespace BootGen
                 {
                     JObject jObj = o as JObject;
                     dataList.Add(new SeedData(jObj, ToSeedRecord(schema.Name, jObj)));
-                    OnDataSplit(item.SeedRecord, dataList.Last().SeedRecord);
+                    OnDataSplit(item.SeedRecord, dataList.Last().SeedRecord, propertyName, DataRelation.OneToMany);
                 }
             }
         }
@@ -124,5 +124,11 @@ namespace BootGen
     {
         public string Name { get; set; }
         public List<KeyValuePair<string, string>> Values { get; set; } = new List<KeyValuePair<string, string>>();
+    }
+
+    public enum DataRelation
+    {
+        OneToMany,
+        ManyToOne
     }
 }

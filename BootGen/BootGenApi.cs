@@ -19,27 +19,32 @@ namespace BootGen
         public BootGenApi()
         {
             schemaStore = new SchemaStore();
-            schemaStore.SchemaAdded += OnSchemaAdded;
             resourceBuilder = new ResourceBuilder(schemaStore);
         }
         public Resource AddResource<T>(string name)
         {
+            var schemaCount = Schemas.Count;
             Resource resource = resourceBuilder.FromClass<T>();
             resource.Name = name;
             Resources.Add(resource);
             Routes.AddRange(resource.GetRoutes(new Path()));
             OnResourceAdded(resource);
+            foreach (var schema in Schemas.Skip(schemaCount))
+                OnSchemaAdded(schema);
             return resource;
         }
 
         public Resource AddResourceCollection<T>(string name)
         {
+            var schemaCount = Schemas.Count;
             Resource resource = resourceBuilder.FromClass<T>();
             resource.Name = name;
             resource.IsCollection = true;
             Resources.Add(resource);
             Routes.AddRange(resource.GetRoutes(new Path()));
             OnResourceAdded(resource);
+            foreach (var schema in Schemas.Skip(schemaCount))
+                OnSchemaAdded(schema);
             return resource;
         }
 
