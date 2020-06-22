@@ -13,7 +13,9 @@ namespace BootGen
         private readonly ResourceBuilder resourceBuilder;
         public List<Resource> Resources { get; } = new List<Resource>();
         public List<Controller> Controllers { get; } = new List<Controller>();
-        public List<Schema> Schemas => schemaStore.Schemas;
+        public List<Schema> StoredSchemas => schemaStore.Schemas;
+        public List<Schema> Schemas => schemaStore.Schemas.Concat(wrappedTypes).ToList();
+        private List<Schema> wrappedTypes = new List<Schema>();
         public List<Route> Routes { get; } = new List<Route>();
 
         public BootGenApi()
@@ -94,16 +96,12 @@ namespace BootGen
             return controller;
         }
 
-        private static TypeDescription WrapType(string name, TypeDescription type)
+        private TypeDescription WrapType(string name, TypeDescription type)
         {
-            return new TypeDescription
+            Schema schema = new Schema
             {
-                BuiltInType = BuiltInType.Object,
-                IsCollection = false,
-                Schema = new Schema
-                {
-                    Name = name,
-                    Properties = new List<Property>
+                Name = name,
+                Properties = new List<Property>
                     {
                         new Property
                         {
@@ -112,7 +110,13 @@ namespace BootGen
                             IsCollection = type.IsCollection
                         }
                     }
-                }
+            };
+            wrappedTypes.Add(schema);
+            return new TypeDescription
+            {
+                BuiltInType = BuiltInType.Object,
+                IsCollection = false,
+                Schema = schema
             };
         }
     }
