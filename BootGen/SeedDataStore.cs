@@ -75,13 +75,13 @@ namespace BootGen
                     continue;
                 foreach (var item in Data[schema.Id])
                 {
-                    SplitData(item, property.Name, property.Schema);
-                    PushSeedDataToProperties(property.Schema);
+                    if (SplitData(item, property.Name, property.Schema))
+                        PushSeedDataToProperties(property.Schema);
                 }
             }
         }
 
-        private void SplitData(SeedData item, string propertyName, Schema schema)
+        private bool SplitData(SeedData item, string propertyName, Schema schema)
         {
             var token = item.JObject.GetValue(propertyName);
             item.JObject.Remove(propertyName);
@@ -94,6 +94,7 @@ namespace BootGen
             {
                 dataList.Add(new SeedData(obj, ToSeedRecord(schema.Name, obj)));
                 OnDataSplit(item.SeedRecord, dataList.Last().SeedRecord, propertyName, DataRelation.ManyToOne);
+                return true;
             }
             else if (token is JArray array)
             {
@@ -103,7 +104,9 @@ namespace BootGen
                     dataList.Add(new SeedData(jObj, ToSeedRecord(schema.Name, jObj)));
                     OnDataSplit(item.SeedRecord, dataList.Last().SeedRecord, propertyName, DataRelation.OneToMany);
                 }
+                return true;
             }
+            return false;
         }
 
         internal void PushSeedDataToNestedResources(Resource resource)
@@ -112,9 +115,11 @@ namespace BootGen
             {
                 foreach (var item in Data[resource.Schema.Id])
                 {
-                    SplitData(item, nestedResource.Name, nestedResource.Schema);
-                    PushSeedDataToProperties(nestedResource.Schema);
-                    PushSeedDataToNestedResources(nestedResource);
+                    if (SplitData(item, nestedResource.Name, nestedResource.Schema))
+                    {
+                        PushSeedDataToProperties(nestedResource.Schema);
+                        PushSeedDataToNestedResources(nestedResource);
+                    }
                 }
             }
         }

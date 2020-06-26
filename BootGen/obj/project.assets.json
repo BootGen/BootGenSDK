@@ -224,7 +224,7 @@
     "/usr/share/dotnet/sdk/NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "0.0.40",
+    "version": "0.0.41",
     "restore": {
       "projectUniqueName": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
       "projectName": "BootGen",
@@ -279,7 +279,7 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.201/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
       }
     }
   }
