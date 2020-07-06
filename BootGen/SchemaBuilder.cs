@@ -61,12 +61,21 @@ namespace BootGen
             if (typeDescription.BuiltInType == BuiltInType.Object)
             {
                 typeDescription.Schema = FromType(propertyType);
+            } else if (typeDescription.BuiltInType == BuiltInType.Enum)
+            {
+                typeDescription.EnumValues = new List<string>();
+                foreach (var value in Enum.GetValues(propertyType))
+                {
+                    typeDescription.EnumValues.Add(value.ToString());
+                }
             }
             return typeDescription;
         }
 
         private static BuiltInType GetType(Type type)
         {
+            if (type.IsEnum)
+                return BuiltInType.Enum;
             switch (type.ToString().Split('.').Last().ToLower())
             {
                 case "string":
@@ -77,6 +86,8 @@ namespace BootGen
                     return BuiltInType.Int64;
                 case "boolean":
                     return BuiltInType.Bool;
+                case "datetime":
+                    return BuiltInType.DateTime;
                 default:
                     return BuiltInType.Object;
             }

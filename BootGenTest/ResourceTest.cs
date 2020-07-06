@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BootGen;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,7 +25,7 @@ namespace BootGenTest
 
         private static void TestEntitySchema(Schema schema)
         {
-            Assert.AreEqual(5, schema.Properties.Count);
+            Assert.AreEqual(7, schema.Properties.Count);
             Assert.AreEqual("Id", schema.Properties[0].Name);
             Assert.IsTrue(schema.Properties[0].IsRequired);
             Assert.AreEqual("Name", schema.Properties[1].Name);
@@ -39,6 +40,14 @@ namespace BootGenTest
             Assert.AreEqual("Ok", schema.Properties[4].Name);
             Assert.AreEqual(BuiltInType.Bool, schema.Properties[4].BuiltInType);
             Assert.IsTrue(schema.Properties[4].IsRequired);
+            Assert.AreEqual("DateTime", schema.Properties[5].Name);
+            Assert.AreEqual(BuiltInType.DateTime, schema.Properties[5].BuiltInType);
+            Assert.IsTrue(schema.Properties[5].IsRequired);
+            Assert.AreEqual("Weekday", schema.Properties[6].Name);
+            Assert.AreEqual(BuiltInType.Enum, schema.Properties[6].BuiltInType);
+            Assert.IsTrue(schema.Properties[6].IsRequired);
+            Assert.AreEqual(7, schema.Properties[6].EnumValues.Count);
+            Assert.AreEqual("Monday", schema.Properties[6].EnumValues.First());
         }
 
         [TestMethod]
@@ -211,6 +220,8 @@ namespace BootGenTest
             Assert.AreEqual(1, seedStore.Get(api.Schemas[0]).Count);
             Assert.AreEqual(1, seedStore.Get(api.Schemas[1]).Count);
         }
+
+        enum Weekday { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday }
         class Entity
         {
             public int Id { get; set; }
@@ -218,6 +229,8 @@ namespace BootGenTest
             public int Value { get; set; }
             public long TimeStamp { get; set; }
             public bool Ok { get; set; }
+            public DateTime DateTime { get; set; }
+            public Weekday Weekday { get; set; }
         }
         class Complex
         {

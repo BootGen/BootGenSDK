@@ -5,7 +5,7 @@
   },
   "projects": {
     "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj": {
-      "version": "0.0.30",
+      "version": "0.0.41",
       "restore": {
         "projectUniqueName": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
         "projectName": "BootGen",
@@ -60,7 +60,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.201/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -139,7 +139,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.201/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
         }
       }
     }

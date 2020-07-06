@@ -10,6 +10,7 @@ namespace BootGen
         public BuiltInType BuiltInType { get; set; }
         public bool IsCollection { get; set; }
         public Schema Schema { get; set; }
+        public List<string> EnumValues { get; set; }
     }
     public class Property : TypeDescription
     {
@@ -25,5 +26,5 @@ namespace BootGen
 
     }
 
-    public enum BuiltInType { String, Int32, Int64, Bool, Object }
+    public enum BuiltInType { String, Int32, Int64, Bool, DateTime, Object, Enum }
 }
