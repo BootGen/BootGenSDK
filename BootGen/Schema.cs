@@ -10,6 +10,8 @@ namespace BootGen
         public string Name { get; internal set; }
         public Property IdProperty { get; internal set; }
         public List<Property> Properties { get; internal set; }
+        public List<Property> ServerProperties => Properties.Where(p => p.Location != Location.ClientOnly).ToList();
+        public List<Property> ClientProperties => Properties.Where(p => p.Location != Location.ServerOnly).ToList();
         public bool HasRequiredProperties => Properties.Any(p => p.IsRequired);
     }
 }

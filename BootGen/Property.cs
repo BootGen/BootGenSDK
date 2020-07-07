@@ -12,11 +12,14 @@ namespace BootGen
         public Schema Schema { get; set; }
         public List<string> EnumValues { get; set; }
     }
+
+    public enum Location { Both, ServerOnly, ClientOnly } 
+
     public class Property : TypeDescription
     {
         public string Name { get; set; }
         public bool IsRequired { get; set; }
-        public bool IsInternal { get; set; }
+        public Location Location { get; set; }
         public List<string> Tags { get; } = new List<string>();
         public bool HasTag(string tag) => Tags.Contains(tag);
     }

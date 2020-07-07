@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj": {}
+    "/home/agabor/Documents/bootgen/BootGen/BootGen.csproj": {}
   },
   "projects": {
-    "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj": {
-      "version": "0.0.42",
+    "/home/agabor/Documents/bootgen/BootGen/BootGen.csproj": {
+      "version": "0.0.43",
       "restore": {
-        "projectUniqueName": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
+        "projectUniqueName": "/home/agabor/Documents/bootgen/BootGen/BootGen.csproj",
         "projectName": "BootGen",
-        "projectPath": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
+        "projectPath": "/home/agabor/Documents/bootgen/BootGen/BootGen.csproj",
         "packagesPath": "/home/agabor/.nuget/packages/",
-        "outputPath": "/home/agabor/Documents/BootGen/BootGen/obj/",
+        "outputPath": "/home/agabor/Documents/bootgen/BootGen/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "/usr/share/dotnet/sdk/NuGetFallbackFolder"
