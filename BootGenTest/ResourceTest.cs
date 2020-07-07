@@ -44,10 +44,11 @@ namespace BootGenTest
             Assert.AreEqual(BuiltInType.DateTime, schema.Properties[5].BuiltInType);
             Assert.IsTrue(schema.Properties[5].IsRequired);
             Assert.AreEqual("Weekday", schema.Properties[6].Name);
+            Assert.AreEqual("Weekday", schema.Properties[6].EnumSchema.Name);
             Assert.AreEqual(BuiltInType.Enum, schema.Properties[6].BuiltInType);
             Assert.IsTrue(schema.Properties[6].IsRequired);
-            Assert.AreEqual(7, schema.Properties[6].EnumValues.Count);
-            Assert.AreEqual("Monday", schema.Properties[6].EnumValues.First());
+            Assert.AreEqual(7, schema.Properties[6].EnumSchema.EnumValues.Count);
+            Assert.AreEqual("Monday", schema.Properties[6].EnumSchema.EnumValues.First());
         }
 
         [TestMethod]

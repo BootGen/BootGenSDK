@@ -1562,7 +1562,7 @@
           "lib/netstandard1.3/System.Xml.XDocument.dll": {}
         }
       },
-      "BootGen/0.0.41": {
+      "BootGen/0.0.43": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
@@ -2299,12 +2299,11 @@
       ]
     },
     "runtime.native.System.IO.Compression/4.3.0": {
-      "sha512": "INBPonS5QPEgn7naufQFXJEp3zX6L4bwHgJ/ZH78aBTpeNfQMtf7C6VrAFhlq2xxWBveIOWyFzQjJ8XzHMhdOQ==",
+      "sha512": "b+V9JC/Ii3sR659flBeaBJww111425tgjcDS1k+hqV4sGh9FALRDBvJnDtQ895gAzpPTUOFDHdqaZ2Et7BpZMg==",
       "type": "package",
       "path": "runtime.native.system.io.compression/4.3.0",
       "files": [
         ".nupkg.metadata",
-        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/netstandard1.0/_._",
@@ -2407,12 +2406,11 @@
       ]
     },
     "runtime.rhel.7-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
-      "sha512": "nyFNiCk/r+VOiIqreLix8yN+q3Wga9+SE8BCgkf+2BwEKiNx6DyvFjCgkfV743/grxv8jHJ8gUK4XEQw7yzRYg==",
+      "sha512": "T5NvFgmHX0WH4c7lP72krsnk+IJI10vJf2j2twGE+5QBRA4RyRAgD+ZjEgdmpLOjW4B+nZGaadewTCUcR899OQ==",
       "type": "package",
       "path": "runtime.rhel.7-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
       "files": [
         ".nupkg.metadata",
-        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "runtime.rhel.7-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
@@ -5505,7 +5503,7 @@
         "system.xml.xdocument.nuspec"
       ]
     },
-    "BootGen/0.0.41": {
+    "BootGen/0.0.43": {
       "type": "project",
       "path": "../BootGen/BootGen.csproj",
       "msbuildProject": "../BootGen/BootGen.csproj"
@@ -5513,7 +5511,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
-      "BootGen >= 0.0.41",
+      "BootGen >= 0.0.43",
       "MSTest.TestAdapter >= 2.1.0",
       "MSTest.TestFramework >= 2.1.0",
       "Microsoft.NET.Test.Sdk >= 16.5.0",
@@ -5528,11 +5526,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/agabor/Documents/BootGen/BootGenTest/BootGenTest.csproj",
+      "projectUniqueName": "/home/agabor/Documents/bootgen/BootGenTest/BootGenTest.csproj",
       "projectName": "BootGenTest",
-      "projectPath": "/home/agabor/Documents/BootGen/BootGenTest/BootGenTest.csproj",
+      "projectPath": "/home/agabor/Documents/bootgen/BootGenTest/BootGenTest.csproj",
       "packagesPath": "/home/agabor/.nuget/packages/",
-      "outputPath": "/home/agabor/Documents/BootGen/BootGenTest/obj/",
+      "outputPath": "/home/agabor/Documents/bootgen/BootGenTest/obj/",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "/usr/share/dotnet/sdk/NuGetFallbackFolder"
@@ -5549,8 +5547,8 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj": {
-              "projectPath": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj"
+            "/home/agabor/Documents/bootgen/BootGen/BootGen.csproj": {
+              "projectPath": "/home/agabor/Documents/bootgen/BootGen/BootGen.csproj"
             }
           }
         }

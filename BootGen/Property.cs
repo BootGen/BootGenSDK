@@ -10,7 +10,7 @@ namespace BootGen
         public BuiltInType BuiltInType { get; set; }
         public bool IsCollection { get; set; }
         public Schema Schema { get; set; }
-        public List<string> EnumValues { get; set; }
+        public EnumSchema EnumSchema { get; set; }
     }
 
     public enum Location { Both, ServerOnly, ClientOnly } 

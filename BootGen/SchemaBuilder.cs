@@ -63,13 +63,30 @@ namespace BootGen
                 typeDescription.Schema = FromType(propertyType);
             } else if (typeDescription.BuiltInType == BuiltInType.Enum)
             {
-                typeDescription.EnumValues = new List<string>();
-                foreach (var value in Enum.GetValues(propertyType))
-                {
-                    typeDescription.EnumValues.Add(value.ToString());
-                }
+                typeDescription.EnumSchema = EnumSchemaFromType(propertyType);
             }
             return typeDescription;
+        }
+
+        private EnumSchema EnumSchemaFromType(Type type)
+        {
+            EnumSchema schema;
+            if (store.TryGetValue(type, out schema))
+                return schema;
+
+            schema = new EnumSchema();
+            schema.Id = store.EnumSchemas.Count;
+            schema.Name = type.Name.Split('.').Last();
+            schema.EnumValues = new List<string>();
+
+            foreach (var value in Enum.GetValues(type))
+            {
+                schema.EnumValues.Add(value.ToString());
+            }
+
+            store.Add(type, schema);
+
+            return schema;
         }
 
         private static BuiltInType GetType(Type type)
