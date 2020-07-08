@@ -77,11 +77,11 @@ namespace BootGen
             schema = new EnumSchema();
             schema.Id = store.EnumSchemas.Count;
             schema.Name = type.Name.Split('.').Last();
-            schema.EnumValues = new List<string>();
+            schema.Values = new List<string>();
 
             foreach (var value in Enum.GetValues(type))
             {
-                schema.EnumValues.Add(value.ToString());
+                schema.Values.Add(value.ToString());
             }
 
             store.Add(type, schema);

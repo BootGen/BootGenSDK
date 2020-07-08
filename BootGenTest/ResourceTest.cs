@@ -47,8 +47,8 @@ namespace BootGenTest
             Assert.AreEqual("Weekday", schema.Properties[6].EnumSchema.Name);
             Assert.AreEqual(BuiltInType.Enum, schema.Properties[6].BuiltInType);
             Assert.IsTrue(schema.Properties[6].IsRequired);
-            Assert.AreEqual(7, schema.Properties[6].EnumSchema.EnumValues.Count);
-            Assert.AreEqual("Monday", schema.Properties[6].EnumSchema.EnumValues.First());
+            Assert.AreEqual(7, schema.Properties[6].EnumSchema.Values.Count);
+            Assert.AreEqual("Monday", schema.Properties[6].EnumSchema.Values.First());
         }
 
         [TestMethod]

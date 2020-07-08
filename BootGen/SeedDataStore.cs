@@ -7,7 +7,8 @@ namespace BootGen
 {
     public class SeedDataStore
     {
-        private class SeedData {
+        private class SeedData
+        {
             internal JObject JObject { get; set; }
             internal SeedRecord SeedRecord { get; set; }
             internal SeedData(JObject obj, SeedRecord record)
@@ -18,13 +19,14 @@ namespace BootGen
         }
         private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
 
-        protected virtual void OnDataSplit(SeedRecord parent, SeedRecord current, string propertyName, DataRelation relation) {
+        protected virtual void OnDataSplit(SeedRecord parent, SeedRecord current, string propertyName, DataRelation relation)
+        {
 
         }
 
-        private SeedRecord ToSeedRecord(string name, JObject obj)
+        private SeedRecord ToSeedRecord(Schema schema, JObject obj)
         {
-            var record = new SeedRecord { Name = name };
+            var record = new SeedRecord { Name = schema.Name };
             foreach (var property in obj.Properties())
             {
                 switch (property.Value.Type)
@@ -38,8 +40,19 @@ namespace BootGen
                     case JTokenType.Null:
                     case JTokenType.Undefined:
                         continue;
+                    case JTokenType.Date:
+                        var dateTime = (DateTime)property.Value;
+                        record.Values.Add(new KeyValuePair<string, string>(property.Name, $"new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second})"));
+                        break;
                     case JTokenType.String:
                         record.Values.Add(new KeyValuePair<string, string>(property.Name, $"\"{property.Value.ToString()}\""));
+                        break;
+                    case JTokenType.Integer:
+                        var pp = schema.Properties.First(p => p.Name == property.Name);
+                        if (pp.BuiltInType == BuiltInType.Enum) {
+                            record.Values.Add(new KeyValuePair<string, string>(property.Name, $"{pp.EnumSchema.Name}.{pp.EnumSchema.Values[(int)property.Value]}"));
+                        } else
+                            record.Values.Add(new KeyValuePair<string, string>(property.Name, property.Value.ToString()));
                         break;
                     default:
                         record.Values.Add(new KeyValuePair<string, string>(property.Name, property.Value.ToString()));
@@ -49,9 +62,10 @@ namespace BootGen
             return record;
         }
 
-        public void Add<T>(Resource resource, IEnumerable<T> data) {
+        public void Add<T>(Resource resource, IEnumerable<T> data)
+        {
             List<JObject> rawDataList = data.Select(i => JObject.FromObject(i)).ToList();
-            Data[resource.Schema.Id] = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Schema.Name, o))).ToList();
+            Data[resource.Schema.Id] = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Schema, o))).ToList();
             PushSeedDataToProperties(resource.Schema);
             PushSeedDataToNestedResources(resource);
         }
@@ -92,8 +106,13 @@ namespace BootGen
             }
             if (token is JObject obj)
             {
-                dataList.Add(new SeedData(obj, ToSeedRecord(schema.Name, obj)));
-                OnDataSplit(item.SeedRecord, dataList.Last().SeedRecord, propertyName, DataRelation.ManyToOne);
+                SeedRecord record = ToSeedRecord(schema, obj);
+                var id = record.GetId(schema);
+                if (!dataList.Any(d => d.SeedRecord.GetId(schema) == id))
+                {
+                    dataList.Add(new SeedData(obj, record));
+                }
+                OnDataSplit(item.SeedRecord, record, propertyName, DataRelation.ManyToOne);
                 return true;
             }
             else if (token is JArray array)
@@ -101,8 +120,13 @@ namespace BootGen
                 foreach (var o in array)
                 {
                     JObject jObj = o as JObject;
-                    dataList.Add(new SeedData(jObj, ToSeedRecord(schema.Name, jObj)));
-                    OnDataSplit(item.SeedRecord, dataList.Last().SeedRecord, propertyName, DataRelation.OneToMany);
+                    SeedRecord record = ToSeedRecord(schema, jObj);
+                    var id = record.GetId(schema);
+                    if (!dataList.Any(d => d.SeedRecord.GetId(schema) == id))
+                    {
+                        dataList.Add(new SeedData(jObj, record));
+                    }
+                    OnDataSplit(item.SeedRecord, record, propertyName, DataRelation.OneToMany);
                 }
                 return true;
             }
@@ -129,6 +153,11 @@ namespace BootGen
     {
         public string Name { get; set; }
         public List<KeyValuePair<string, string>> Values { get; set; } = new List<KeyValuePair<string, string>>();
+
+        internal string GetId(Schema schema)
+        {
+            return Values.FirstOrDefault(kvp => kvp.Key == schema.IdProperty.Name).Value;
+        }
     }
 
     public enum DataRelation

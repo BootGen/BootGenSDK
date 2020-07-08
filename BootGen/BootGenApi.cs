@@ -15,6 +15,7 @@ namespace BootGen
         public List<Controller> Controllers { get; } = new List<Controller>();
         public List<Schema> StoredSchemas => schemaStore.Schemas;
         public List<Schema> Schemas => schemaStore.Schemas.Concat(wrappedTypes).ToList();
+        public List<EnumSchema> EnumSchemas => schemaStore.EnumSchemas;
         private List<Schema> wrappedTypes = new List<Schema>();
         public List<Route> Routes { get; } = new List<Route>();
 
