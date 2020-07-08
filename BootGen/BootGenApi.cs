@@ -33,10 +33,10 @@ namespace BootGen
             resource.Name = name;
             Resources.Add(resource);
             Routes.AddRange(resource.GetRoutes(new Path()));
+            CalculatePivots();
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
                 OnSchemaAdded(schema);
-            CalculatePivots();
             return resource;
         }
 
@@ -48,10 +48,10 @@ namespace BootGen
             resource.IsCollection = true;
             Resources.Add(resource);
             Routes.AddRange(resource.GetRoutes(new Path()));
+            CalculatePivots();
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
                 OnSchemaAdded(schema);
-            CalculatePivots();
             return resource;
         }
 
