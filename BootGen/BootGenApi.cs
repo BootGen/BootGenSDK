@@ -10,11 +10,13 @@ namespace BootGen
     public class BootGenApi
     {
         private readonly SchemaStore schemaStore;
+        private readonly PivotStore pivotStore = new PivotStore();
         private readonly ResourceBuilder resourceBuilder;
         public List<Resource> Resources { get; } = new List<Resource>();
         public List<Controller> Controllers { get; } = new List<Controller>();
         public List<Schema> StoredSchemas => schemaStore.Schemas;
         public List<Schema> Schemas => schemaStore.Schemas.Concat(wrappedTypes).ToList();
+        public List<Pivot> Pivots => pivotStore.Pivots;
         public List<EnumSchema> EnumSchemas => schemaStore.EnumSchemas;
         private List<Schema> wrappedTypes = new List<Schema>();
         public List<Route> Routes { get; } = new List<Route>();
@@ -34,6 +36,7 @@ namespace BootGen
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
                 OnSchemaAdded(schema);
+            CalculatePivots();
             return resource;
         }
 
@@ -48,7 +51,20 @@ namespace BootGen
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
                 OnSchemaAdded(schema);
+            CalculatePivots();
             return resource;
+        }
+
+        private void CalculatePivots()
+        {
+            foreach(var schema in Schemas)
+            {
+                foreach (var property in schema.Properties)
+                {
+                    if (property.WithPivot && property.Pivot == null)
+                        property.Pivot = pivotStore.Add(property.Schema, schema);
+                }
+            }
         }
 
         protected virtual void OnResourceAdded(Resource resource)

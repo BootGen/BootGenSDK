@@ -6,16 +6,16 @@ namespace BootGen
 {
     internal class SchemaBuilder
     {
-        private readonly SchemaStore store;
+        private readonly SchemaStore schemaStore;
 
-        internal SchemaBuilder(SchemaStore store)
+        internal SchemaBuilder(SchemaStore schemaStore)
         {
-            this.store = store;
+            this.schemaStore = schemaStore;
         }
         internal Schema FromType(Type type)
         {
             Schema schema;
-            if (store.TryGetValue(type, out schema))
+            if (schemaStore.TryGetValue(type, out schema))
             {
                 return schema;
             }
@@ -25,10 +25,10 @@ namespace BootGen
         private Schema CreateSchemaForType(Type type)
         {
             Schema schema = new Schema();
-            schema.Id = store.Schemas.Count;
+            schema.Id = schemaStore.Schemas.Count;
             schema.Name = type.Name.Split('.').Last();
             schema.Properties = new List<Property>();
-            store.Add(type, schema);
+            schemaStore.Add(type, schema);
             foreach (var p in type.GetProperties())
             {
                 if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
@@ -40,6 +40,7 @@ namespace BootGen
                 property.Name = p.Name;
                 property.IsRequired = propertyType.IsValueType;
                 property.ParentSchema = schema;
+                property.WithPivot = p.CustomAttributes.Any(d => d.AttributeType == typeof(WithPivotAttribute));
                 schema.Properties.Add(property);
                 if (property.Name.ToLower() == "id")
                 {
@@ -72,11 +73,11 @@ namespace BootGen
         private EnumSchema EnumSchemaFromType(Type type)
         {
             EnumSchema schema;
-            if (store.TryGetValue(type, out schema))
+            if (schemaStore.TryGetValue(type, out schema))
                 return schema;
 
             schema = new EnumSchema();
-            schema.Id = store.EnumSchemas.Count;
+            schema.Id = schemaStore.EnumSchemas.Count;
             schema.Name = type.Name.Split('.').Last();
             schema.Values = new List<string>();
 
@@ -85,7 +86,7 @@ namespace BootGen
                 schema.Values.Add(value.ToString());
             }
 
-            store.Add(type, schema);
+            schemaStore.Add(type, schema);
 
             return schema;
         }

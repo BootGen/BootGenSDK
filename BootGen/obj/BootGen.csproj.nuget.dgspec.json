@@ -5,7 +5,7 @@
   },
   "projects": {
     "/home/agabor/Documents/bootgen/BootGen/BootGen.csproj": {
-      "version": "0.0.54",
+      "version": "0.0.56",
       "restore": {
         "projectUniqueName": "/home/agabor/Documents/bootgen/BootGen/BootGen.csproj",
         "projectName": "BootGen",
