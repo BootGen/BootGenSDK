@@ -224,13 +224,13 @@
     "/usr/share/dotnet/sdk/NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "0.0.53",
+    "version": "0.0.54",
     "restore": {
-      "projectUniqueName": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
+      "projectUniqueName": "/home/agabor/Documents/bootgen/BootGen/BootGen.csproj",
       "projectName": "BootGen",
-      "projectPath": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
+      "projectPath": "/home/agabor/Documents/bootgen/BootGen/BootGen.csproj",
       "packagesPath": "/home/agabor/.nuget/packages/",
-      "outputPath": "/home/agabor/Documents/BootGen/BootGen/obj/",
+      "outputPath": "/home/agabor/Documents/bootgen/BootGen/obj/",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "/usr/share/dotnet/sdk/NuGetFallbackFolder"

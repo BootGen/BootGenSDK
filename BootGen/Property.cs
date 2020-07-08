@@ -17,6 +17,7 @@ namespace BootGen
 
     public class Property : TypeDescription
     {
+        public Schema ParentSchema { get; set; }
         public string Name { get; set; }
         public bool IsRequired { get; set; }
         public Location Location { get; set; }
@@ -24,6 +25,7 @@ namespace BootGen
         public bool IsClientOnly => Location == Location.ClientOnly;
         public List<string> Tags { get; } = new List<string>();
         public bool HasTag(string tag) => Tags.Contains(tag);
+        public Property MirrorProperty { get; set; }
     }
 
     public class ResourceAttribute : Attribute
