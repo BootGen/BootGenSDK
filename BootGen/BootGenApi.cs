@@ -17,6 +17,7 @@ namespace BootGen
         public List<Schema> StoredSchemas => schemaStore.Schemas;
         public List<Schema> Schemas => schemaStore.Schemas.Concat(wrappedTypes).ToList();
         public List<Pivot> Pivots => pivotStore.Pivots;
+
         public List<EnumSchema> EnumSchemas => schemaStore.EnumSchemas;
         private List<Schema> wrappedTypes = new List<Schema>();
         public List<Route> Routes { get; } = new List<Route>();
@@ -62,7 +63,9 @@ namespace BootGen
                 foreach (var property in schema.Properties)
                 {
                     if (property.WithPivot && property.Pivot == null)
+                    {
                         property.Pivot = pivotStore.Add(property.Schema, schema);
+                    }
                 }
             }
         }

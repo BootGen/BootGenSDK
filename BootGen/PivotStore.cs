@@ -8,9 +8,20 @@ namespace BootGen
         public Pivot Add(Schema schemaA, Schema schemaB)
         {
             foreach (var pivot in Pivots)
-                if (pivot.SchemaA == schemaA && pivot.SchemaB == schemaB || pivot.SchemaA == schemaB && pivot.SchemaB == schemaA)
+            {
+                if (pivot.SchemaA == schemaA && pivot.SchemaB == schemaB)
+                {
+                    pivot.SchemaAExplicit = true;
                     return pivot;
-            var p = new Pivot{ SchemaA = schemaA, SchemaB = schemaB};
+                }
+                if (pivot.SchemaA == schemaB && pivot.SchemaB == schemaA)
+                {
+                    pivot.SchemaBExplicit = true;
+                    return pivot;
+                }
+            }
+            var p = new Pivot(schemaA, schemaB);
+            p.SchemaAExplicit = true;
             Pivots.Add(p);
             return p;
         }
