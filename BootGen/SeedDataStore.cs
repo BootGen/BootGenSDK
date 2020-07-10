@@ -19,7 +19,7 @@ namespace BootGen
         }
         private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
 
-        protected virtual void OnDataSplit(SeedRecord parent, SeedRecord current, string propertyName, DataRelation relation)
+        protected virtual void OnDataSplit(SeedRecord parent, SeedRecord current, Property property, DataRelation relation)
         {
 
         }
@@ -89,16 +89,16 @@ namespace BootGen
                     continue;
                 foreach (var item in Data[schema.Id])
                 {
-                    if (SplitData(item, property.Name, property.Schema))
+                    if (SplitData(item, property, property.Schema))
                         PushSeedDataToProperties(property.Schema);
                 }
             }
         }
 
-        private bool SplitData(SeedData item, string propertyName, Schema schema)
+        private bool SplitData(SeedData item, Property property, Schema schema)
         {
-            var token = item.JObject.GetValue(propertyName);
-            item.JObject.Remove(propertyName);
+            var token = item.JObject.GetValue(property.Name);
+            item.JObject.Remove(property.Name);
             if (!Data.TryGetValue(schema.Id, out var dataList))
             {
                 dataList = new List<SeedData>();
@@ -112,7 +112,7 @@ namespace BootGen
                 {
                     dataList.Add(new SeedData(obj, record));
                 }
-                OnDataSplit(item.SeedRecord, record, propertyName, DataRelation.ManyToOne);
+                OnDataSplit(item.SeedRecord, record, property, DataRelation.ManyToOne);
                 return true;
             }
             else if (token is JArray array)
@@ -126,7 +126,7 @@ namespace BootGen
                     {
                         dataList.Add(new SeedData(jObj, record));
                     }
-                    OnDataSplit(item.SeedRecord, record, propertyName, DataRelation.OneToMany);
+                    OnDataSplit(item.SeedRecord, record, property, DataRelation.OneToMany);
                 }
                 return true;
             }
@@ -139,7 +139,12 @@ namespace BootGen
             {
                 foreach (var item in Data[resource.Schema.Id])
                 {
-                    if (SplitData(item, nestedResource.Name, nestedResource.Schema))
+                    var property = new Property {
+                        Name = nestedResource.Name,
+                        BuiltInType = BuiltInType.Object,
+                        Schema = nestedResource.Schema
+                    };
+                    if (SplitData(item, property, nestedResource.Schema))
                     {
                         PushSeedDataToProperties(nestedResource.Schema);
                         PushSeedDataToNestedResources(nestedResource);
