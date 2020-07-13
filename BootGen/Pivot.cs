@@ -28,14 +28,14 @@ namespace BootGen
                 Name = SchemaA.Name,
                 BuiltInType = BuiltInType.Object,
                 Schema = SchemaA,
-                Tags = new List<string> { "parentReference"}
+                Tags = new List<string> { "pivotReference"}
             });
             Schema.Properties.Add(new Property
             {
                 Name = SchemaB.Name,
                 BuiltInType = BuiltInType.Object,
                 Schema = SchemaB,
-                Tags = new List<string> { "parentReference"}
+                Tags = new List<string> { "pivotReference"}
             });
             Schema.Location = Location.ServerOnly;
         }

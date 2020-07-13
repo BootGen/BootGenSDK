@@ -27,7 +27,7 @@ namespace BootGen
         {
 
         }
-        protected virtual void OnDataSplitManyToMany(SeedRecord parent, SeedRecord current, Property property)
+        protected virtual void OnDataSplitManyToMany(SeedRecord parent, SeedRecord child, SeedRecord current, Property property)
         {
 
         }
@@ -139,7 +139,9 @@ namespace BootGen
                             Name = property.Pivot.Name,
                             Values = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("Id", (pivotDataList.Count+1).ToString() )}
                         };
-                        OnDataSplitManyToMany(item.SeedRecord, pivotRecord, property);
+                        pivotDataList.Add(new SeedData(null, pivotRecord));
+                        OnDataSplitManyToMany(item.SeedRecord, record, pivotRecord, property);
+                        return false;
                     }
                 }
                 return true;
