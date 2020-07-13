@@ -12,14 +12,24 @@ namespace BootGen
         {
             this.schemaStore = schemaStore;
         }
-        public Resource FromClass<T>()
+        public Resource FromClass<T>(Resource parent = null)
         {
-            Resource resource = FromType(typeof(T));
+            List<Resource> parentResources = null;
+            if (parent != null)
+            {
+                parentResources = new List<Resource>();
+                while (parent != null)
+                {
+                    parentResources.Insert(0, parent);
+                    parent = parent.ParentResource;
+                }
+            }
+            Resource resource = FromType(typeof(T), parentResources);
             CheckDanglingResources(typeof(T));
             return resource;
         }
 
-        private void CheckDanglingResources(Type type, bool parentIsResource = true, HashSet<Type> checkedTypes = null)
+        private void CheckDanglingResources(Type type, HashSet<Type> checkedTypes = null)
         {
             checkedTypes = checkedTypes == null ? new HashSet<Type>() : new HashSet<Type>(checkedTypes);
             checkedTypes.Add(type);
@@ -29,23 +39,8 @@ namespace BootGen
             }
             foreach (var p in type.GetProperties())
             {
-                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
-                {
-                    if (parentIsResource)
-                    {
-                        if (!checkedTypes.Contains(p.PropertyType))
-                            CheckDanglingResources(p.PropertyType, true, checkedTypes);
-                    }
-                    else
-                    {
-                        throw new IllegalNestingException();
-                    }
-                }
-                else
-                {
                     if (!checkedTypes.Contains(p.PropertyType))
-                        CheckDanglingResources(p.PropertyType, false, checkedTypes);
-                }
+                        CheckDanglingResources(p.PropertyType, checkedTypes);
             }
         }
 
@@ -65,22 +60,6 @@ namespace BootGen
             }
             result.NestedResources = new List<Resource>();
             result.ParentResources = parentResources ?? new List<Resource>();
-            parentResources = new List<Resource>(result.ParentResources);
-            parentResources.Add(result);
-            foreach (var p in type.GetProperties())
-            {
-                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
-                {
-                    if (parentResources.Any(r => r.SourceType == p.PropertyType))
-                    {
-                        throw new RecursionException("Recursive resources are not allowed.");
-                    }
-
-                    Resource nestedResource = FromType(p.PropertyType, parentResources);
-                    nestedResource.Name = p.Name;
-                    result.NestedResources.Add(nestedResource);
-                }
-            }
             return result;
         }
     }

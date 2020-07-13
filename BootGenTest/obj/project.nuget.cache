@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "VgQa1zwHGLmR1RsP5LQNwa43L5TCZ8wh+KDMWeJWBrP29EZEJHbLL73GYkpm1ldPD1KwvZsn6D7w+PTOkwD4ZA==",
+  "dgSpecHash": "kPhDF1SYjL9aVtte8RPS5yRJfeVMrYqi099jJnMg9tk5P1yGU3zbwWo+6AtUsBysAW2Jn9PbIIXyrBmAYmBHdg==",
   "success": true,
   "projectFilePath": "C:\\Users\\angya\\Documents\\bootgen\\BootGenTest\\BootGenTest.csproj",
   "expectedPackageFiles": [
@@ -90,7 +90,7 @@
     "C:\\Users\\angya\\.nuget\\packages\\system.threading.timer\\4.3.0\\system.threading.timer.4.3.0.nupkg.sha512",
     "C:\\Users\\angya\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\angya\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
-    "C:\\Users\\angya\\.nuget\\packages\\bootgen\\0.0.67\\bootgen.0.0.67.nupkg.sha512"
+    "C:\\Users\\angya\\.nuget\\packages\\bootgen\\0.0.75\\bootgen.0.0.75.nupkg.sha512"
   ],
   "logs": []
 }

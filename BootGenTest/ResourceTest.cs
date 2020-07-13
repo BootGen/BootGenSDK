@@ -83,49 +83,6 @@ namespace BootGenTest
         }
 
         [TestMethod]
-        public void TestNestedResource()
-        {
-            var resourceStore = new ResourceBuilder(new SchemaStore());
-            TestNestedResource(resourceStore.FromClass<Nested>());
-        }
-
-        private static void TestNestedResource(Resource resource)
-        {
-            Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(1, resource.NestedResources.Count);
-            Resource nestedResource = resource.NestedResources.First();
-            Assert.IsFalse(nestedResource.IsCollection);
-            TestEntityResource(nestedResource);
-            Property property = resource.Schema.Properties.Last();
-            Assert.AreNotEqual("Entity", property.Name);
-        }
-
-        [TestMethod]
-        public void TestDoubleNestedResource()
-        {
-            var resourceStore = new ResourceBuilder(new SchemaStore());
-            var resource = resourceStore.FromClass<DoubleNested>();
-            Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(1, resource.NestedResources.Count);
-            TestNestedResource(resource.NestedResources.First());
-        }
-        [TestMethod]
-        public void TestIllegalNesting()
-        {
-            try
-            {
-                var resourceStore = new ResourceBuilder(new SchemaStore());
-                var resource = resourceStore.FromClass<IllegalNesting>();
-            }
-            catch (IllegalNestingException e)
-            {
-                Assert.IsNotNull(e);
-                return;
-            }
-            Assert.Fail();
-        }
-
-        [TestMethod]
         public void TestComplexListResource()
         {
             var resourceStore = new ResourceBuilder(new SchemaStore());
@@ -147,20 +104,6 @@ namespace BootGenTest
         }
 
         [TestMethod]
-        public void TestNestedListResource()
-        {
-            var resourceStore = new ResourceBuilder(new SchemaStore());
-            var resource = resourceStore.FromClass<NestedList>();
-            Assert.IsFalse(resource.IsCollection);
-            Assert.AreEqual(1, resource.NestedResources.Count);
-            Resource nestedResource = resource.NestedResources.First();
-            Assert.IsTrue(nestedResource.IsCollection);
-            TestEntityResource(nestedResource);
-            Property property = resource.Schema.Properties.Last();
-            Assert.AreNotEqual("Entities", property.Name);
-        }
-
-        [TestMethod]
         public void TestRecursive()
         {
             var resourceStore = new ResourceBuilder(new SchemaStore());
@@ -168,22 +111,6 @@ namespace BootGenTest
             Assert.AreEqual(4, resource.Schema.Properties.Count);
         }
 
-        [TestMethod]
-        public void TestNestedIndirectRecursion()
-        {
-            try
-            {
-                var resourceStore = new ResourceBuilder(new SchemaStore());
-                var resource = resourceStore.FromClass<NestedIndirectRecursion>();
-            }
-            catch (RecursionException e)
-            {
-                Assert.IsNotNull(e);
-                return;
-            }
-            Assert.Fail();
-        }
-        
         [TestMethod]
         public void TestTreeResource()
         {
@@ -210,17 +137,6 @@ namespace BootGenTest
             Assert.AreEqual(1, seedStore.Get(api.Schemas[0]).Count);
             Assert.AreEqual(1, seedStore.Get(api.Schemas[1]).Count);
         }
-        [TestMethod]
-        public void TestDataSeedNestedResource()
-        {
-            var api = new BootGenApi();
-            var r = api.AddResource<NestedList>("nested");
-            var seedStore = new SeedDataStore();
-            seedStore.Add(r, new List<NestedList>{ new NestedList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
-            Assert.AreEqual(2, api.Schemas.Count);
-            Assert.AreEqual(1, seedStore.Get(api.Schemas[0]).Count);
-            Assert.AreEqual(1, seedStore.Get(api.Schemas[1]).Count);
-        }
 
         enum Weekday { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday }
         class Entity
@@ -240,30 +156,6 @@ namespace BootGenTest
             public string Value { get; set; }
             public Entity Entity { get; set; }
         }
-        class Nested
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Value { get; set; }
-            [Resource]
-            public Entity Entity { get; set; }
-        }
-        class DoubleNested
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Value { get; set; }
-            [Resource]
-            public Nested Nested { get; set; }
-        }
-
-        class IllegalNesting
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Value { get; set; }
-            public Nested Nested { get; set; }
-        }
 
         class ComplexList
         {
@@ -272,28 +164,12 @@ namespace BootGenTest
             public string Value { get; set; }
             public List<Entity> Entities { get; set; }
         }
-        class NestedList
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Value { get; set; }
-            [Resource]
-            public List<Entity> Entities { get; set; }
-        }
         class Recursive
         {
             public int Id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
             public Recursive Entity { get; set; }
-        }
-        class NestedRecursive
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Value { get; set; }
-            [Resource]
-            public NestedRecursive Entity { get; set; }
         }
 
         class Tree
@@ -316,19 +192,6 @@ namespace BootGenTest
         {
             public int Id { get; set; }
             public IndirectRecursion IndirestRecursion { get; set; }
-        }
-        class NestedIndirectRecursion
-        {
-            public int Id { get; set; }
-            [Resource]
-            public NestedIndirestRecursion2 NestedIndirestRecursion2 { get; set; }
-        }
-
-        class NestedIndirestRecursion2
-        {
-            public int Id { get; set; }
-            [Resource]
-            public NestedIndirectRecursion NestedIndirestRecursion { get; set; }
         }
     }
 }

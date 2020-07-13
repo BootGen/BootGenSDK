@@ -5,8 +5,9 @@ namespace BootGen
 {
     public static class RouteBuilder
     {
-        public static List<Route> GetRoutes(this Resource resource, Path basePath)
+        public static List<Route> GetRoutes(this Resource resource)
         {
+            Path basePath = resource.ParentResource?.ElementRoute?.PathModel ?? resource.ParentResource?.Route?.PathModel ?? new Path();
             var result = new List<Route>();
             var route = new Route();
             string resourceName = resource.Name.ToCamelCase();
@@ -33,10 +34,6 @@ namespace BootGen
             else
             {
                 AddBaseOperations(resource, route, basePath);
-            }
-            foreach (var subResource in resource.NestedResources)
-            {
-                result.AddRange(subResource.GetRoutes(basePath));
             }
             return result;
         }

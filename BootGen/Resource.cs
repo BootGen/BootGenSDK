@@ -22,13 +22,6 @@ namespace BootGen
         internal Type SourceType { get; set; }
     }
 
-    public class RecursionException : Exception
-    {
-        public RecursionException(string message) : base(message)
-        {
-
-        }
-    }
     public class InvalidResourceException : Exception
     {
         public InvalidResourceException(string message) : base(message)
@@ -37,11 +30,4 @@ namespace BootGen
         }
     }
 
-    public class IllegalNestingException : Exception
-    {
-        public IllegalNestingException() : base("Parent of a nested resource must also be a resource.")
-        {
-
-        }
-    }
 }

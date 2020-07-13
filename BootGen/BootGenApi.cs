@@ -27,13 +27,16 @@ namespace BootGen
             schemaStore = new SchemaStore();
             resourceBuilder = new ResourceBuilder(schemaStore);
         }
-        public Resource AddResource<T>(string name)
+        public Resource AddResource<T>(string name, Resource parent = null)
         {
             var schemaCount = Schemas.Count;
-            Resource resource = resourceBuilder.FromClass<T>();
+            Resource resource = resourceBuilder.FromClass<T>(parent);
             resource.Name = name;
-            Resources.Add(resource);
-            Routes.AddRange(resource.GetRoutes(new Path()));
+            if (parent == null)
+                Resources.Add(resource);
+            else
+                parent.NestedResources.Add(resource);
+            Routes.AddRange(resource.GetRoutes());
             CalculatePivots();
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
@@ -41,14 +44,18 @@ namespace BootGen
             return resource;
         }
 
-        public Resource AddResourceCollection<T>(string name)
+        public Resource AddResourceCollection<T>(string name, Resource parent = null)
         {
             var schemaCount = Schemas.Count;
-            Resource resource = resourceBuilder.FromClass<T>();
+            Resource resource = resourceBuilder.FromClass<T>(parent);
             resource.Name = name;
             resource.IsCollection = true;
-            Resources.Add(resource);
-            Routes.AddRange(resource.GetRoutes(new Path()));
+            if (parent == null)
+                Resources.Add(resource);
+            else
+                parent.NestedResources.Add(resource);
+           
+            Routes.AddRange(resource.GetRoutes());
             CalculatePivots();
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
