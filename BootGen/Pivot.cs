@@ -27,14 +27,17 @@ namespace BootGen
             {
                 Name = SchemaA.Name,
                 BuiltInType = BuiltInType.Object,
-                Schema = SchemaA
+                Schema = SchemaA,
+                Tags = new List<string> { "parentReference"}
             });
             Schema.Properties.Add(new Property
             {
                 Name = SchemaB.Name,
                 BuiltInType = BuiltInType.Object,
-                Schema = SchemaB
+                Schema = SchemaB,
+                Tags = new List<string> { "parentReference"}
             });
+            Schema.Location = Location.ServerOnly;
         }
     }
 }

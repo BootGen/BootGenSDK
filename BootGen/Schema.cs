@@ -12,6 +12,8 @@ namespace BootGen
         public List<Property> Properties { get; internal set; }
         public List<Property> ServerProperties => Properties.Where(p => p.Location != Location.ClientOnly).ToList();
         public List<Property> ClientProperties => Properties.Where(p => p.Location != Location.ServerOnly).ToList();
+        public List<Property> CommonProperties => Properties.Where(p => p.Location == Location.Both).ToList();
         public bool HasRequiredProperties => Properties.Any(p => p.IsRequired);
+        public Location Location { get; set; }
     }
 }

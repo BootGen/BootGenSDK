@@ -60,7 +60,8 @@ namespace BootGen
         {
             foreach(var schema in Schemas)
             {
-                foreach (var property in schema.Properties)
+                List<Property> properties = new List<Property> (schema.Properties);
+                foreach (var property in properties)
                 {
                     if (property.WithPivot && property.Pivot == null)
                     {

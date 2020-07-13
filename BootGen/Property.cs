@@ -23,7 +23,7 @@ namespace BootGen
         public Location Location { get; set; }
         public bool IsServerOnly => Location == Location.ServerOnly;
         public bool IsClientOnly => Location == Location.ClientOnly;
-        public List<string> Tags { get; } = new List<string>();
+        public List<string> Tags { get; internal set; } = new List<string>();
         public bool HasTag(string tag) => Tags.Contains(tag);
         public Property MirrorProperty { get; set; }
         public Pivot Pivot { get; set; }
