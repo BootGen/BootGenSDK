@@ -30,11 +30,6 @@ namespace BootGen
         internal bool WithPivot { get; set; }
     }
 
-    public class ResourceAttribute : Attribute
-    {
-
-    }
-
     public class WithPivotAttribute : Attribute
     {
     }

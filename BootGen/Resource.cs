@@ -19,6 +19,7 @@ namespace BootGen
         public List<Resource> ParentResources { get; set; }
         public Resource ParentResource => ParentResources.LastOrDefault();
         public List<Resource> NestedResources { get; set; }
+        public Schema Pivot { get; internal set; }
         internal Type SourceType { get; set; }
     }
 

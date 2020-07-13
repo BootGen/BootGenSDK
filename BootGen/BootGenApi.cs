@@ -17,7 +17,6 @@ namespace BootGen
         public List<Schema> StoredSchemas => schemaStore.Schemas;
         public List<Schema> Schemas => schemaStore.Schemas.Concat(wrappedTypes).ToList();
         public List<Pivot> Pivots => pivotStore.Pivots;
-
         public List<EnumSchema> EnumSchemas => schemaStore.EnumSchemas;
         private List<Schema> wrappedTypes = new List<Schema>();
         public List<Route> Routes { get; } = new List<Route>();
@@ -27,7 +26,7 @@ namespace BootGen
             schemaStore = new SchemaStore();
             resourceBuilder = new ResourceBuilder(schemaStore);
         }
-        public Resource AddResource<T>(string name, Resource parent = null)
+        public Resource AddResource<T>(string name, Resource parent = null, string pivotName = null)
         {
             var schemaCount = Schemas.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
@@ -37,6 +36,12 @@ namespace BootGen
             else
                 parent.NestedResources.Add(resource);
             Routes.AddRange(resource.GetRoutes());
+            if (pivotName != null)
+            {
+                Schema pivotSchema = CreatePivot(parent, resource, pivotName);
+                resource.Pivot = pivotSchema;
+                schemaStore.Add(pivotSchema);
+            }
             CalculatePivots();
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
@@ -44,7 +49,46 @@ namespace BootGen
             return resource;
         }
 
-        public Resource AddResourceCollection<T>(string name, Resource parent = null)
+        private static Schema CreatePivot(Resource parent, Resource resource, string pivotName)
+        {
+            Property idProperty = new Property
+            {
+                Name = "Id",
+                BuiltInType = BuiltInType.Int32
+            };
+            var pivotSchema = new Schema
+            {
+                Name = pivotName,
+                Location = Location.ServerOnly,
+                IdProperty = idProperty,
+                Properties = new List<Property> {
+                        idProperty,
+                        new Property {
+                            Name = parent.Schema.Name + "Id",
+                            BuiltInType = parent.Schema.IdProperty.BuiltInType
+                        },
+                        new Property {
+                            Name = parent.Schema.Name,
+                            BuiltInType = BuiltInType.Object,
+                            Schema = parent.Schema,
+                            Tags = new List<string> { "hasOne" }
+                        },
+                        new Property {
+                            Name = resource.Schema.Name + "Id",
+                            BuiltInType = resource.Schema.IdProperty.BuiltInType
+                        },
+                        new Property {
+                            Name = resource.Schema.Name,
+                            BuiltInType = BuiltInType.Object,
+                            Schema = resource.Schema,
+                            Tags = new List<string> { "hasOne" }
+                        }
+                    }
+            };
+            return pivotSchema;
+        }
+
+        public Resource AddResourceCollection<T>(string name, Resource parent = null, string pivotName = null)
         {
             var schemaCount = Schemas.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
@@ -56,6 +100,12 @@ namespace BootGen
                 parent.NestedResources.Add(resource);
            
             Routes.AddRange(resource.GetRoutes());
+            if (pivotName != null)
+            {
+                Schema pivotSchema = CreatePivot(parent, resource, pivotName);
+                resource.Pivot = pivotSchema;
+                schemaStore.Add(pivotSchema);
+            }
             CalculatePivots();
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
