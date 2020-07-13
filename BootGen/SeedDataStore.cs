@@ -19,7 +19,15 @@ namespace BootGen
         }
         private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
 
-        protected virtual void OnDataSplit(SeedRecord parent, SeedRecord current, Property property, DataRelation relation)
+        protected virtual void OnDataSplitOneToMany(SeedRecord parent, SeedRecord current, Property property)
+        {
+
+        }
+        protected virtual void OnDataSplitManyToOne(SeedRecord parent, SeedRecord current, Property property)
+        {
+
+        }
+        protected virtual void OnDataSplitManyToMany(SeedRecord parent, SeedRecord current, Property property)
         {
 
         }
@@ -99,11 +107,7 @@ namespace BootGen
         {
             var token = item.JObject.GetValue(property.Name);
             item.JObject.Remove(property.Name);
-            if (!Data.TryGetValue(schema.Id, out var dataList))
-            {
-                dataList = new List<SeedData>();
-                Data.Add(schema.Id, dataList);
-            }
+            var dataList = GetDataList(schema);
             if (token is JObject obj)
             {
                 SeedRecord record = ToSeedRecord(schema, obj);
@@ -112,7 +116,7 @@ namespace BootGen
                 {
                     dataList.Add(new SeedData(obj, record));
                 }
-                OnDataSplit(item.SeedRecord, record, property, DataRelation.ManyToOne);
+                OnDataSplitManyToOne(item.SeedRecord, record, property);
                 return true;
             }
             else if (token is JArray array)
@@ -126,11 +130,32 @@ namespace BootGen
                     {
                         dataList.Add(new SeedData(jObj, record));
                     }
-                    OnDataSplit(item.SeedRecord, record, property, DataRelation.OneToMany);
+                    OnDataSplitOneToMany(item.SeedRecord, record, property);
+                    if (property.Pivot != null)
+                    {
+                        var pivotDataList = GetDataList(property.Pivot.Schema);
+                        var pivotRecord = new SeedRecord
+                        {
+                            Name = property.Pivot.Name,
+                            Values = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("Id", (pivotDataList.Count+1).ToString() )}
+                        };
+                        OnDataSplitManyToMany(item.SeedRecord, pivotRecord, property);
+                    }
                 }
                 return true;
             }
             return false;
+        }
+
+        private List<SeedData> GetDataList(Schema schema)
+        {
+            if (!Data.TryGetValue(schema.Id, out var dataList))
+            {
+                dataList = new List<SeedData>();
+                Data.Add(schema.Id, dataList);
+            }
+
+            return dataList;
         }
 
         internal void PushSeedDataToNestedResources(Resource resource)
@@ -163,11 +188,5 @@ namespace BootGen
         {
             return Values.FirstOrDefault(kvp => kvp.Key == schema.IdProperty.Name).Value;
         }
-    }
-
-    public enum DataRelation
-    {
-        OneToMany,
-        ManyToOne
     }
 }

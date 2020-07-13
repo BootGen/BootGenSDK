@@ -16,7 +16,7 @@ namespace BootGen
             SchemaA = schemaA;
             SchemaB = schemaB;
             Schema = new Schema();
-            Schema.Name = SchemaA.Name + SchemaB.Name;
+            Schema.Name = Name;
             Schema.IdProperty = new Property
             {
                 Name = "Id",

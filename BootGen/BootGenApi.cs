@@ -64,7 +64,9 @@ namespace BootGen
                 {
                     if (property.WithPivot && property.Pivot == null)
                     {
-                        property.Pivot = pivotStore.Add(property.Schema, schema);
+                        property.Pivot = pivotStore.Add(property, schema);
+                        property.Pivot.Schema.Id = schemaStore.Schemas.Count;
+                        schemaStore.Add(property.Pivot.Schema);
                     }
                 }
             }
