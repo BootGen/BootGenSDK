@@ -21,10 +21,11 @@ namespace BootGen
         internal void Add(Type type, Schema schema)
         {
             schemasByType.Add(type, schema);
-            Schemas.Add(schema);
+            Add(schema);
         }
         internal void Add(Schema schema)
         {
+            schema.Id = Schemas.Count;
             Schemas.Add(schema);
         }
         internal bool TryGetValue(Type type, out EnumSchema schema)
@@ -35,5 +36,6 @@ namespace BootGen
         {
             enumSchemas.Add(type, schema);
         }
+
     }
 }

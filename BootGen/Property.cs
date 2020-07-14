@@ -26,8 +26,11 @@ namespace BootGen
         public List<string> Tags { get; internal set; } = new List<string>();
         public bool HasTag(string tag) => Tags.Contains(tag);
         public Property MirrorProperty { get; set; }
-        public Pivot Pivot { get; set; }
-        internal bool WithPivot { get; set; }
+    }
+
+    public class ResourceAttribute : Attribute
+    {
+
     }
 
     public class WithPivotAttribute : Attribute

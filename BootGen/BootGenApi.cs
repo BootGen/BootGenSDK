@@ -9,22 +9,20 @@ namespace BootGen
 {
     public class BootGenApi
     {
-        private readonly SchemaStore schemaStore;
-        private readonly PivotStore pivotStore = new PivotStore();
+        public SchemaStore SchemaStore { get; }
         private readonly ResourceBuilder resourceBuilder;
         public List<Resource> Resources { get; } = new List<Resource>();
         public List<Controller> Controllers { get; } = new List<Controller>();
-        public List<Schema> StoredSchemas => schemaStore.Schemas;
-        public List<Schema> Schemas => schemaStore.Schemas.Concat(wrappedTypes).ToList();
-        public List<Pivot> Pivots => pivotStore.Pivots;
-        public List<EnumSchema> EnumSchemas => schemaStore.EnumSchemas;
+        public List<Schema> StoredSchemas => SchemaStore.Schemas;
+        public List<Schema> Schemas => SchemaStore.Schemas.Concat(wrappedTypes).ToList();
+        public List<EnumSchema> EnumSchemas => SchemaStore.EnumSchemas;
         private List<Schema> wrappedTypes = new List<Schema>();
         public List<Route> Routes { get; } = new List<Route>();
 
         public BootGenApi()
         {
-            schemaStore = new SchemaStore();
-            resourceBuilder = new ResourceBuilder(schemaStore);
+            SchemaStore = new SchemaStore();
+            resourceBuilder = new ResourceBuilder(SchemaStore);
         }
         public Resource AddResource<T>(string name, Resource parent = null, string pivotName = null)
         {
@@ -40,9 +38,8 @@ namespace BootGen
             {
                 Schema pivotSchema = CreatePivot(parent, resource, pivotName);
                 resource.Pivot = pivotSchema;
-                schemaStore.Add(pivotSchema);
+                SchemaStore.Add(pivotSchema);
             }
-            CalculatePivots();
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
                 OnSchemaAdded(schema);
@@ -104,30 +101,12 @@ namespace BootGen
             {
                 Schema pivotSchema = CreatePivot(parent, resource, pivotName);
                 resource.Pivot = pivotSchema;
-                schemaStore.Add(pivotSchema);
+                SchemaStore.Add(pivotSchema);
             }
-            CalculatePivots();
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
                 OnSchemaAdded(schema);
             return resource;
-        }
-
-        private void CalculatePivots()
-        {
-            foreach(var schema in Schemas)
-            {
-                List<Property> properties = new List<Property> (schema.Properties);
-                foreach (var property in properties)
-                {
-                    if (property.WithPivot && property.Pivot == null)
-                    {
-                        property.Pivot = pivotStore.Add(property, schema);
-                        property.Pivot.Schema.Id = schemaStore.Schemas.Count;
-                        schemaStore.Add(property.Pivot.Schema);
-                    }
-                }
-            }
         }
 
         protected virtual void OnResourceAdded(Resource resource)
@@ -155,13 +134,13 @@ namespace BootGen
                 controller.Methods.Add(controllerMethod);
                 foreach (var param in method.GetParameters())
                 {
-                    var property = new SchemaBuilder(schemaStore).GetTypeDescription<Property>(param.ParameterType);
+                    var property = new SchemaBuilder(SchemaStore).GetTypeDescription<Property>(param.ParameterType);
                     property.Name = param.Name;
                     property.IsRequired = param.ParameterType.IsValueType;
                     controllerMethod.Parameters.Add(property);
                 }
 
-                TypeDescription responseType = new SchemaBuilder(schemaStore).GetTypeDescription<Property>(method.ReturnType);
+                TypeDescription responseType = new SchemaBuilder(SchemaStore).GetTypeDescription<Property>(method.ReturnType);
                 if (responseType.BuiltInType == BuiltInType.Object)
                 {
                     controllerMethod.ReturnType = responseType;

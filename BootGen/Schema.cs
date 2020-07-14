@@ -10,8 +10,6 @@ namespace BootGen
         public string Name { get; internal set; }
         public Property IdProperty { get; internal set; }
         public List<Property> Properties { get; internal set; }
-        public List<Property> PivotedProperties => Properties.Where(p => p.Pivot != null).ToList();
-        public bool HasPivots => PivotedProperties.Any();
         public List<Property> ServerProperties => Properties.Where(p => p.Location != Location.ClientOnly).ToList();
         public List<Property> ClientProperties => Properties.Where(p => p.Location != Location.ServerOnly).ToList();
         public List<Property> CommonProperties => Properties.Where(p => p.Location == Location.Both).ToList();

@@ -25,13 +25,12 @@ namespace BootGen
         private Schema CreateSchemaForType(Type type)
         {
             Schema schema = new Schema();
-            schema.Id = schemaStore.Schemas.Count;
             schema.Name = type.Name.Split('.').Last();
             schema.Properties = new List<Property>();
             schemaStore.Add(type, schema);
             foreach (var p in type.GetProperties())
             {
-                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
+                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute) || d.AttributeType == typeof(WithPivotAttribute)))
                 {
                     continue;
                 }
@@ -40,7 +39,6 @@ namespace BootGen
                 property.Name = p.Name;
                 property.IsRequired = propertyType.IsValueType;
                 property.ParentSchema = schema;
-                property.WithPivot = p.CustomAttributes.Any(d => d.AttributeType == typeof(WithPivotAttribute));
                 schema.Properties.Add(property);
                 if (property.Name.ToLower() == "id")
                 {

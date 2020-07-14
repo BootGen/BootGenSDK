@@ -7,6 +7,8 @@ namespace BootGen
 {
     public class SeedDataStore
     {
+        private readonly SchemaStore schemaStore;
+
         private class SeedData
         {
             internal JObject JObject { get; set; }
@@ -19,15 +21,16 @@ namespace BootGen
         }
         private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
 
+        public SeedDataStore(SchemaStore schemaStore)
+        {
+            this.schemaStore = schemaStore;
+        }
+
         protected virtual void OnDataSplitOneToMany(SeedRecord parent, SeedRecord current, Property property)
         {
 
         }
         protected virtual void OnDataSplitManyToOne(SeedRecord parent, SeedRecord current, Property property)
-        {
-
-        }
-        protected virtual void OnDataSplitManyToMany(SeedRecord parent, SeedRecord child, SeedRecord current, Property property)
         {
 
         }
@@ -103,7 +106,7 @@ namespace BootGen
             }
         }
 
-        private bool SplitData(SeedData item, Property property, Schema schema)
+        private bool SplitData(SeedData item, Property property, Schema schema, Schema pivot = null)
         {
             var token = item.JObject.GetValue(property.Name);
             item.JObject.Remove(property.Name);
@@ -131,18 +134,19 @@ namespace BootGen
                         dataList.Add(new SeedData(jObj, record));
                     }
                     OnDataSplitOneToMany(item.SeedRecord, record, property);
-                    if (property.Pivot != null)
+                     if (pivot != null)
                     {
-                        var pivotDataList = GetDataList(property.Pivot.Schema);
-                        var pivotRecord = new SeedRecord
-                        {
-                            Name = property.Pivot.Name,
-                            Values = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("Id", (pivotDataList.Count+1).ToString() )}
-                        };
-                        pivotDataList.Add(new SeedData(null, pivotRecord));
-                        OnDataSplitManyToMany(item.SeedRecord, record, pivotRecord, property);
-                        return false;
+                            var pivotDataList = GetDataList(pivot);
+                            var pivotRecord = new SeedRecord
+                            {
+                                Name = pivot.Name,
+                                Values = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("Id", (pivotDataList.Count+1).ToString() )}
+                            };
+                            pivotRecord.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
+                            pivotRecord.Values.Add(new KeyValuePair<string, string>(record.Name + "Id", record.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
+                            pivotDataList.Add(new SeedData(null, pivotRecord));
                     }
+
                 }
                 return true;
             }
@@ -171,7 +175,7 @@ namespace BootGen
                         BuiltInType = BuiltInType.Object,
                         Schema = nestedResource.Schema
                     };
-                    if (SplitData(item, property, nestedResource.Schema))
+                    if (SplitData(item, property, nestedResource.Schema, nestedResource.Pivot))
                     {
                         PushSeedDataToProperties(nestedResource.Schema);
                         PushSeedDataToNestedResources(nestedResource);
