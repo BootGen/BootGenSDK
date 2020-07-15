@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "SJGzFc4t0gj+VV9hFqXBhJzXJYVmw6SNIe9W73wgP72n0LzTDSO7XK5O5fSqjOO+VnLhkNyKb2vI9X130oGGOg==",
+  "dgSpecHash": "ksyO5MDnjusI3y6J0J06OGKbVgRkjEyIE5b/y/7EFeAchHHO/xuLTZwuFGDKGIgvs1TEl3Z8gc7QBrvqF7jkxQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\angya\\Documents\\bootgen\\BootGen\\BootGen.csproj",
+  "projectFilePath": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\angya\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "C:\\Users\\angya\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
-    "C:\\Users\\angya\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
+    "/usr/share/dotnet/sdk/NuGetFallbackFolder/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "/usr/share/dotnet/sdk/NuGetFallbackFolder/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512",
+    "/home/agabor/.nuget/packages/newtonsoft.json/12.0.3/newtonsoft.json.12.0.3.nupkg.sha512"
   ],
   "logs": []
 }

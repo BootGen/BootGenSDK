@@ -19,23 +19,29 @@ namespace BootGen
             if (resource.IsCollection)
             {
                 AddCollectionOperations(resource, route, basePath);
-                var subRoute = new Route();
-                string itemIdName = resource.Schema.Name.ToCamelCase() + "Id";
-                Parameter idParameter = resource.Schema.IdProperty.ConvertToParameter();
-                idParameter.Name = itemIdName;
-                idParameter.Kind = RestParamterKind.Path;
-                basePath = basePath.Adding(new PathComponent { Parameter = idParameter, Name = itemIdName });
-                subRoute.PathModel = basePath;
-                subRoute.Operations = new List<Operation>();
+                Route subRoute = GetItemRoute(resource, basePath);
                 result.Add(subRoute);
                 resource.ElementRoute = subRoute;
-                AddItemOperations(resource, subRoute, basePath);
+                AddItemOperations(resource, subRoute, subRoute.PathModel);
             }
             else
             {
                 AddBaseOperations(resource, route, basePath);
             }
             return result;
+        }
+
+        private static Route GetItemRoute(Resource resource, Path basePath)
+        {
+            var subRoute = new Route();
+            string itemIdName = resource.Schema.Name.ToCamelCase() + "Id";
+            Parameter idParameter = resource.Schema.IdProperty.ConvertToParameter();
+            idParameter.Name = itemIdName;
+            idParameter.Kind = RestParamterKind.Path;
+            var itemPath = basePath.Adding(new PathComponent { Parameter = idParameter, Name = itemIdName });
+            subRoute.PathModel = itemPath;
+            subRoute.Operations = new List<Operation>();
+            return subRoute;
         }
 
         public static IEnumerable<Route> GetRoutes(this Controller controller)
@@ -113,6 +119,17 @@ namespace BootGen
                     SuccessDescription = $"successful deletion",
                     Parameters = path.Parameters
                 });
+            if (resource.Post)
+                route.Operations.Add(new Operation(HttpMethod.Post)
+                {
+                    Name = "add" + resource.Name,
+                    Summary = $"add a new element to the collection",
+                    Body = resource.Schema.Name,
+                    BodyIsCollection = false,
+                    SuccessCode = 200,
+                    SuccessDescription = $"successful deletion",
+                    Parameters = path.Parameters
+                });
         }
 
         private static void AddBaseOperations(Resource resource, Route route, Path path)
@@ -144,7 +161,7 @@ namespace BootGen
         {
             string resourceName = resource.Name.ToWords();
 
-            if (resource.Get)
+            if (resource.ItemGet)
                 subRoute.Operations.Add(new Operation(HttpMethod.Get)
                 {
                     Name = "get" + resource.Name,
@@ -154,7 +171,7 @@ namespace BootGen
                     Response = resource.Name,
                     Parameters = path.Parameters
                 });
-            if (resource.Put)
+            if (resource.ItemPut)
                 subRoute.Operations.Add(new Operation(HttpMethod.Put)
                 {
                     Name = "update" + resource.Name,
@@ -164,7 +181,7 @@ namespace BootGen
                     Body = resource.Schema.Name,
                     Parameters = path.Parameters
                 });
-            if (resource.Delete)
+            if (resource.ItemDelete)
                 subRoute.Operations.Add(new Operation(HttpMethod.Delete)
                 {
                     Name = "delete" + resource.Name,

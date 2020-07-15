@@ -10,10 +10,14 @@ namespace BootGen
         public string Name { get; set; }
         public bool IsCollection { get; set; }
         public Schema Schema { get; set; }
-        public bool Get { get; set; } = true;
-        public bool Put { get; set; } = true;
-        public bool Patch { get; set; } = true;
-        public bool Delete { get; set; } = true;
+        public bool Get { get; set; }
+        public bool Put { get; set; }
+        public bool Patch { get; set; }
+        public bool Delete { get; set; }
+        public bool Post { get; set; }
+        public bool ItemGet { get; set; }
+        public bool ItemPut { get; set; }
+        public bool ItemDelete { get; set; }
         public Route Route { get; set; }
         public Route ElementRoute { get; set; }
         public List<Resource> ParentResources { get; set; }

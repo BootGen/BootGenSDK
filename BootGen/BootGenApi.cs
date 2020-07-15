@@ -24,22 +24,18 @@ namespace BootGen
             SchemaStore = new SchemaStore();
             resourceBuilder = new ResourceBuilder(SchemaStore);
         }
-        public Resource AddResource<T>(string name, Resource parent = null, string pivotName = null)
+        public Resource AddResource<T>(string name, bool isReadonly = false, Resource parent = null)
         {
             var schemaCount = Schemas.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
+            resource.Get = true;
+            resource.Put = !isReadonly;
             resource.Name = name;
             if (parent == null)
                 Resources.Add(resource);
             else
                 parent.NestedResources.Add(resource);
             Routes.AddRange(resource.GetRoutes());
-            if (pivotName != null)
-            {
-                Schema pivotSchema = CreatePivot(parent, resource, pivotName);
-                resource.Pivot = pivotSchema;
-                SchemaStore.Add(pivotSchema);
-            }
             OnResourceAdded(resource);
             foreach (var schema in Schemas.Skip(schemaCount))
                 OnSchemaAdded(schema);
@@ -85,10 +81,21 @@ namespace BootGen
             return pivotSchema;
         }
 
-        public Resource AddResourceCollection<T>(string name, Resource parent = null, string pivotName = null)
+        public Resource AddResourceCollection<T>(string name, bool isReadonly = false, Resource parent = null, string pivotName = null)
         {
             var schemaCount = Schemas.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
+            resource.Get = true;
+            resource.Post = !isReadonly;
+            resource.ItemDelete = !isReadonly;
+            if (pivotName == null)
+            {
+                resource.Put = !isReadonly;
+                resource.Patch = !isReadonly;
+                resource.Delete = !isReadonly;
+                resource.ItemGet = true;
+                resource.ItemPut = !isReadonly;
+            }
             resource.Name = name;
             resource.IsCollection = true;
             if (parent == null)
