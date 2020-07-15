@@ -7,7 +7,7 @@ namespace BootGen
     {
         public static List<Route> GetRoutes(this Resource resource)
         {
-            Path basePath = resource.ParentResource?.ElementRoute?.PathModel ?? resource.ParentResource?.Route?.PathModel ?? new Path();
+            Path basePath = resource.ParentResource?.ItemRoute?.PathModel ?? resource.ParentResource?.Route?.PathModel ?? new Path();
             var result = new List<Route>();
             var route = new Route();
             string resourceName = resource.Name.ToCamelCase();
@@ -21,7 +21,7 @@ namespace BootGen
                 AddCollectionOperations(resource, route, basePath);
                 Route subRoute = GetItemRoute(resource, basePath);
                 result.Add(subRoute);
-                resource.ElementRoute = subRoute;
+                resource.ItemRoute = subRoute;
                 AddItemOperations(resource, subRoute, subRoute.PathModel);
             }
             else

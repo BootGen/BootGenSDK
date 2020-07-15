@@ -19,7 +19,7 @@ namespace BootGen
         public bool ItemPut { get; set; }
         public bool ItemDelete { get; set; }
         public Route Route { get; set; }
-        public Route ElementRoute { get; set; }
+        public Route ItemRoute { get; set; }
         public List<Resource> ParentResources { get; set; }
         public Resource ParentResource => ParentResources.LastOrDefault();
         public List<Resource> NestedResources { get; set; }

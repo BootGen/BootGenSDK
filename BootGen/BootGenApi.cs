@@ -90,9 +90,6 @@ namespace BootGen
             resource.ItemDelete = !isReadonly;
             if (pivotName == null)
             {
-                resource.Put = !isReadonly;
-                resource.Patch = !isReadonly;
-                resource.Delete = !isReadonly;
                 resource.ItemGet = true;
                 resource.ItemPut = !isReadonly;
             }
