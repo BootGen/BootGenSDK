@@ -23,7 +23,7 @@ namespace BootGen
         public List<Resource> NestedResources { get; set; }
         public Schema Pivot { get; internal set; }
         internal Type SourceType { get; set; }
-        public bool UsePermissons { get; set; }
+        public bool UsePermissions { get => Schema.UsePermissions; set => Schema.UsePermissions = value; }
         public Permission GetPermission { get; set; } = Permission.Read;
         public Permission PostPermission { get; set; } = Permission.Write;
         public Permission DeletePermission { get; set; } = Permission.Write;

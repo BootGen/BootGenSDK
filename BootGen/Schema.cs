@@ -16,5 +16,6 @@ namespace BootGen
         public bool HasRequiredProperties => Properties.Any(p => p.IsRequired);
         public Location Location { get; set; }
         public bool Persisted { get; set; }
+        public bool UsePermissions { get; internal set; }
     }
 }
