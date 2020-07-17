@@ -13,7 +13,7 @@ namespace BootGen
         private readonly ResourceBuilder resourceBuilder;
         public List<Resource> Resources { get; } = new List<Resource>();
         public List<Controller> Controllers { get; } = new List<Controller>();
-        public List<Schema> StoredSchemas => SchemaStore.Schemas;
+        public List<Schema> StoredSchemas => SchemaStore.Schemas.Where(s => s.Persisted).ToList();
         public List<Schema> Schemas => SchemaStore.Schemas.Concat(wrappedTypes).ToList();
         public List<EnumSchema> EnumSchemas => SchemaStore.EnumSchemas;
         private List<Schema> wrappedTypes = new List<Schema>();
@@ -37,8 +37,10 @@ namespace BootGen
                 parent.NestedResources.Add(resource);
             Routes.AddRange(resource.GetRoutes());
             OnResourceAdded(resource);
-            foreach (var schema in Schemas.Skip(schemaCount))
+            foreach (var schema in Schemas.Skip(schemaCount)) {
+                schema.Persisted = true;
                 OnSchemaAdded(schema);
+            }
             return resource;
         }
 
@@ -108,8 +110,10 @@ namespace BootGen
                 SchemaStore.Add(pivotSchema);
             }
             OnResourceAdded(resource);
-            foreach (var schema in Schemas.Skip(schemaCount))
+            foreach (var schema in Schemas.Skip(schemaCount)) {
+                schema.Persisted = true;
                 OnSchemaAdded(schema);
+            }
             return resource;
         }
 
@@ -182,12 +186,6 @@ namespace BootGen
                 Schema = schema
             };
         }
-    }
-
-    public class Controller
-    {
-        public string Name { get; set; }
-        public List<Method> Methods { get; set; }
     }
 
     public class Method

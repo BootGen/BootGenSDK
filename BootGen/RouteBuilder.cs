@@ -57,7 +57,7 @@ namespace BootGen
                             new Operation(HttpMethod.Post)
                             {
                                 Name = method.Name.ToCamelCase(),
-                                Parameters = method.Parameters.Select(ToQueryParam).ToList(),
+                                Parameters = method.Parameters.Select(ToParam).ToList(),
                                 Response = method.ReturnType.Schema?.Name,
                                 ResponseIsCollection = method.ReturnType.IsCollection,
                                 SuccessCode = 200,
@@ -68,10 +68,10 @@ namespace BootGen
                 }
         }
 
-        private static Parameter ToQueryParam(Property p)
+        private static Parameter ToParam(Property p)
         {
             Parameter parameter = p.ConvertToParameter();
-            parameter.Kind = RestParamterKind.Query;
+            parameter.Kind = p.BuiltInType == BuiltInType.Object ? RestParamterKind.Body : RestParamterKind.Query;
             return parameter;
         }
         private static void AddCollectionOperations(Resource resource, Route route, Path path)

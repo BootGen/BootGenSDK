@@ -15,5 +15,6 @@ namespace BootGen
         public List<Property> CommonProperties => Properties.Where(p => p.Location == Location.Both).ToList();
         public bool HasRequiredProperties => Properties.Any(p => p.IsRequired);
         public Location Location { get; set; }
+        public bool Persisted { get; set; }
     }
 }
