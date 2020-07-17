@@ -29,7 +29,6 @@ namespace BootGen
             var schemaCount = Schemas.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
             resource.Get = true;
-            resource.Put = !isReadonly;
             resource.Name = name;
             if (parent == null)
                 Resources.Add(resource);
@@ -93,7 +92,6 @@ namespace BootGen
             if (pivotName == null)
             {
                 resource.ItemGet = true;
-                resource.ItemPut = !isReadonly;
             }
             resource.Name = name;
             resource.IsCollection = true;
