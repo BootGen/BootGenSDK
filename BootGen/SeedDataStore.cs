@@ -7,6 +7,7 @@ namespace BootGen
 {
     public class SeedDataStore
     {
+        private const string PermissionTokenId = "PermissionTokenId";
         private readonly SchemaStore schemaStore;
 
         private class SeedData
@@ -84,9 +85,11 @@ namespace BootGen
             if (resource.Schema.UsePermissions)
                 foreach (var seedData in seedDataList)
                 {
+                    if (seedData.SeedRecord.Values.Any(t => t.Key == PermissionTokenId))
+                        continue;
                     var token = new PermissionToken{ Id = PermissionTokens.Count + 1 };
                     PermissionTokens.Add(token);
-                    seedData.SeedRecord.Values.Add(new KeyValuePair<string, string>("PermissionTokenId", token.Id.ToString()));
+                    seedData.SeedRecord.Values.Add(new KeyValuePair<string, string>(PermissionTokenId, token.Id.ToString()));
                     if (permissions != null)
                         foreach (var permission in permissions) {
                             UserPermissions.Add(new UserPermission {
@@ -155,7 +158,7 @@ namespace BootGen
                         dataList.Add(new SeedData(jObj, record));
                     }
                     OnDataSplitOneToMany(item.SeedRecord, record, property);
-                     if (pivot != null)
+                    if (pivot != null)
                     {
                             var pivotDataList = GetDataList(pivot);
                             var pivotRecord = new SeedRecord
@@ -166,6 +169,12 @@ namespace BootGen
                             pivotRecord.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
                             pivotRecord.Values.Add(new KeyValuePair<string, string>(record.Name + "Id", record.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
                             pivotDataList.Add(new SeedData(null, pivotRecord));
+                    } else if (schema.UsePermissions) {
+                        var tokenId = item.SeedRecord.Values.FirstOrDefault( t => t.Key == PermissionTokenId);
+                        if (!string.IsNullOrEmpty(tokenId.Value)) 
+                        {
+                            record.Values.Add( new KeyValuePair<string, string>(PermissionTokenId, tokenId.Value));
+                        }
                     }
 
                 }
