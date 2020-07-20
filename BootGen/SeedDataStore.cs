@@ -21,6 +21,8 @@ namespace BootGen
         }
         private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
 
+        public List<PermissionToken> PermissionTokens { get; } = new List<PermissionToken>();
+
         public SeedDataStore(SchemaStore schemaStore)
         {
             this.schemaStore = schemaStore;
@@ -76,7 +78,16 @@ namespace BootGen
         public void Add<T>(Resource resource, IEnumerable<T> data)
         {
             List<JObject> rawDataList = data.Select(i => JObject.FromObject(i)).ToList();
-            Data[resource.Schema.Id] = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Schema, o))).ToList();
+            List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Schema, o))).ToList();
+            Data[resource.Schema.Id] = seedDataList;
+            if (resource.Schema.UsePermissions)
+                foreach (var seedData in seedDataList)
+                {
+                    var token = new PermissionToken{ Id = PermissionTokens.Count + 1 };
+                    PermissionTokens.Add(token);
+                    seedData.SeedRecord.Values.Add(new KeyValuePair<string, string>("PermissionTokenId", token.Id.ToString()));
+                }
+
             PushSeedDataToProperties(resource.Schema);
             PushSeedDataToNestedResources(resource);
         }
@@ -195,4 +206,10 @@ namespace BootGen
             return Values.FirstOrDefault(kvp => kvp.Key == schema.IdProperty.Name).Value;
         }
     }
+
+    public class PermissionToken
+    {
+        public int Id { get; set; }
+    }
+
 }
