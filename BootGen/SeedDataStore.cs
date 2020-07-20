@@ -22,6 +22,7 @@ namespace BootGen
         private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
 
         public List<PermissionToken> PermissionTokens { get; } = new List<PermissionToken>();
+        public List<UserPermission> UserPermissions { get; } = new List<UserPermission>();
 
         public SeedDataStore(SchemaStore schemaStore)
         {
@@ -75,7 +76,7 @@ namespace BootGen
             return record;
         }
 
-        public void Add<T>(Resource resource, IEnumerable<T> data)
+        public void Add<T>(Resource resource, IEnumerable<T> data, Dictionary<int, Permission> permissions = null)
         {
             List<JObject> rawDataList = data.Select(i => JObject.FromObject(i)).ToList();
             List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Schema, o))).ToList();
@@ -86,6 +87,15 @@ namespace BootGen
                     var token = new PermissionToken{ Id = PermissionTokens.Count + 1 };
                     PermissionTokens.Add(token);
                     seedData.SeedRecord.Values.Add(new KeyValuePair<string, string>("PermissionTokenId", token.Id.ToString()));
+                    if (permissions != null)
+                        foreach (var permission in permissions) {
+                            UserPermissions.Add(new UserPermission {
+                                Id = UserPermissions.Count + 1,
+                                PermissionTokenId = token.Id,
+                                UserId = permission.Key,
+                                Permission = permission.Value
+                            });
+                        }
                 }
 
             PushSeedDataToProperties(resource.Schema);
@@ -210,6 +220,14 @@ namespace BootGen
     public class PermissionToken
     {
         public int Id { get; set; }
+    }
+
+    public class UserPermission
+    {
+        public int Id { get; set; }
+        public int PermissionTokenId { get; set; }
+        public int UserId { get; set; }
+        public Permission Permission { get; set; }
     }
 
 }
