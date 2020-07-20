@@ -8,13 +8,11 @@ namespace BootGen
     public class Resource
     {
         public string Name { get; set; }
-        public bool IsCollection { get; set; }
         public Schema Schema { get; set; }
         public bool Get { get; set; }
         public bool Post { get; set; }
-        public bool Delete { get; set; }
         public bool ItemGet { get; set; }
-        public bool ItemPost { get; set; }
+        public bool ItemPut { get; set; }
         public bool ItemDelete { get; set; }
         public Route Route { get; set; }
         public Route ItemRoute { get; set; }
@@ -26,9 +24,8 @@ namespace BootGen
         public bool UsePermissions { get => Schema.UsePermissions; set => Schema.UsePermissions = value; }
         public Permission GetPermission { get; set; } = Permission.Read;
         public Permission PostPermission { get; set; } = Permission.Write;
-        public Permission DeletePermission { get; set; } = Permission.Write;
         public Permission ItemGetPermission { get; set; } = Permission.Read;
-        public Permission ItemPostPermission { get; set; } = Permission.Write;
+        public Permission ItemPutPermission { get; set; } = Permission.Write;
         public Permission ItemDeletePermission { get; set; } = Permission.Write;
     }
 

@@ -50,7 +50,6 @@ namespace BootGen
             result.SourceType = type;
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
-                result.IsCollection = true;
                 type = type.GetGenericArguments()[0];
             }
 

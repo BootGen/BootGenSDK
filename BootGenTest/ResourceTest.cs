@@ -14,7 +14,6 @@ namespace BootGenTest
         {
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<Entity>();
-            Assert.IsFalse(resource.IsCollection);
             TestEntityResource(resource);
         }
 
@@ -56,7 +55,6 @@ namespace BootGenTest
         {
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<List<Entity>>();
-            Assert.IsTrue(resource.IsCollection);
             TestEntityResource(resource);
         }
 
@@ -66,7 +64,6 @@ namespace BootGenTest
         {
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<Complex>();
-            Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(0, resource.NestedResources.Count);
             Schema schema = resource.Schema;
             TestComplexSchema(schema);
@@ -87,7 +84,6 @@ namespace BootGenTest
         {
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<ComplexList>();
-            Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(0, resource.NestedResources.Count);
             Schema schema = resource.Schema;
             TestComplexListSchema(schema);
@@ -116,7 +112,6 @@ namespace BootGenTest
         {
             var resourceStore = new ResourceBuilder(new SchemaStore());
             var resource = resourceStore.FromClass<Tree>();
-            Assert.IsFalse(resource.IsCollection);
             Assert.AreEqual(0, resource.NestedResources.Count);
             Property property = resource.Schema.Properties[3];
             Assert.AreEqual("Entity", property.Name);

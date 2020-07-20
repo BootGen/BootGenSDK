@@ -24,24 +24,6 @@ namespace BootGen
             SchemaStore = new SchemaStore();
             resourceBuilder = new ResourceBuilder(SchemaStore);
         }
-        public Resource AddResource<T>(string name, bool isReadonly = false, Resource parent = null)
-        {
-            var schemaCount = Schemas.Count;
-            Resource resource = resourceBuilder.FromClass<T>(parent);
-            resource.Get = true;
-            resource.Name = name;
-            if (parent == null)
-                Resources.Add(resource);
-            else
-                parent.NestedResources.Add(resource);
-            Routes.AddRange(resource.GetRoutes());
-            OnResourceAdded(resource);
-            foreach (var schema in Schemas.Skip(schemaCount)) {
-                schema.Persisted = true;
-                OnSchemaAdded(schema);
-            }
-            return resource;
-        }
 
         private static Schema CreatePivot(Resource parent, Resource resource, string pivotName)
         {
@@ -82,19 +64,16 @@ namespace BootGen
             return pivotSchema;
         }
 
-        public Resource AddResourceCollection<T>(string name, bool isReadonly = false, Resource parent = null, string pivotName = null)
+        public Resource AddResource<T>(string name, bool isReadonly = false, Resource parent = null, string pivotName = null)
         {
             var schemaCount = Schemas.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
             resource.Get = true;
             resource.Post = !isReadonly;
             resource.ItemDelete = !isReadonly;
-            if (pivotName == null)
-            {
-                resource.ItemGet = true;
-            }
+            resource.ItemPut = !isReadonly;
+            resource.ItemGet = pivotName == null;
             resource.Name = name;
-            resource.IsCollection = true;
             if (parent == null)
                 Resources.Add(resource);
             else
