@@ -5,22 +5,7 @@ namespace BootGen
 {
     public class Operation
     {
-        public Operation(HttpVerb method)
-        { 
-            switch(method)
-            {
-                case BootGen.HttpVerb.Get:
-                Method = "get";
-                break;
-                case BootGen.HttpVerb.Post:
-                Method = "post";
-                break;
-                case BootGen.HttpVerb.Delete:
-                Method = "delete";
-                break;
-            }
-        }
-        public string Method { get; }
+        public HttpVerb Verb { get; set; }
         public string Name { get; internal set; }
         public string Summary { get; internal set; }
         public string Body { get; internal set; }

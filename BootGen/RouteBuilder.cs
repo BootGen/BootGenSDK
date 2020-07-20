@@ -47,8 +47,9 @@ namespace BootGen
                     {
                         PathModel = path.Adding(new PathComponent { Name = method.Name.ToKebabCase() }),
                         Operations = new List<Operation> {
-                            new Operation(HttpVerb.Post)
+                            new Operation
                             {
+                                Verb = HttpVerb.Post,
                                 Name = method.Name.ToCamelCase(),
                                 Parameters = method.Parameters.Select(ToParam).ToList(),
                                 Response = method.ReturnType.Schema?.Name,
@@ -71,8 +72,9 @@ namespace BootGen
         {
             string resourceName = resource.Name.ToWords();
             if (resource.Get)
-                route.Operations.Add(new Operation(HttpVerb.Get)
+                route.Operations.Add(new Operation
                 {
+                    Verb = HttpVerb.Get,
                     Name = "get" + resource.Name,
                     Summary = $"retrieve list of {resourceName}",
                     Response = resource.Name,
@@ -82,8 +84,9 @@ namespace BootGen
                     Parameters = path.Parameters
                 });
             if (resource.Post)
-                route.Operations.Add(new Operation(HttpVerb.Post)
+                route.Operations.Add(new Operation
                 {
+                    Verb = HttpVerb.Post,
                     Name = "add" + resource.Name,
                     Summary = $"add a new element to the collection",
                     Body = resource.Schema.Name,
@@ -100,8 +103,9 @@ namespace BootGen
             string resourceName = resource.Name.ToWords();
 
             if (resource.ItemGet)
-                subRoute.Operations.Add(new Operation(HttpVerb.Get)
+                subRoute.Operations.Add(new Operation
                 {
+                    Verb = HttpVerb.Get,
                     Name = "get" + resource.Name,
                     Summary = $"retrieve {resourceName} resource",
                     SuccessCode = 200,
@@ -110,8 +114,9 @@ namespace BootGen
                     Parameters = path.Parameters
                 });
             if (resource.ItemPut)
-                subRoute.Operations.Add(new Operation(HttpVerb.Put)
+                subRoute.Operations.Add(new Operation
                 {
+                    Verb = HttpVerb.Put,
                     Name = "update" + resource.Name,
                     Summary = $"update {resourceName} resource",
                     SuccessCode = 200,
@@ -120,8 +125,9 @@ namespace BootGen
                     Parameters = path.Parameters
                 });
             if (resource.ItemDelete)
-                subRoute.Operations.Add(new Operation(HttpVerb.Delete)
+                subRoute.Operations.Add(new Operation
                 {
+                    Verb = HttpVerb.Delete,
                     Name = "delete" + resource.Name,
                     Summary = $"delete {resourceName} resource",
                     SuccessCode = 200,
