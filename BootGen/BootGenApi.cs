@@ -94,13 +94,6 @@ namespace BootGen
             return resource;
         }
 
-        protected virtual void OnResourceAdded(Resource resource)
-        {
-        }
-        protected virtual void OnSchemaAdded(Schema schema)
-        {
-        }
-
         public Controller AddController<T>()
         {
             var type = typeof(T);
@@ -162,6 +155,107 @@ namespace BootGen
                 IsCollection = false,
                 Schema = schema
             };
+        }
+
+        HashSet<int> ProcessedSchemas = new HashSet<int>();
+        private void OnResourceAdded(Resource resource)
+        {
+            if (resource.Pivot == null)
+                AddEfRelations(resource);
+        }
+        private void OnSchemaAdded(Schema schema)
+        {
+            if (!ProcessedSchemas.Contains(schema.Id))
+            {
+                AddEfRelationsParentToChild(schema);
+            }
+            AddEfRelationsChildToParent(schema);
+        }
+
+
+        public static void AddEfRelations(Resource resource)
+        {
+            Resource parent = resource.ParentResource;
+            if (parent == null)
+                return;
+            Property referenceProperty = new Property
+            {
+                Name = parent.Schema.Name,
+                BuiltInType = BuiltInType.Object,
+                Schema = parent.Schema,
+                IsCollection = false,
+                IsRequired = true,
+                Location = Location.ServerOnly
+            };
+            referenceProperty.Tags.Add("hasOne");
+            referenceProperty.Tags.Add("parentReference");
+            resource.Schema.Properties.Add(referenceProperty);
+            resource.Schema.Properties.Add(new Property
+            {
+                Name = parent.Schema.Name + "Id",
+                BuiltInType = parent.Schema.IdProperty.BuiltInType,
+                IsCollection = false,
+                IsRequired = true,
+                Location = Location.ServerOnly
+            });
+        }
+
+
+        public void AddEfRelationsParentToChild(Schema schema)
+        {
+            ProcessedSchemas.Add(schema.Id);
+            foreach (var property in schema.Properties)
+            {
+                if (property.Schema == null || !property.IsCollection || property.MirrorProperty != null)
+                    continue;
+                Property referenceProperty = new Property
+                {
+                    Name = schema.Name,
+                    BuiltInType = BuiltInType.Object,
+                    Schema = schema,
+                    IsCollection = false,
+                    IsRequired = true,
+                    Location = Location.ServerOnly
+                };
+                referenceProperty.Tags.Add("hasOne");
+                referenceProperty.Tags.Add("parentReference");
+                referenceProperty.MirrorProperty = property;
+                property.MirrorProperty = referenceProperty;
+                property.Schema.Properties.Add(referenceProperty);
+                property.Schema.Properties.Add(new Property
+                {
+                    Name = schema.Name + "Id",
+                    BuiltInType = schema.IdProperty.BuiltInType,
+                    IsCollection = false,
+                    IsRequired = true
+                });
+                AddEfRelationsParentToChild(property.Schema);
+            }
+        }
+
+        public void AddEfRelationsChildToParent(Schema schema)
+        {
+            var properties = new List<Property>(schema.Properties);
+            var propertyIdx = -1;
+            foreach (var property in properties)
+            {
+                propertyIdx += 1;
+                if (property.Schema == null)
+                    continue;
+                if (!property.IsCollection && !property.Tags.Contains("hasOne"))
+                {
+                    schema.Properties.Insert(propertyIdx + 1, new Property
+                    {
+                        Name = property.Name + "Id",
+                        BuiltInType = property.Schema.IdProperty.BuiltInType,
+                        IsCollection = false,
+                        Location = Location.ServerOnly
+                    });
+                    property.Tags.Add("hasOne");
+                    propertyIdx += 1;
+                    AddEfRelationsChildToParent(property.Schema);
+                }
+            }
         }
     }
 

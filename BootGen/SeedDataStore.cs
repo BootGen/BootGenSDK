@@ -30,15 +30,6 @@ namespace BootGen
             this.schemaStore = schemaStore;
         }
 
-        protected virtual void OnDataSplitOneToMany(SeedRecord parent, SeedRecord current, Property property)
-        {
-
-        }
-        protected virtual void OnDataSplitManyToOne(SeedRecord parent, SeedRecord current, Property property)
-        {
-
-        }
-
         private SeedRecord ToSeedRecord(Schema schema, JObject obj)
         {
             var record = new SeedRecord { Name = schema.Name };
@@ -143,7 +134,7 @@ namespace BootGen
                 {
                     dataList.Add(new SeedData(obj, record));
                 }
-                OnDataSplitManyToOne(item.SeedRecord, record, property);
+                item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + "Id", record.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
                 return true;
             }
             else if (token is JArray array)
@@ -157,7 +148,7 @@ namespace BootGen
                     {
                         dataList.Add(new SeedData(jObj, record));
                     }
-                    OnDataSplitOneToMany(item.SeedRecord, record, property);
+                    record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
                     if (pivot != null)
                     {
                             var pivotDataList = GetDataList(pivot);
