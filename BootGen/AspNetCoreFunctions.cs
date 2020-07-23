@@ -221,8 +221,8 @@ namespace IssueTrackerGenerator
         {
             var builder = new StringBuilder();
             foreach (var res in resource.ParentResources)
-                builder.Append(res.Name);
-            builder.Append(resource.Name);
+                builder.Append(res.PluralName);
+            builder.Append(resource.PluralName);
             builder.Append("Controller");
             return builder.ToString();
         }

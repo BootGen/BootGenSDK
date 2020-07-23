@@ -73,7 +73,7 @@ namespace BootGen
             resource.ItemDelete = !isReadonly;
             resource.ItemPut = !isReadonly;
             resource.ItemGet = pivotName == null;
-            resource.Name = name;
+            resource.PluralName = name;
             if (parent == null)
                 Resources.Add(resource);
             else

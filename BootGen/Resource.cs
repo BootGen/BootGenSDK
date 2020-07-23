@@ -7,7 +7,8 @@ namespace BootGen
 {
     public class Resource
     {
-        public string Name { get; set; }
+        public string PluralName { get; set; }
+        public string SingularName => PluralName.Substring(0, PluralName.Length - 1);
         public Schema Schema { get; set; }
         public bool Get { get; set; }
         public bool Post { get; set; }

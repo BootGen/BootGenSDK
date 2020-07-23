@@ -10,7 +10,7 @@ namespace BootGen
             Path basePath = resource.ParentResource?.ItemRoute?.PathModel ?? resource.ParentResource?.Route?.PathModel ?? new Path();
             var result = new List<Route>();
             var route = new Route();
-            string resourceName = resource.Name.ToCamelCase();
+            string resourceName = resource.PluralName.ToCamelCase();
             basePath = basePath.Adding(new PathComponent { Name = resourceName });
             route.PathModel = basePath;
             result.Add(route);
@@ -73,12 +73,12 @@ namespace BootGen
         }
         private static void AddCollectionOperations(Resource resource, Route route, Path path)
         {
-            string resourceName = resource.Name.ToWords();
+            string resourceName = resource.PluralName.ToWords();
             if (resource.Get)
                 route.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Get,
-                    Name = "get" + resource.Name,
+                    Name = "get" + resource.PluralName,
                     Summary = $"retrieve list of {resourceName}",
                     Response = resource.Schema.Name,
                     ResponseIsCollection = true,
@@ -90,7 +90,7 @@ namespace BootGen
                 route.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Post,
-                    Name = "add" + resource.Name,
+                    Name = "add" + resource.PluralName,
                     Summary = $"add a new element to the collection",
                     Body = resource.Schema.Name,
                     BodyIsCollection = false,
@@ -103,7 +103,7 @@ namespace BootGen
 
         private static void AddItemOperations(Resource resource, Route subRoute, Path path)
         {
-            string resourceName = resource.Name.ToWords();
+            string resourceName = resource.PluralName.ToWords();
 
             if (resource.ItemGet)
                 subRoute.Operations.Add(new Operation

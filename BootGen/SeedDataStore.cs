@@ -192,7 +192,7 @@ namespace BootGen
                 foreach (var item in Data[resource.Schema.Id])
                 {
                     var property = new Property {
-                        Name = nestedResource.Name,
+                        Name = nestedResource.PluralName,
                         BuiltInType = BuiltInType.Object,
                         Schema = nestedResource.Schema
                     };
