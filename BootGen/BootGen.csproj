@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>BootGen</PackageId>
-    <Version>0.0.121</Version>
+    <Version>0.0.123</Version>
     <Authors>Gabor Angyal</Authors>
     <Company>Code Sharp Kft.</Company>
   </PropertyGroup>
@@ -12,5 +12,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Scriban" Version="2.1.3" />
   </ItemGroup>
-
 </Project>
