@@ -9,6 +9,7 @@ namespace BootGen
     {
         private const string PermissionTokenId = "PermissionTokenId";
         private readonly SchemaStore schemaStore;
+        private readonly ResourceStore resourceStore;
 
         private class SeedData
         {
@@ -25,9 +26,10 @@ namespace BootGen
         public List<PermissionToken> PermissionTokens { get; } = new List<PermissionToken>();
         public List<UserPermission> UserPermissions { get; } = new List<UserPermission>();
 
-        public SeedDataStore(SchemaStore schemaStore)
+        public SeedDataStore(SchemaStore schemaStore, ResourceStore resourceStore)
         {
             this.schemaStore = schemaStore;
+            this.resourceStore = resourceStore;
         }
 
         private SeedRecord ToSeedRecord(Schema schema, JObject obj)
@@ -55,9 +57,11 @@ namespace BootGen
                         break;
                     case JTokenType.Integer:
                         var pp = schema.Properties.First(p => p.Name == property.Name);
-                        if (pp.BuiltInType == BuiltInType.Enum) {
+                        if (pp.BuiltInType == BuiltInType.Enum)
+                        {
                             record.Values.Add(new KeyValuePair<string, string>(property.Name, $"{pp.EnumSchema.Name}.{pp.EnumSchema.Values[(int)property.Value]}"));
-                        } else
+                        }
+                        else
                             record.Values.Add(new KeyValuePair<string, string>(property.Name, property.Value.ToString()));
                         break;
                     default:
@@ -78,12 +82,14 @@ namespace BootGen
                 {
                     if (seedData.SeedRecord.Values.Any(t => t.Key == PermissionTokenId))
                         continue;
-                    var token = new PermissionToken{ Id = PermissionTokens.Count + 1 };
+                    var token = new PermissionToken { Id = PermissionTokens.Count + 1 };
                     PermissionTokens.Add(token);
                     seedData.SeedRecord.Values.Add(new KeyValuePair<string, string>(PermissionTokenId, token.Id.ToString()));
                     if (permissions != null)
-                        foreach (var permission in permissions) {
-                            UserPermissions.Add(new UserPermission {
+                        foreach (var permission in permissions)
+                        {
+                            UserPermissions.Add(new UserPermission
+                            {
                                 Id = UserPermissions.Count + 1,
                                 PermissionTokenId = token.Id,
                                 UserId = permission.Key,
@@ -116,7 +122,14 @@ namespace BootGen
                 foreach (var item in Data[schema.Id])
                 {
                     if (SplitData(item, property, property.Schema))
+                    {
                         PushSeedDataToProperties(property.Schema);
+                        foreach (var resource in resourceStore.Resources)
+                        {
+                            if (resource.Schema == property.Schema)
+                                PushSeedDataToNestedResources(resource);
+                        }
+                    }
                 }
             }
         }
@@ -148,23 +161,28 @@ namespace BootGen
                     {
                         dataList.Add(new SeedData(jObj, record));
                     }
-                    record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
                     if (pivot != null)
                     {
-                            var pivotDataList = GetDataList(pivot);
-                            var pivotRecord = new SeedRecord
-                            {
-                                Name = pivot.Name,
-                                Values = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("Id", (pivotDataList.Count+1).ToString() )}
-                            };
-                            pivotRecord.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
-                            pivotRecord.Values.Add(new KeyValuePair<string, string>(record.Name + "Id", record.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
-                            pivotDataList.Add(new SeedData(null, pivotRecord));
-                    } else if (schema.UsePermissions) {
-                        var tokenId = item.SeedRecord.Values.FirstOrDefault( t => t.Key == PermissionTokenId);
-                        if (!string.IsNullOrEmpty(tokenId.Value)) 
+                        var pivotDataList = GetDataList(pivot);
+                        var pivotRecord = new SeedRecord
                         {
-                            record.Values.Add( new KeyValuePair<string, string>(PermissionTokenId, tokenId.Value));
+                            Name = pivot.Name,
+                            Values = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("Id", (pivotDataList.Count + 1).ToString()) }
+                        };
+                        pivotRecord.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
+                        pivotRecord.Values.Add(new KeyValuePair<string, string>(record.Name + "Id", record.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
+                        pivotDataList.Add(new SeedData(null, pivotRecord));
+                    }
+                    else
+                    {
+                        record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
+                        if (schema.UsePermissions)
+                        {
+                            var tokenId = item.SeedRecord.Values.FirstOrDefault(t => t.Key == PermissionTokenId);
+                            if (!string.IsNullOrEmpty(tokenId.Value))
+                            {
+                                record.Values.Add(new KeyValuePair<string, string>(PermissionTokenId, tokenId.Value));
+                            }
                         }
                     }
 
@@ -191,7 +209,8 @@ namespace BootGen
             {
                 foreach (var item in Data[resource.Schema.Id])
                 {
-                    var property = new Property {
+                    var property = new Property
+                    {
                         Name = nestedResource.PluralName,
                         BuiltInType = BuiltInType.Object,
                         Schema = nestedResource.Schema

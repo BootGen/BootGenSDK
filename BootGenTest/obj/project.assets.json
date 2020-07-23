@@ -571,7 +571,7 @@
           }
         }
       },
-      "Scriban/2.1.2": {
+      "Scriban/2.1.3": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
@@ -1562,11 +1562,12 @@
           "lib/netstandard1.3/System.Xml.XDocument.dll": {}
         }
       },
-      "BootGen/0.0.111": {
+      "BootGen/0.0.127": {
         "type": "project",
-        "framework": ".NETStandard,Version=v2.0",
+        "framework": ".NETCoreApp,Version=v3.1",
         "dependencies": {
-          "Newtonsoft.Json": "12.0.3"
+          "Newtonsoft.Json": "12.0.3",
+          "Scriban": "2.1.3"
         },
         "compile": {
           "bin/placeholder/BootGen.dll": {}
@@ -2462,10 +2463,10 @@
         "runtimes/ubuntu.16.10-x64/native/System.Security.Cryptography.Native.OpenSsl.so"
       ]
     },
-    "Scriban/2.1.2": {
-      "sha512": "TMF5/BG+zRy1siaaNDLN+rGY9JGPzgS/nQJCn2C1elr3wQ4ZXNXi99dQnCVgWfzal/63SNtJyYbGWX7AezoXBw==",
+    "Scriban/2.1.3": {
+      "sha512": "IlK5nbdE8YqeSb0rNZnHRdmWCh6M+MqU8wXySOgK3GBZNOT8GaX2dl4siLPAqKLTUHHWziyfKIluKyjnKVeiEQ==",
       "type": "package",
-      "path": "scriban/2.1.2",
+      "path": "scriban/2.1.3",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2481,8 +2482,9 @@
         "lib/netstandard1.3/Scriban.xml",
         "lib/netstandard2.0/Scriban.dll",
         "lib/netstandard2.0/Scriban.xml",
-        "scriban.2.1.2.nupkg.sha512",
-        "scriban.nuspec"
+        "scriban.2.1.3.nupkg.sha512",
+        "scriban.nuspec",
+        "scriban.png"
       ]
     },
     "System.AppContext/4.3.0": {
@@ -5505,7 +5507,7 @@
         "system.xml.xdocument.nuspec"
       ]
     },
-    "BootGen/0.0.111": {
+    "BootGen/0.0.127": {
       "type": "project",
       "path": "../BootGen/BootGen.csproj",
       "msbuildProject": "../BootGen/BootGen.csproj"
@@ -5513,11 +5515,10 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
-      "BootGen >= 0.0.111",
+      "BootGen >= 0.0.127",
       "MSTest.TestAdapter >= 2.1.0",
       "MSTest.TestFramework >= 2.1.0",
       "Microsoft.NET.Test.Sdk >= 16.5.0",
-      "Scriban >= 2.1.2",
       "coverlet.collector >= 1.2.0"
     ]
   },
@@ -5575,10 +5576,6 @@
           "Microsoft.NET.Test.Sdk": {
             "target": "Package",
             "version": "[16.5.0, )"
-          },
-          "Scriban": {
-            "target": "Package",
-            "version": "[2.1.2, )"
           },
           "coverlet.collector": {
             "target": "Package",

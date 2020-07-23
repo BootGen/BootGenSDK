@@ -126,7 +126,7 @@ namespace BootGenTest
         {
             var api = new BootGenApi();
             var r = api.AddResource<ComplexList>("complex");
-            var seedStore = new SeedDataStore(api.SchemaStore);
+            var seedStore = new SeedDataStore(api.SchemaStore, api.ResourceStore);
             seedStore.Add(r, new List<ComplexList>{ new ComplexList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
             Assert.AreEqual(2, api.Schemas.Count);
             Assert.AreEqual(1, seedStore.Get(api.Schemas[0]).Count);

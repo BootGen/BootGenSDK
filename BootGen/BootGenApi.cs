@@ -7,11 +7,19 @@ using Newtonsoft.Json.Linq;
 
 namespace BootGen
 {
+    public class ResourceStore {
+        public List<Resource> Resources { get; } = new List<Resource>();
+        public void Add(Resource resource)
+        {
+            Resources.Add(resource);
+        }
+    }
     public class BootGenApi
     {
         public SchemaStore SchemaStore { get; }
+        public ResourceStore ResourceStore { get; }
         private readonly ResourceBuilder resourceBuilder;
-        public List<Resource> Resources { get; } = new List<Resource>();
+        public List<Resource> Resources => ResourceStore.Resources.ToList();
         public List<Controller> Controllers { get; } = new List<Controller>();
         public List<Schema> StoredSchemas => SchemaStore.Schemas.Where(s => s.Persisted).ToList();
         public List<Schema> Schemas => SchemaStore.Schemas.Concat(wrappedTypes).ToList();
@@ -22,6 +30,7 @@ namespace BootGen
         public BootGenApi()
         {
             SchemaStore = new SchemaStore();
+            ResourceStore = new ResourceStore();
             resourceBuilder = new ResourceBuilder(SchemaStore);
         }
 
@@ -75,7 +84,7 @@ namespace BootGen
             resource.ItemGet = pivotName == null;
             resource.PluralName = name;
             if (parent == null)
-                Resources.Add(resource);
+                ResourceStore.Add(resource);
             else
                 parent.NestedResources.Add(resource);
            
