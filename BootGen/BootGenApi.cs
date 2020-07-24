@@ -258,9 +258,10 @@ namespace BootGen
                         Name = property.Name + "Id",
                         BuiltInType = property.Schema.IdProperty.BuiltInType,
                         IsCollection = false,
-                        Location = Location.ServerOnly
+                        Location = Location.Both
                     });
                     property.Tags.Add("hasOne");
+                    property.Location = Location.ServerOnly;
                     propertyIdx += 1;
                     AddEfRelationsChildToParent(property.Schema);
                 }
