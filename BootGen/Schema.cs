@@ -17,5 +17,6 @@ namespace BootGen
         public Location Location { get; set; }
         public bool Persisted { get; set; }
         public bool UsePermissions { get; internal set; }
+        public bool HasPermissions { get; internal set; }
     }
 }

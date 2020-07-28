@@ -23,11 +23,7 @@ namespace BootGen
         public Schema Pivot { get; internal set; }
         internal Type SourceType { get; set; }
         public bool UsePermissions { get => Schema.UsePermissions; set => Schema.UsePermissions = value; }
-        public Permission GetPermission { get; set; } = Permission.Read;
-        public Permission PostPermission { get; set; } = Permission.Write;
-        public Permission ItemGetPermission { get; set; } = Permission.Read;
-        public Permission ItemPutPermission { get; set; } = Permission.Write;
-        public Permission ItemDeletePermission { get; set; } = Permission.Write;
+        public bool HasPermissions { get => Schema.HasPermissions; set => Schema.HasPermissions = value; }
     }
 
     public class InvalidResourceException : Exception
