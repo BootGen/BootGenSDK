@@ -4,7 +4,6 @@ namespace BootGen
     {
         public string Name { get; set; }
         public RestParamterKind Kind { get; set; }
-        public bool Required { get; set; }
     }
 
     public enum RestParamterKind { Path, Query, Body }

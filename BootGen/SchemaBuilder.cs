@@ -37,7 +37,7 @@ namespace BootGen
                 var propertyType = p.PropertyType;
                 var property = GetTypeDescription<Property>(propertyType);
                 property.Name = p.Name;
-                property.IsRequired = propertyType.IsValueType;
+                property.IsRequired = propertyType.IsValueType && !propertyType.IsGenericType;
                 property.ParentSchema = schema;
                 schema.Properties.Add(property);
                 if (property.Name.ToLower() == "id")
@@ -52,10 +52,18 @@ namespace BootGen
         public T GetTypeDescription<T>(Type propertyType) where T : TypeDescription, new()
         {
             T typeDescription = new T();
-            if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>))
+            if (propertyType.IsGenericType)
             {
-                typeDescription.IsCollection = true;
-                propertyType = propertyType.GetGenericArguments()[0];
+                Type genericType = propertyType.GetGenericTypeDefinition();
+                if (genericType == typeof(List<>))
+                {
+                    typeDescription.IsCollection = true;
+                    propertyType = propertyType.GetGenericArguments()[0];
+                }
+                if(genericType == typeof(Nullable<>))
+                {
+                    propertyType = propertyType.GetGenericArguments()[0];
+                }
             }
             typeDescription.BuiltInType = GetType(propertyType);
             if (typeDescription.BuiltInType == BuiltInType.Object)

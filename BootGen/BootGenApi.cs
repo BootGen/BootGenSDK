@@ -39,7 +39,8 @@ namespace BootGen
             Property idProperty = new Property
             {
                 Name = "Id",
-                BuiltInType = BuiltInType.Int32
+                BuiltInType = BuiltInType.Int32,
+                IsRequired = true
             };
             var pivotSchema = new Schema
             {
@@ -50,23 +51,27 @@ namespace BootGen
                         idProperty,
                         new Property {
                             Name = parent.Schema.Name + "Id",
-                            BuiltInType = parent.Schema.IdProperty.BuiltInType
+                            BuiltInType = parent.Schema.IdProperty.BuiltInType,
+                            IsRequired = true
                         },
                         new Property {
                             Name = parent.Schema.Name,
                             BuiltInType = BuiltInType.Object,
                             Schema = parent.Schema,
-                            Tags = new List<string> { "hasOne" }
+                            Tags = new List<string> { "hasOne" },
+                            IsRequired = true
                         },
                         new Property {
                             Name = resource.Schema.Name + "Id",
-                            BuiltInType = resource.Schema.IdProperty.BuiltInType
+                            BuiltInType = resource.Schema.IdProperty.BuiltInType,
+                            IsRequired = true
                         },
                         new Property {
                             Name = resource.Schema.Name,
                             BuiltInType = BuiltInType.Object,
                             Schema = resource.Schema,
-                            Tags = new List<string> { "hasOne" }
+                            Tags = new List<string> { "hasOne" },
+                            IsRequired = true
                         }
                     }
             };
@@ -258,7 +263,8 @@ namespace BootGen
                         Name = property.Name + "Id",
                         BuiltInType = property.Schema.IdProperty.BuiltInType,
                         IsCollection = false,
-                        Location = Location.Both
+                        Location = Location.Both,
+                        IsRequired = true
                     });
                     property.Tags.Add("hasOne");
                     property.Location = Location.ServerOnly;

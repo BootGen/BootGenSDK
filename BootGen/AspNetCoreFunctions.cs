@@ -144,6 +144,8 @@ namespace IssueTrackerGenerator
             string baseType = GetBaseType(property);
             if (property.IsCollection)
                 return $"List<{baseType}>";
+            if (!property.IsRequired && property.BuiltInType != BuiltInType.Object && property.BuiltInType != BuiltInType.String)
+                return $"{baseType}?";
             return baseType;
         }
         public static string GetKind(Parameter param)

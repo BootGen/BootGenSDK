@@ -9,6 +9,7 @@ namespace BootGen
     {
         public BuiltInType BuiltInType { get; set; }
         public bool IsCollection { get; set; }
+        public bool IsRequired { get; set; }
         public Schema Schema { get; set; }
         public EnumSchema EnumSchema { get; set; }
     }
@@ -19,7 +20,6 @@ namespace BootGen
     {
         public Schema ParentSchema { get; set; }
         public string Name { get; set; }
-        public bool IsRequired { get; set; }
         public Location Location { get; set; }
         public bool IsServerOnly => Location == Location.ServerOnly;
         public bool IsClientOnly => Location == Location.ClientOnly;

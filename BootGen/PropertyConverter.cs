@@ -9,19 +9,19 @@ namespace BootGen
             switch (property.BuiltInType)
             {
                 case BuiltInType.Bool:
-                    oasProp.Required = true;;
+                    oasProp.IsRequired = true;;
                     break;
                 case BuiltInType.Int32:
-                    oasProp.Required = true;
+                    oasProp.IsRequired = true;
                     break;
                 case BuiltInType.Int64:
-                    oasProp.Required = true;
+                    oasProp.IsRequired = true;
                     break;
                 case BuiltInType.String:
-                    oasProp.Required = false;
+                    oasProp.IsRequired = false;
                     break;
                 case BuiltInType.Object:
-                    oasProp.Required = false;
+                    oasProp.IsRequired = false;
                     break;
             }
             oasProp.BuiltInType = property.BuiltInType;
