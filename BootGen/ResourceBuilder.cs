@@ -49,7 +49,6 @@ namespace BootGen
         private Resource FromType(Type type, List<Resource> parentResources = null)
         {
             var result = new Resource();
-            result.SourceType = type;
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
                 type = type.GetGenericArguments()[0];

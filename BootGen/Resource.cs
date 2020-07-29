@@ -17,11 +17,11 @@ namespace BootGen
         public bool ItemDelete { get; set; }
         public Route Route { get; set; }
         public Route ItemRoute { get; set; }
+        public Route PermissionRoute { get; set; }
         public List<Resource> ParentResources { get; set; }
         public Resource ParentResource => ParentResources.LastOrDefault();
         public List<Resource> NestedResources { get; set; }
         public Schema Pivot { get; internal set; }
-        internal Type SourceType { get; set; }
         public bool UsePermissions { get => Schema.UsePermissions; internal set => Schema.UsePermissions = value; }
         public bool HasPermissions { get => Schema.HasPermissions; internal set => Schema.HasPermissions = value; }
     }

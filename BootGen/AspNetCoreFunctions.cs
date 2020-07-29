@@ -258,7 +258,7 @@ namespace IssueTrackerGenerator
             return Parameters(operation);
         }
 
-        public static string ElementGetParameters(Resource resource)
+        public static string ItemGetParameters(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
             return Parameters(operation);
@@ -319,7 +319,7 @@ namespace IssueTrackerGenerator
             return builder.ToString();
         }
 
-        public static string ElementRelativePath(Resource resource)
+        public static string ItemRelativePath(Resource resource)
         {
             int count = resource.ItemRoute.PathModel.Count - resource.Route.PathModel.Count;
             var path = new BootGen.Path();
@@ -327,6 +327,13 @@ namespace IssueTrackerGenerator
             return path.ToString().Substring(1);
         }
 
+        public static string PermissionRelativePath(Resource resource)
+        {
+            int count = resource.PermissionRoute.PathModel.Count - resource.Route.PathModel.Count;
+            var path = new BootGen.Path();
+            path.AddRange(resource.PermissionRoute.PathModel.TakeLast(count));
+            return path.ToString().Substring(1);
+        }
 
         public static bool IsLazyLoaded(Property property)
         {

@@ -18,7 +18,6 @@ namespace BootGen
 
     public class Property : TypeDescription
     {
-        public Schema ParentSchema { get; set; }
         public string Name { get; set; }
         public Location Location { get; set; }
         public bool IsServerOnly => Location == Location.ServerOnly;

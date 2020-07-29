@@ -24,6 +24,7 @@ namespace BootGen
             if (resource.HasPermissions)
             {
                 var permissonRoute = new Route();
+                resource.PermissionRoute = permissonRoute;
                 permissonRoute.Operations = new List<Operation>();
                 permissonRoute.PathModel = subRoute.PathModel.Adding(new PathComponent { Name = "permissions" });
                 result.Add(permissonRoute);
@@ -36,7 +37,7 @@ namespace BootGen
         {
             var subRoute = new Route();
             string itemIdName = resource.Schema.Name.ToCamelCase() + "Id";
-            Parameter idParameter = resource.Schema.IdProperty.ConvertToParameter();
+            Parameter idParameter = ConvertToParameter(resource.Schema.IdProperty);
             idParameter.Name = itemIdName;
             idParameter.Kind = RestParamterKind.Path;
             var itemPath = basePath.Adding(new PathComponent { Parameter = idParameter, Name = itemIdName });
@@ -75,10 +76,38 @@ namespace BootGen
 
         private static Parameter ToParam(Property p)
         {
-            Parameter parameter = p.ConvertToParameter();
+            Parameter parameter = ConvertToParameter(p);
             parameter.Kind = p.BuiltInType == BuiltInType.Object ? RestParamterKind.Body : RestParamterKind.Query;
             return parameter;
         }
+        public static Parameter ConvertToParameter(Property property)
+        {
+            var oasProp = new Parameter { Name = property.Name.ToSnakeCase() };
+            switch (property.BuiltInType)
+            {
+                case BuiltInType.Bool:
+                    oasProp.IsRequired = true;;
+                    break;
+                case BuiltInType.Int32:
+                    oasProp.IsRequired = true;
+                    break;
+                case BuiltInType.Int64:
+                    oasProp.IsRequired = true;
+                    break;
+                case BuiltInType.String:
+                    oasProp.IsRequired = false;
+                    break;
+                case BuiltInType.Object:
+                    oasProp.IsRequired = false;
+                    break;
+            }
+            oasProp.BuiltInType = property.BuiltInType;
+            oasProp.Schema = property.Schema;
+            oasProp.IsCollection = property.IsCollection;
+
+            return oasProp;
+        }
+
         private static void AddCollectionOperations(Resource resource, Route route, Path path)
         {
             string resourceName = resource.PluralName.ToWords();
