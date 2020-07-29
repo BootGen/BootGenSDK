@@ -17,8 +17,10 @@ namespace BootGen
     }
     public class BootGenApi
     {
-        public SchemaStore SchemaStore { get; }
-        public ResourceStore ResourceStore { get; }
+        internal SchemaStore SchemaStore { get; }
+        internal EnumSchemaStore EnumSchemaStore { get; }
+        private SchemaBuilder SchemaBuilder { get; }
+        internal ResourceStore ResourceStore { get; }
         private readonly ResourceBuilder resourceBuilder;
         public List<Resource> Resources => ResourceStore.Resources.ToList();
         public List<Controller> Controllers { get; } = new List<Controller>();
@@ -27,16 +29,18 @@ namespace BootGen
         public List<Schema> ServerSchemas => Schemas.Where(p => p.Location != Location.ClientOnly).ToList();
         public List<Schema> ClientSchemas => Schemas.Where(p => p.Location != Location.ServerOnly).ToList();
         public List<Schema> CommonSchemas => Schemas.Where(p => p.Location == Location.Both).ToList();
-        public List<EnumSchema> EnumSchemas => SchemaStore.EnumSchemas;
+        public List<EnumSchema> EnumSchemas => EnumSchemaStore.EnumSchemas;
         private List<Schema> wrappedTypes = new List<Schema>();
         public List<Route> Routes { get; } = new List<Route>();
 
         public BootGenApi()
         {
             SchemaStore = new SchemaStore();
+            EnumSchemaStore = new EnumSchemaStore();
             ResourceStore = new ResourceStore();
-            resourceBuilder = new ResourceBuilder(SchemaStore);
-            var permissionSchema = SchemaStore.GetSchemaForResource(typeof(UserPermission));
+            resourceBuilder = new ResourceBuilder(SchemaStore, EnumSchemaStore);
+            SchemaBuilder = new SchemaBuilder(SchemaStore, EnumSchemaStore);
+            var permissionSchema = SchemaBuilder.FromType(typeof(UserPermission));
             Schemas.First(s => s.Name == "PermissionToken").Location = Location.ServerOnly;
             foreach (var schema in Schemas)
             {
@@ -141,13 +145,13 @@ namespace BootGen
                 controller.Methods.Add(controllerMethod);
                 foreach (var param in method.GetParameters())
                 {
-                    var property = new SchemaBuilder(SchemaStore).GetTypeDescription<Property>(param.ParameterType);
+                    var property = SchemaBuilder.GetTypeDescription<Property>(param.ParameterType);
                     property.Name = param.Name;
                     property.IsRequired = param.ParameterType.IsValueType;
                     controllerMethod.Parameters.Add(property);
                 }
 
-                TypeDescription responseType = new SchemaBuilder(SchemaStore).GetTypeDescription<Property>(method.ReturnType);
+                TypeDescription responseType = SchemaBuilder.GetTypeDescription<Property>(method.ReturnType);
                 if (responseType.BuiltInType == BuiltInType.Object)
                 {
                     controllerMethod.ReturnType = responseType;

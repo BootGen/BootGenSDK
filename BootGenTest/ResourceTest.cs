@@ -12,7 +12,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestSimpleResource()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
             var resource = resourceStore.FromClass<Entity>();
             TestEntityResource(resource);
         }
@@ -53,7 +53,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestListResource()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
             var resource = resourceStore.FromClass<List<Entity>>();
             TestEntityResource(resource);
         }
@@ -62,7 +62,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestComplexResource()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
             var resource = resourceStore.FromClass<Complex>();
             Assert.AreEqual(0, resource.NestedResources.Count);
             Schema schema = resource.Schema;
@@ -82,7 +82,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestComplexListResource()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
             var resource = resourceStore.FromClass<ComplexList>();
             Assert.AreEqual(0, resource.NestedResources.Count);
             Schema schema = resource.Schema;
@@ -102,7 +102,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestRecursive()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
             var resource = resourceStore.FromClass<Recursive>();
             Assert.AreEqual(4, resource.Schema.Properties.Count);
         }
@@ -110,7 +110,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestTreeResource()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore());
+            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
             var resource = resourceStore.FromClass<Tree>();
             Assert.AreEqual(0, resource.NestedResources.Count);
             Property property = resource.Schema.Properties[3];
@@ -126,7 +126,7 @@ namespace BootGenTest
         {
             var api = new BootGenApi();
             var r = api.AddResource<ComplexList>("complex");
-            var seedStore = new SeedDataStore(api.SchemaStore, api.ResourceStore);
+            var seedStore = new SeedDataStore(api);
             seedStore.Add(r, new List<ComplexList>{ new ComplexList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
             Assert.AreEqual(2, api.Schemas.Count);
             Assert.AreEqual(1, seedStore.Get(api.Schemas[0]).Count);

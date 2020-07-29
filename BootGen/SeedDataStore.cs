@@ -26,10 +26,10 @@ namespace BootGen
         public List<PermissionToken> PermissionTokens { get; } = new List<PermissionToken>();
         public List<UserPermission> UserPermissions { get; } = new List<UserPermission>();
 
-        public SeedDataStore(SchemaStore schemaStore, ResourceStore resourceStore)
+        public SeedDataStore(BootGenApi api)
         {
-            this.schemaStore = schemaStore;
-            this.resourceStore = resourceStore;
+            this.schemaStore = api.SchemaStore;
+            this.resourceStore = api.ResourceStore;
         }
 
         private SeedRecord ToSeedRecord(Schema schema, JObject obj)

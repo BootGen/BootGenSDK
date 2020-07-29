@@ -7,10 +7,12 @@ namespace BootGen
     internal class SchemaBuilder
     {
         private readonly SchemaStore schemaStore;
+        private readonly EnumSchemaStore enumSchemaStore;
 
-        internal SchemaBuilder(SchemaStore schemaStore)
+        internal SchemaBuilder(SchemaStore schemaStore, EnumSchemaStore enumSchemaStore)
         {
             this.schemaStore = schemaStore;
+            this.enumSchemaStore = enumSchemaStore;
         }
         internal Schema FromType(Type type)
         {
@@ -79,11 +81,11 @@ namespace BootGen
         private EnumSchema EnumSchemaFromType(Type type)
         {
             EnumSchema schema;
-            if (schemaStore.TryGetValue(type, out schema))
+            if (enumSchemaStore.TryGetValue(type, out schema))
                 return schema;
 
             schema = new EnumSchema();
-            schema.Id = schemaStore.EnumSchemas.Count;
+            schema.Id = enumSchemaStore.EnumSchemas.Count;
             schema.Name = type.Name.Split('.').Last();
             schema.Values = new List<string>();
 
@@ -92,7 +94,7 @@ namespace BootGen
                 schema.Values.Add(value.ToString());
             }
 
-            schemaStore.Add(type, schema);
+            enumSchemaStore.Add(type, schema);
 
             return schema;
         }
