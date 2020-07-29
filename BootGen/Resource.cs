@@ -22,8 +22,8 @@ namespace BootGen
         public List<Resource> NestedResources { get; set; }
         public Schema Pivot { get; internal set; }
         internal Type SourceType { get; set; }
-        public bool UsePermissions { get => Schema.UsePermissions; set => Schema.UsePermissions = value; }
-        public bool HasPermissions { get => Schema.HasPermissions; set => Schema.HasPermissions = value; }
+        public bool UsePermissions { get => Schema.UsePermissions; internal set => Schema.UsePermissions = value; }
+        public bool HasPermissions { get => Schema.HasPermissions; internal set => Schema.HasPermissions = value; }
     }
 
     public class InvalidResourceException : Exception

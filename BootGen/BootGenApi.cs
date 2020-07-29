@@ -78,16 +78,18 @@ namespace BootGen
             return pivotSchema;
         }
 
-        public Resource AddResource<T>(string name, bool isReadonly = false, Resource parent = null, string pivotName = null)
+        public Resource AddResource<T>(string name, bool isReadonly = false, bool hasPermissions = false, bool usePermissions = false, Resource parent = null, string pivotName = null)
         {
             var schemaCount = Schemas.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
             resource.Get = true;
             resource.Post = !isReadonly;
             resource.ItemDelete = !isReadonly;
-            resource.ItemPut = !isReadonly;
+            resource.ItemPut = pivotName == null && !isReadonly;
             resource.ItemGet = pivotName == null;
             resource.PluralName = name;
+            resource.HasPermissions = hasPermissions;
+            resource.UsePermissions = hasPermissions || usePermissions|| parent?.HasPermissions == true;
             if (parent == null)
                 ResourceStore.Add(resource);
             else

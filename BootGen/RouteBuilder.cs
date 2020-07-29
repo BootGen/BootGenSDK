@@ -14,13 +14,21 @@ namespace BootGen
             basePath = basePath.Adding(new PathComponent { Name = resourceName });
             route.PathModel = basePath;
             result.Add(route);
-            resource.Route = route; 
+            resource.Route = route;
             route.Operations = new List<Operation>();
             AddCollectionOperations(resource, route, basePath);
             Route subRoute = GetItemRoute(resource, basePath);
             result.Add(subRoute);
             resource.ItemRoute = subRoute;
-            AddItemOperations(resource, subRoute, subRoute.PathModel);
+            AddItemOperations(resource, subRoute);
+            if (resource.HasPermissions)
+            {
+                var permissonRoute = new Route();
+                permissonRoute.Operations = new List<Operation>();
+                permissonRoute.PathModel = subRoute.PathModel.Adding(new PathComponent { Name = "permissions" });
+                result.Add(permissonRoute);
+                AddPermissionOperations(resource, permissonRoute);
+            }
             return result;
         }
 
@@ -40,13 +48,13 @@ namespace BootGen
         public static IEnumerable<Route> GetRoutes(this Controller controller)
         {
 
-                var path = new Path { new PathComponent { Name = controller.Name.ToKebabCase() } };
-                foreach (var method in controller.Methods)
+            var path = new Path { new PathComponent { Name = controller.Name.ToKebabCase() } };
+            foreach (var method in controller.Methods)
+            {
+                yield return new Route
                 {
-                    yield return new Route
-                    {
-                        PathModel = path.Adding(new PathComponent { Name = method.Name.ToKebabCase() }),
-                        Operations = new List<Operation> {
+                    PathModel = path.Adding(new PathComponent { Name = method.Name.ToKebabCase() }),
+                    Operations = new List<Operation> {
                             new Operation
                             {
                                 Verb = HttpVerb.Post,
@@ -61,8 +69,8 @@ namespace BootGen
                                 Summary = method.Name
                             }
                         }
-                    };
-                }
+                };
+            }
         }
 
         private static Parameter ToParam(Property p)
@@ -101,10 +109,10 @@ namespace BootGen
         }
 
 
-        private static void AddItemOperations(Resource resource, Route subRoute, Path path)
+        private static void AddItemOperations(Resource resource, Route subRoute)
         {
             string resourceName = resource.PluralName.ToWords();
-
+            var path = subRoute.PathModel;
             if (resource.ItemGet)
                 subRoute.Operations.Add(new Operation
                 {
@@ -137,6 +145,41 @@ namespace BootGen
                     SuccessDescription = $"successful deletion",
                     Parameters = path.Parameters
                 });
+        }
+        private static void AddPermissionOperations(Resource resource, Route route)
+        {
+            string resourceName = resource.PluralName.ToWords();
+            var path = route.PathModel;
+            route.Operations.Add(new Operation
+            {
+                Verb = HttpVerb.Get,
+                Name = "get" + resource.Schema.Name + "Permissions",
+                Summary = $"retrieve {resourceName} resource",
+                SuccessCode = 200,
+                SuccessDescription = $"successful query",
+                Response = "UserPermission",
+                ResponseIsCollection = true,
+                Parameters = path.Parameters
+            });
+            route.Operations.Add(new Operation
+            {
+                Verb = HttpVerb.Post,
+                Name = "set" + resource.Schema.Name + "Permission",
+                Summary = $"set {resourceName} permission",
+                SuccessCode = 200,
+                SuccessDescription = $"successful update",
+                Body = "UserPermission",
+                Parameters = path.Parameters
+            });
+            route.Operations.Add(new Operation
+            {
+                Verb = HttpVerb.Delete,
+                Name = "delete" + resource.Schema.Name + "Permission",
+                Summary = $"delete {resourceName} permission",
+                SuccessCode = 200,
+                SuccessDescription = $"successful deletion",
+                Parameters = path.Parameters
+            });
         }
     }
 }
