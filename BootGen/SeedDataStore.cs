@@ -91,7 +91,7 @@ namespace BootGen
                             UserPermissions.Add(new UserPermission
                             {
                                 Id = UserPermissions.Count + 1,
-                                PermissionTokenId = token.Id,
+                                PermissionToken = token,
                                 UserId = permission.Key,
                                 Permission = permission.Value
                             });
@@ -239,13 +239,14 @@ namespace BootGen
     public class PermissionToken
     {
         public int Id { get; set; }
+        public List<UserPermission> UserPermissions { get; set; }
     }
 
     public class UserPermission
     {
         public int Id { get; set; }
-        public int PermissionTokenId { get; set; }
         public int UserId { get; set; }
+        public PermissionToken PermissionToken { get; set; }
         public Permission Permission { get; set; }
     }
 

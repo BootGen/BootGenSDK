@@ -5,7 +5,7 @@ namespace BootGen
 {
     public static class RouteBuilder
     {
-        public static List<Route> GetRoutes(this Resource resource)
+        public static List<Route> GetRoutes(this Resource resource, SchemaStore schemaStore)
         {
             Path basePath = resource.ParentResource?.ItemRoute?.PathModel ?? resource.ParentResource?.Route?.PathModel ?? new Path();
             var result = new List<Route>();
@@ -27,7 +27,7 @@ namespace BootGen
                 permissonRoute.Operations = new List<Operation>();
                 permissonRoute.PathModel = subRoute.PathModel.Adding(new PathComponent { Name = "permissions" });
                 result.Add(permissonRoute);
-                AddPermissionOperations(resource, permissonRoute);
+                AddPermissionOperations(resource, permissonRoute, schemaStore);
             }
             return result;
         }
@@ -60,9 +60,9 @@ namespace BootGen
                                 Verb = HttpVerb.Post,
                                 Name = method.Name.ToCamelCase(),
                                 Parameters = method.Parameters.Where(p => p.Schema == null).Select(ToParam).ToList(),
-                                Body = method.Parameters.FirstOrDefault( p => p.Schema != null)?.Schema?.Name,
+                                Body = method.Parameters.FirstOrDefault( p => p.Schema != null)?.Schema,
                                 BodyIsCollection = method.Parameters.FirstOrDefault( p => p.Schema != null)?.IsCollection == true,
-                                Response = method.ReturnType.Schema?.Name,
+                                Response = method.ReturnType.Schema,
                                 ResponseIsCollection = method.ReturnType.IsCollection,
                                 SuccessCode = 200,
                                 SuccessDescription = method.Name + " success",
@@ -88,7 +88,7 @@ namespace BootGen
                     Verb = HttpVerb.Get,
                     Name = "get" + resource.PluralName,
                     Summary = $"retrieve list of {resourceName}",
-                    Response = resource.Schema.Name,
+                    Response = resource.Schema,
                     ResponseIsCollection = true,
                     SuccessCode = 200,
                     SuccessDescription = $"successful query",
@@ -100,7 +100,7 @@ namespace BootGen
                     Verb = HttpVerb.Post,
                     Name = "add" + resource.PluralName,
                     Summary = $"add a new element to the collection",
-                    Body = resource.Schema.Name,
+                    Body = resource.Schema,
                     BodyIsCollection = false,
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion",
@@ -121,7 +121,7 @@ namespace BootGen
                     Summary = $"retrieve {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful query",
-                    Response = resource.Schema.Name,
+                    Response = resource.Schema,
                     Parameters = path.Parameters
                 });
             if (resource.ItemPut)
@@ -132,7 +132,7 @@ namespace BootGen
                     Summary = $"update {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful update",
-                    Body = resource.Schema.Name,
+                    Body = resource.Schema,
                     Parameters = path.Parameters
                 });
             if (resource.ItemDelete)
@@ -146,18 +146,19 @@ namespace BootGen
                     Parameters = path.Parameters
                 });
         }
-        private static void AddPermissionOperations(Resource resource, Route route)
+        private static void AddPermissionOperations(Resource resource, Route route, SchemaStore schemaStore)
         {
             string resourceName = resource.PluralName.ToWords();
             var path = route.PathModel;
+            schemaStore.TryGetValue(typeof(UserPermission), out Schema userPermissionSchema);
             route.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Get,
                 Name = "get" + resource.Schema.Name + "Permissions",
-                Summary = $"retrieve {resourceName} resource",
+                Summary = $"get permissions for {resourceName}",
                 SuccessCode = 200,
                 SuccessDescription = $"successful query",
-                Response = "UserPermission",
+                Response = userPermissionSchema,
                 ResponseIsCollection = true,
                 Parameters = path.Parameters
             });
@@ -168,7 +169,7 @@ namespace BootGen
                 Summary = $"set {resourceName} permission",
                 SuccessCode = 200,
                 SuccessDescription = $"successful update",
-                Body = "UserPermission",
+                Body = userPermissionSchema,
                 Parameters = path.Parameters
             });
             route.Operations.Add(new Operation

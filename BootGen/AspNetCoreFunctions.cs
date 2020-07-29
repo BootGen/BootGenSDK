@@ -297,7 +297,7 @@ namespace IssueTrackerGenerator
                     builder.Append(" ");
                     builder.Append(param.Name);
                 }
-                if (!string.IsNullOrEmpty(operation.Body))
+                if (operation.Body != null)
                 {
                     if (builder.Length != 0)
                         builder.Append(", ");
@@ -305,16 +305,16 @@ namespace IssueTrackerGenerator
                     if (operation.BodyIsCollection)
                     {
                         builder.Append("List<");
-                        builder.Append(operation.Body);
+                        builder.Append(operation.Body.Name);
                         builder.Append("> ");
-                        builder.Append(operation.Body.ToLower());
+                        builder.Append(operation.Body.Name.ToLower());
                         builder.Append("s");
                     }
                     else
                     {
-                        builder.Append(operation.Body);
+                        builder.Append(operation.Body.Name);
                         builder.Append(" ");
-                        builder.Append(operation.Body.ToLower());
+                        builder.Append(operation.Body.Name.ToLower());
                     }
                 }
             }

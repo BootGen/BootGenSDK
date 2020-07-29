@@ -7,7 +7,8 @@ using Newtonsoft.Json.Linq;
 
 namespace BootGen
 {
-    public class ResourceStore {
+    public class ResourceStore
+    {
         public List<Resource> Resources { get; } = new List<Resource>();
         public void Add(Resource resource)
         {
@@ -32,6 +33,16 @@ namespace BootGen
             SchemaStore = new SchemaStore();
             ResourceStore = new ResourceStore();
             resourceBuilder = new ResourceBuilder(SchemaStore);
+            var permissionSchema = SchemaStore.GetSchemaForResource(typeof(UserPermission));
+            Schemas.First(s => s.Name == "PermissionToken").Location = Location.ServerOnly;
+            foreach (var schema in Schemas)
+            {
+                schema.Persisted = true;
+                OnSchemaAdded(schema);
+            }
+            permissionSchema.Properties.First(p => p.Name == "Id").Location = Location.ServerOnly;
+            permissionSchema.Properties.First(p => p.Name == "PermissionToken").Location = Location.ServerOnly;
+            permissionSchema.Properties.First(p => p.Name == "PermissionTokenId").Location = Location.ServerOnly;
         }
 
         private static Schema CreatePivot(Resource parent, Resource resource, string pivotName)
@@ -89,13 +100,13 @@ namespace BootGen
             resource.ItemGet = pivotName == null;
             resource.PluralName = name;
             resource.HasPermissions = hasPermissions;
-            resource.UsePermissions = hasPermissions || usePermissions|| parent?.HasPermissions == true;
+            resource.UsePermissions = hasPermissions || usePermissions || parent?.HasPermissions == true;
             if (parent == null)
                 ResourceStore.Add(resource);
             else
                 parent.NestedResources.Add(resource);
-           
-            Routes.AddRange(resource.GetRoutes());
+
+            Routes.AddRange(resource.GetRoutes(SchemaStore));
             if (pivotName != null)
             {
                 Schema pivotSchema = CreatePivot(parent, resource, pivotName);
@@ -103,7 +114,8 @@ namespace BootGen
                 SchemaStore.Add(pivotSchema);
             }
             OnResourceAdded(resource);
-            foreach (var schema in Schemas.Skip(schemaCount)) {
+            foreach (var schema in Schemas.Skip(schemaCount))
+            {
                 schema.Persisted = true;
                 OnSchemaAdded(schema);
             }
@@ -194,26 +206,31 @@ namespace BootGen
             Resource parent = resource.ParentResource;
             if (parent == null)
                 return;
-            Property referenceProperty = new Property
+            if (!resource.Schema.Properties.Any(p => p.Name == parent.Schema.Name))
             {
-                Name = parent.Schema.Name,
-                BuiltInType = BuiltInType.Object,
-                Schema = parent.Schema,
-                IsCollection = false,
-                IsRequired = true,
-                Location = Location.ServerOnly
-            };
-            referenceProperty.Tags.Add("hasOne");
-            referenceProperty.Tags.Add("parentReference");
-            resource.Schema.Properties.Add(referenceProperty);
-            resource.Schema.Properties.Add(new Property
-            {
-                Name = parent.Schema.Name + "Id",
-                BuiltInType = parent.Schema.IdProperty.BuiltInType,
-                IsCollection = false,
-                IsRequired = true,
-                Location = Location.ServerOnly
-            });
+                Property referenceProperty = new Property
+                {
+                    Name = parent.Schema.Name,
+                    BuiltInType = BuiltInType.Object,
+                    Schema = parent.Schema,
+                    IsCollection = false,
+                    IsRequired = true,
+                    Location = Location.ServerOnly
+                };
+                referenceProperty.Tags.Add("hasOne");
+                referenceProperty.Tags.Add("parentReference");
+                resource.Schema.Properties.Add(referenceProperty);
+            }
+
+            if (!resource.Schema.Properties.Any(p => p.Name == parent.Schema.Name + "Id"))
+                resource.Schema.Properties.Add(new Property
+                {
+                    Name = parent.Schema.Name + "Id",
+                    BuiltInType = parent.Schema.IdProperty.BuiltInType,
+                    IsCollection = false,
+                    IsRequired = true,
+                    Location = Location.ServerOnly
+                });
         }
 
 
@@ -224,27 +241,34 @@ namespace BootGen
             {
                 if (property.Schema == null || !property.IsCollection || property.MirrorProperty != null)
                     continue;
-                Property referenceProperty = new Property
+
+                Property referenceProperty = property.Schema.Properties.FirstOrDefault(p => p.Name == schema.Name);
+                if (referenceProperty == null)
                 {
-                    Name = schema.Name,
-                    BuiltInType = BuiltInType.Object,
-                    Schema = schema,
-                    IsCollection = false,
-                    IsRequired = true,
-                    Location = Location.ServerOnly
-                };
-                referenceProperty.Tags.Add("hasOne");
-                referenceProperty.Tags.Add("parentReference");
+                    referenceProperty = new Property
+                    {
+                        Name = schema.Name,
+                        BuiltInType = BuiltInType.Object,
+                        Schema = schema,
+                        IsCollection = false,
+                        IsRequired = true,
+                        Location = Location.ServerOnly
+                    };
+                    referenceProperty.Tags.Add("hasOne");
+                    referenceProperty.Tags.Add("parentReference");
+                    property.Schema.Properties.Add(referenceProperty);
+                }
                 referenceProperty.MirrorProperty = property;
                 property.MirrorProperty = referenceProperty;
-                property.Schema.Properties.Add(referenceProperty);
-                property.Schema.Properties.Add(new Property
-                {
-                    Name = schema.Name + "Id",
-                    BuiltInType = schema.IdProperty.BuiltInType,
-                    IsCollection = false,
-                    IsRequired = true
-                });
+
+                if (!property.Schema.Properties.Any(p => p.Name == schema.Name + "Id"))
+                    property.Schema.Properties.Add(new Property
+                    {
+                        Name = schema.Name + "Id",
+                        BuiltInType = schema.IdProperty.BuiltInType,
+                        IsCollection = false,
+                        IsRequired = true
+                    });
                 AddEfRelationsParentToChild(property.Schema);
             }
         }
