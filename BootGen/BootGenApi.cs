@@ -24,6 +24,9 @@ namespace BootGen
         public List<Controller> Controllers { get; } = new List<Controller>();
         public List<Schema> StoredSchemas => SchemaStore.Schemas.Where(s => s.Persisted).ToList();
         public List<Schema> Schemas => SchemaStore.Schemas.Concat(wrappedTypes).ToList();
+        public List<Schema> ServerSchemas => Schemas.Where(p => p.Location != Location.ClientOnly).ToList();
+        public List<Schema> ClientSchemas => Schemas.Where(p => p.Location != Location.ServerOnly).ToList();
+        public List<Schema> CommonSchemas => Schemas.Where(p => p.Location == Location.Both).ToList();
         public List<EnumSchema> EnumSchemas => SchemaStore.EnumSchemas;
         private List<Schema> wrappedTypes = new List<Schema>();
         public List<Route> Routes { get; } = new List<Route>();
@@ -69,7 +72,6 @@ namespace BootGen
                             Name = parent.Schema.Name,
                             BuiltInType = BuiltInType.Object,
                             Schema = parent.Schema,
-                            Tags = new List<string> { "hasOne" },
                             IsRequired = true
                         },
                         new Property {
@@ -81,7 +83,6 @@ namespace BootGen
                             Name = resource.Schema.Name,
                             BuiltInType = BuiltInType.Object,
                             Schema = resource.Schema,
-                            Tags = new List<string> { "hasOne" },
                             IsRequired = true
                         }
                     }
@@ -215,10 +216,9 @@ namespace BootGen
                     Schema = parent.Schema,
                     IsCollection = false,
                     IsRequired = true,
-                    Location = Location.ServerOnly
+                    Location = Location.ServerOnly,
+                    ParentReference = true
                 };
-                referenceProperty.Tags.Add("hasOne");
-                referenceProperty.Tags.Add("parentReference");
                 resource.Schema.Properties.Add(referenceProperty);
             }
 
@@ -252,10 +252,9 @@ namespace BootGen
                         Schema = schema,
                         IsCollection = false,
                         IsRequired = true,
-                        Location = Location.ServerOnly
+                        Location = Location.ServerOnly,
+                        ParentReference = true
                     };
-                    referenceProperty.Tags.Add("hasOne");
-                    referenceProperty.Tags.Add("parentReference");
                     property.Schema.Properties.Add(referenceProperty);
                 }
                 referenceProperty.MirrorProperty = property;
@@ -282,20 +281,22 @@ namespace BootGen
                 propertyIdx += 1;
                 if (property.Schema == null)
                     continue;
-                if (!property.IsCollection && !property.Tags.Contains("hasOne"))
+                if (!property.IsCollection && property.Schema != null)
                 {
-                    schema.Properties.Insert(propertyIdx + 1, new Property
+                    if (!schema.Properties.Any(p => p.Name == property.Name + "Id"))
                     {
-                        Name = property.Name + "Id",
-                        BuiltInType = property.Schema.IdProperty.BuiltInType,
-                        IsCollection = false,
-                        Location = Location.Both,
-                        IsRequired = true
-                    });
-                    property.Tags.Add("hasOne");
-                    property.Location = Location.ServerOnly;
-                    propertyIdx += 1;
-                    AddEfRelationsChildToParent(property.Schema);
+                        schema.Properties.Insert(propertyIdx + 1, new Property
+                        {
+                            Name = property.Name + "Id",
+                            BuiltInType = property.Schema.IdProperty.BuiltInType,
+                            IsCollection = false,
+                            Location = Location.Both,
+                            IsRequired = true
+                        });
+                        property.Location = Location.ServerOnly;
+                        propertyIdx += 1;
+                        AddEfRelationsChildToParent(property.Schema);
+                    }
                 }
             }
         }

@@ -39,8 +39,6 @@ namespace IssueTrackerGenerator
             return value[0].ToString().ToLower() + value.Substring(1);
         }
 
-        public static bool HasTag(Property property, string tag) => property.Tags.Contains(tag);
-
         public void Render(string folderName, string targetFileName, string templateFile, Dictionary<string, object> parameters)
         {
             var dir = GetPath(folderName);
@@ -173,7 +171,7 @@ namespace IssueTrackerGenerator
             var result = new List<string>();
             foreach (var property in schema.Properties)
             {
-                if (property.BuiltInType == BuiltInType.Object && (!property.HasTag("pivotReference") || property.Schema != parents?.LastOrDefault()) && !property.HasTag("parentReference"))
+                if (property.BuiltInType == BuiltInType.Object && !property.ParentReference)
                 {
                     string newPrefix;
                     if (prefix == null)
