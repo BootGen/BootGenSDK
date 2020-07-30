@@ -263,6 +263,21 @@ namespace IssueTrackerGenerator
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
             return Parameters(operation);
         }
+        public static string PermissionGetParameters(Resource resource)
+        {
+            var operation = resource.PermissionRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
+            return Parameters(operation);
+        }
+        public static string PermissionPostParameters(Resource resource)
+        {
+            var operation = resource.PermissionRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Post);
+            return Parameters(operation);
+        }
+        public static string PermissionDeleteParameters(Resource resource)
+        {
+            var operation = resource.PermissionRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
+            return Parameters(operation);
+        }
 
         public static string Parameters(Method method)
         {
