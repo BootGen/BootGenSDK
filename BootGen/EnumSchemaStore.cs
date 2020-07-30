@@ -4,17 +4,17 @@ using System.Linq;
 
 namespace BootGen
 {
-    public class EnumSchemaStore
+    public class EnumStore
     {
-        private Dictionary<Type, EnumSchema> enumSchemas = new Dictionary<Type, EnumSchema>();
-        public List<EnumSchema> EnumSchemas => enumSchemas.Values.ToList();
-        internal bool TryGetValue(Type type, out EnumSchema schema)
+        private Dictionary<Type, EnumModel> enums = new Dictionary<Type, EnumModel>();
+        public List<EnumModel> Enums => enums.Values.ToList();
+        internal bool TryGetValue(Type type, out EnumModel e)
         {
-            return enumSchemas.TryGetValue(type, out schema);
+            return enums.TryGetValue(type, out e);
         }
-        internal void Add(Type type, EnumSchema schema)
+        internal void Add(Type type, EnumModel e)
         {
-            enumSchemas.Add(type, schema);
+            enums.Add(type, e);
         }
 
     }

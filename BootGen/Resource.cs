@@ -9,7 +9,7 @@ namespace BootGen
     {
         public string PluralName { get; set; }
         public string SingularName => PluralName.Substring(0, PluralName.Length - 1);
-        public Schema Schema { get; set; }
+        public ClassModel ClassModel { get; set; }
         public bool Get { get; set; }
         public bool Post { get; set; }
         public bool ItemGet { get; set; }
@@ -21,9 +21,9 @@ namespace BootGen
         public List<Resource> ParentResources { get; set; }
         public Resource ParentResource => ParentResources.LastOrDefault();
         public List<Resource> NestedResources { get; set; }
-        public Schema Pivot { get; internal set; }
-        public bool UsePermissions { get => Schema.UsePermissions; internal set => Schema.UsePermissions = value; }
-        public bool HasPermissions { get => Schema.HasPermissions; internal set => Schema.HasPermissions = value; }
+        public ClassModel Pivot { get; internal set; }
+        public bool UsePermissions { get => ClassModel.UsePermissions; internal set => ClassModel.UsePermissions = value; }
+        public bool HasPermissions { get => ClassModel.HasPermissions; internal set => ClassModel.HasPermissions = value; }
     }
 
     public class InvalidResourceException : Exception

@@ -1,10 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BootGen
 {
-    public class Schema
+    public class ClassModel
     {
         public int Id { get; internal set; }
         public string Name { get; internal set; }

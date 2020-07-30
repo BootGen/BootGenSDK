@@ -1,35 +1,35 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BootGen
 {
-    internal class SchemaBuilder
+    internal class TypeBuilder
     {
-        private readonly SchemaStore schemaStore;
-        private readonly EnumSchemaStore enumSchemaStore;
+        private readonly ClassStore classStore;
+        private readonly EnumStore enumStore;
 
-        internal SchemaBuilder(SchemaStore schemaStore, EnumSchemaStore enumSchemaStore)
+        internal TypeBuilder(ClassStore classStore, EnumStore enumStore)
         {
-            this.schemaStore = schemaStore;
-            this.enumSchemaStore = enumSchemaStore;
+            this.classStore = classStore;
+            this.enumStore = enumStore;
         }
-        internal Schema FromType(Type type)
+        internal ClassModel FromType(Type type)
         {
-            Schema schema;
-            if (schemaStore.TryGetValue(type, out schema))
+            ClassModel c;
+            if (classStore.TryGetValue(type, out c))
             {
-                return schema;
+                return c;
             }
-            return CreateSchemaForType(type);
+            return CreateClassForType(type);
         }
 
-        private Schema CreateSchemaForType(Type type)
+        private ClassModel CreateClassForType(Type type)
         {
-            Schema schema = new Schema();
-            schema.Name = type.Name.Split('.').Last();
-            schema.Properties = new List<Property>();
-            schemaStore.Add(type, schema);
+            var c = new ClassModel();
+            c.Name = type.Name.Split('.').Last();
+            c.Properties = new List<Property>();
+            classStore.Add(type, c);
             foreach (var p in type.GetProperties())
             {
                 if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute) || d.AttributeType == typeof(WithPivotAttribute)))
@@ -40,14 +40,14 @@ namespace BootGen
                 var property = GetTypeDescription<Property>(propertyType);
                 property.Name = p.Name;
                 property.IsRequired = propertyType.IsValueType && !propertyType.IsGenericType;
-                schema.Properties.Add(property);
+                c.Properties.Add(property);
                 if (property.Name.ToLower() == "id")
                 {
-                    schema.IdProperty = property;
+                    c.IdProperty = property;
                 }
             }
 
-            return schema;
+            return c;
         }
 
         public T GetTypeDescription<T>(Type propertyType) where T : TypeDescription, new()
@@ -69,33 +69,33 @@ namespace BootGen
             typeDescription.BuiltInType = GetType(propertyType);
             if (typeDescription.BuiltInType == BuiltInType.Object)
             {
-                typeDescription.Schema = FromType(propertyType);
+                typeDescription.ClassModel = FromType(propertyType);
             } else if (typeDescription.BuiltInType == BuiltInType.Enum)
             {
-                typeDescription.EnumSchema = EnumSchemaFromType(propertyType);
+                typeDescription.EnumModel = EnumFromType(propertyType);
             }
             return typeDescription;
         }
 
-        private EnumSchema EnumSchemaFromType(Type type)
+        private EnumModel EnumFromType(Type type)
         {
-            EnumSchema schema;
-            if (enumSchemaStore.TryGetValue(type, out schema))
-                return schema;
+            EnumModel e;
+            if (enumStore.TryGetValue(type, out e))
+                return e;
 
-            schema = new EnumSchema();
-            schema.Id = enumSchemaStore.EnumSchemas.Count;
-            schema.Name = type.Name.Split('.').Last();
-            schema.Values = new List<string>();
+            e = new EnumModel();
+            e.Id = enumStore.Enums.Count;
+            e.Name = type.Name.Split('.').Last();
+            e.Values = new List<string>();
 
-            foreach (var value in Enum.GetValues(type))
+            foreach (var value in System.Enum.GetValues(type))
             {
-                schema.Values.Add(value.ToString());
+                e.Values.Add(value.ToString());
             }
 
-            enumSchemaStore.Add(type, schema);
+            enumStore.Add(type, e);
 
-            return schema;
+            return e;
         }
 
         private static BuiltInType GetType(Type type)

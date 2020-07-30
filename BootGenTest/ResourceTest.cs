@@ -12,48 +12,48 @@ namespace BootGenTest
         [TestMethod]
         public void TestSimpleResource()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
+            var resourceStore = new ResourceBuilder(new ClassStore(), new EnumStore());
             var resource = resourceStore.FromClass<Entity>();
             TestEntityResource(resource);
         }
 
         private static void TestEntityResource(Resource resource)
         {
-            TestEntitySchema(resource.Schema);
+            TestEntityClass(resource.ClassModel);
         }
 
-        private static void TestEntitySchema(Schema schema)
+        private static void TestEntityClass(ClassModel c)
         {
-            Assert.AreEqual(7, schema.Properties.Count);
-            Assert.AreEqual("Id", schema.Properties[0].Name);
-            Assert.IsTrue(schema.Properties[0].IsRequired);
-            Assert.AreEqual("Name", schema.Properties[1].Name);
-            Assert.IsFalse(schema.Properties[1].IsRequired);
-            Assert.AreEqual(BuiltInType.String, schema.Properties[1].BuiltInType);
-            Assert.AreEqual("Value", schema.Properties[2].Name);
-            Assert.AreEqual(BuiltInType.Int32, schema.Properties[2].BuiltInType);
-            Assert.IsTrue(schema.Properties[2].IsRequired);
-            Assert.AreEqual("TimeStamp", schema.Properties[3].Name);
-            Assert.AreEqual(BuiltInType.Int64, schema.Properties[3].BuiltInType);
-            Assert.IsTrue(schema.Properties[3].IsRequired);
-            Assert.AreEqual("Ok", schema.Properties[4].Name);
-            Assert.AreEqual(BuiltInType.Bool, schema.Properties[4].BuiltInType);
-            Assert.IsTrue(schema.Properties[4].IsRequired);
-            Assert.AreEqual("DateTime", schema.Properties[5].Name);
-            Assert.AreEqual(BuiltInType.DateTime, schema.Properties[5].BuiltInType);
-            Assert.IsTrue(schema.Properties[5].IsRequired);
-            Assert.AreEqual("Weekday", schema.Properties[6].Name);
-            Assert.AreEqual("Weekday", schema.Properties[6].EnumSchema.Name);
-            Assert.AreEqual(BuiltInType.Enum, schema.Properties[6].BuiltInType);
-            Assert.IsTrue(schema.Properties[6].IsRequired);
-            Assert.AreEqual(7, schema.Properties[6].EnumSchema.Values.Count);
-            Assert.AreEqual("Monday", schema.Properties[6].EnumSchema.Values.First());
+            Assert.AreEqual(7, c.Properties.Count);
+            Assert.AreEqual("Id", c.Properties[0].Name);
+            Assert.IsTrue(c.Properties[0].IsRequired);
+            Assert.AreEqual("Name", c.Properties[1].Name);
+            Assert.IsFalse(c.Properties[1].IsRequired);
+            Assert.AreEqual(BuiltInType.String, c.Properties[1].BuiltInType);
+            Assert.AreEqual("Value", c.Properties[2].Name);
+            Assert.AreEqual(BuiltInType.Int32, c.Properties[2].BuiltInType);
+            Assert.IsTrue(c.Properties[2].IsRequired);
+            Assert.AreEqual("TimeStamp", c.Properties[3].Name);
+            Assert.AreEqual(BuiltInType.Int64, c.Properties[3].BuiltInType);
+            Assert.IsTrue(c.Properties[3].IsRequired);
+            Assert.AreEqual("Ok", c.Properties[4].Name);
+            Assert.AreEqual(BuiltInType.Bool, c.Properties[4].BuiltInType);
+            Assert.IsTrue(c.Properties[4].IsRequired);
+            Assert.AreEqual("DateTime", c.Properties[5].Name);
+            Assert.AreEqual(BuiltInType.DateTime, c.Properties[5].BuiltInType);
+            Assert.IsTrue(c.Properties[5].IsRequired);
+            Assert.AreEqual("Weekday", c.Properties[6].Name);
+            Assert.AreEqual("Weekday", c.Properties[6].EnumModel.Name);
+            Assert.AreEqual(BuiltInType.Enum, c.Properties[6].BuiltInType);
+            Assert.IsTrue(c.Properties[6].IsRequired);
+            Assert.AreEqual(7, c.Properties[6].EnumModel.Values.Count);
+            Assert.AreEqual("Monday", c.Properties[6].EnumModel.Values.First());
         }
 
         [TestMethod]
         public void TestListResource()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
+            var resourceStore = new ResourceBuilder(new ClassStore(), new EnumStore());
             var resource = resourceStore.FromClass<List<Entity>>();
             TestEntityResource(resource);
         }
@@ -62,64 +62,62 @@ namespace BootGenTest
         [TestMethod]
         public void TestComplexResource()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
+            var resourceStore = new ResourceBuilder(new ClassStore(), new EnumStore());
             var resource = resourceStore.FromClass<Complex>();
             Assert.AreEqual(0, resource.NestedResources.Count);
-            Schema schema = resource.Schema;
-            TestComplexSchema(schema);
+            TestComplexClass(resource.ClassModel);
         }
 
-        private static void TestComplexSchema(Schema schema)
+        private static void TestComplexClass(ClassModel c)
         {
-            Assert.AreEqual("Complex", schema.Name);
-            Property property = schema.Properties.Last();
+            Assert.AreEqual("Complex", c.Name);
+            Property property = c.Properties.Last();
             Assert.AreEqual("Entity", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.BuiltInType);
             Assert.IsFalse(property.IsCollection);
-            TestEntitySchema(property.Schema);
+            TestEntityClass(property.ClassModel);
         }
 
         [TestMethod]
         public void TestComplexListResource()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
+            var resourceStore = new ResourceBuilder(new ClassStore(), new EnumStore());
             var resource = resourceStore.FromClass<ComplexList>();
             Assert.AreEqual(0, resource.NestedResources.Count);
-            Schema schema = resource.Schema;
-            TestComplexListSchema(schema);
+            TestComplexListClass(resource.ClassModel);
         }
 
-        private static void TestComplexListSchema(Schema schema)
+        private static void TestComplexListClass(ClassModel c)
         {
-            Assert.AreEqual("ComplexList", schema.Name);
-            Property property = schema.Properties.Last();
+            Assert.AreEqual("ComplexList", c.Name);
+            Property property = c.Properties.Last();
             Assert.AreEqual("Entities", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.BuiltInType);
             Assert.IsTrue(property.IsCollection);
-            TestEntitySchema(property.Schema);
+            TestEntityClass(property.ClassModel);
         }
 
         [TestMethod]
         public void TestRecursive()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
+            var resourceStore = new ResourceBuilder(new ClassStore(), new EnumStore());
             var resource = resourceStore.FromClass<Recursive>();
-            Assert.AreEqual(4, resource.Schema.Properties.Count);
+            Assert.AreEqual(4, resource.ClassModel.Properties.Count);
         }
 
         [TestMethod]
         public void TestTreeResource()
         {
-            var resourceStore = new ResourceBuilder(new SchemaStore(), new EnumSchemaStore());
+            var resourceStore = new ResourceBuilder(new ClassStore(), new EnumStore());
             var resource = resourceStore.FromClass<Tree>();
             Assert.AreEqual(0, resource.NestedResources.Count);
-            Property property = resource.Schema.Properties[3];
+            Property property = resource.ClassModel.Properties[3];
             Assert.AreEqual("Entity", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.BuiltInType);
             Assert.IsFalse(property.IsCollection);
-            TestEntitySchema(property.Schema);
-            TestComplexSchema(resource.Schema.Properties[4].Schema);
-            TestComplexListSchema(resource.Schema.Properties[5].Schema);
+            TestEntityClass(property.ClassModel);
+            TestComplexClass(resource.ClassModel.Properties[4].ClassModel);
+            TestComplexListClass(resource.ClassModel.Properties[5].ClassModel);
         }
         [TestMethod]
         public void TestDataSeed()
@@ -128,9 +126,9 @@ namespace BootGenTest
             var r = api.AddResource<ComplexList>("complex");
             var seedStore = new SeedDataStore(api);
             seedStore.Add(r, new List<ComplexList>{ new ComplexList { Name = "My Name", Entities = new List<Entity> { new Entity{ Name = "Hello"} } }});
-            Assert.AreEqual(2, api.Schemas.Count);
-            Assert.AreEqual(1, seedStore.Get(api.Schemas[0]).Count);
-            Assert.AreEqual(1, seedStore.Get(api.Schemas[1]).Count);
+            Assert.AreEqual(2, api.Classes.Count);
+            Assert.AreEqual(1, seedStore.Get(api.Classes[0]).Count);
+            Assert.AreEqual(1, seedStore.Get(api.Classes[1]).Count);
         }
 
         enum Weekday { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday }

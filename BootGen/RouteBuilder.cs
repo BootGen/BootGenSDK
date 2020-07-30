@@ -5,7 +5,7 @@ namespace BootGen
 {
     public static class RouteBuilder
     {
-        public static List<Route> GetRoutes(this Resource resource, SchemaStore schemaStore)
+        public static List<Route> GetRoutes(this Resource resource, ClassStore classStore)
         {
             Path basePath = resource.ParentResource?.ItemRoute?.PathModel ?? resource.ParentResource?.Route?.PathModel ?? new Path();
             var result = new List<Route>();
@@ -28,7 +28,7 @@ namespace BootGen
                 permissonRoute.Operations = new List<Operation>();
                 permissonRoute.PathModel = subRoute.PathModel.Adding(new PathComponent { Name = "permissions" });
                 result.Add(permissonRoute);
-                AddPermissionOperations(resource, permissonRoute, schemaStore);
+                AddPermissionOperations(resource, permissonRoute, classStore);
             }
             return result;
         }
@@ -36,8 +36,8 @@ namespace BootGen
         private static Route GetItemRoute(Resource resource, Path basePath)
         {
             var subRoute = new Route();
-            string itemIdName = resource.Schema.Name.ToCamelCase() + "Id";
-            Parameter idParameter = ConvertToParameter(resource.Schema.IdProperty);
+            string itemIdName = resource.ClassModel.Name.ToCamelCase() + "Id";
+            Parameter idParameter = ConvertToParameter(resource.ClassModel.IdProperty);
             idParameter.Name = itemIdName;
             idParameter.Kind = RestParamterKind.Path;
             var itemPath = basePath.Adding(new PathComponent { Parameter = idParameter, Name = itemIdName });
@@ -60,10 +60,10 @@ namespace BootGen
                             {
                                 Verb = HttpVerb.Post,
                                 Name = method.Name.ToCamelCase(),
-                                Parameters = method.Parameters.Where(p => p.Schema == null).Select(ToParam).ToList(),
-                                Body = method.Parameters.FirstOrDefault( p => p.Schema != null)?.Schema,
-                                BodyIsCollection = method.Parameters.FirstOrDefault( p => p.Schema != null)?.IsCollection == true,
-                                Response = method.ReturnType.Schema,
+                                Parameters = method.Parameters.Where(p => p.ClassModel == null).Select(ToParam).ToList(),
+                                Body = method.Parameters.FirstOrDefault( p => p.ClassModel != null)?.ClassModel,
+                                BodyIsCollection = method.Parameters.FirstOrDefault( p => p.ClassModel != null)?.IsCollection == true,
+                                Response = method.ReturnType.ClassModel,
                                 ResponseIsCollection = method.ReturnType.IsCollection,
                                 SuccessCode = 200,
                                 SuccessDescription = method.Name + " success",
@@ -102,7 +102,7 @@ namespace BootGen
                     break;
             }
             oasProp.BuiltInType = property.BuiltInType;
-            oasProp.Schema = property.Schema;
+            oasProp.ClassModel = property.ClassModel;
             oasProp.IsCollection = property.IsCollection;
 
             return oasProp;
@@ -117,7 +117,7 @@ namespace BootGen
                     Verb = HttpVerb.Get,
                     Name = "get" + resource.PluralName,
                     Summary = $"retrieve list of {resourceName}",
-                    Response = resource.Schema,
+                    Response = resource.ClassModel,
                     ResponseIsCollection = true,
                     SuccessCode = 200,
                     SuccessDescription = $"successful query",
@@ -129,7 +129,7 @@ namespace BootGen
                     Verb = HttpVerb.Post,
                     Name = "add" + resource.PluralName,
                     Summary = $"add a new element to the collection",
-                    Body = resource.Schema,
+                    Body = resource.ClassModel,
                     BodyIsCollection = false,
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion",
@@ -146,65 +146,65 @@ namespace BootGen
                 subRoute.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Get,
-                    Name = "get" + resource.Schema.Name + "ById",
+                    Name = "get" + resource.ClassModel.Name + "ById",
                     Summary = $"retrieve {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful query",
-                    Response = resource.Schema,
+                    Response = resource.ClassModel,
                     Parameters = path.Parameters
                 });
             if (resource.ItemPut)
                 subRoute.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Put,
-                    Name = "update" + resource.Schema.Name + "ById",
+                    Name = "update" + resource.ClassModel.Name + "ById",
                     Summary = $"update {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful update",
-                    Body = resource.Schema,
+                    Body = resource.ClassModel,
                     Parameters = path.Parameters
                 });
             if (resource.ItemDelete)
                 subRoute.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Delete,
-                    Name = "delete" + resource.Schema.Name + "ById",
+                    Name = "delete" + resource.ClassModel.Name + "ById",
                     Summary = $"delete {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion",
                     Parameters = path.Parameters
                 });
         }
-        private static void AddPermissionOperations(Resource resource, Route route, SchemaStore schemaStore)
+        private static void AddPermissionOperations(Resource resource, Route route, ClassStore classStore)
         {
             string resourceName = resource.PluralName.ToWords();
             var path = route.PathModel;
-            schemaStore.TryGetValue(typeof(UserPermission), out Schema userPermissionSchema);
+            classStore.TryGetValue(typeof(UserPermission), out ClassModel userPermissionClass);
             route.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Get,
-                Name = "get" + resource.Schema.Name + "Permissions",
+                Name = "get" + resource.ClassModel.Name + "Permissions",
                 Summary = $"get permissions for {resourceName}",
                 SuccessCode = 200,
                 SuccessDescription = $"successful query",
-                Response = userPermissionSchema,
+                Response = userPermissionClass,
                 ResponseIsCollection = true,
                 Parameters = path.Parameters
             });
             route.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Post,
-                Name = "set" + resource.Schema.Name + "Permission",
+                Name = "set" + resource.ClassModel.Name + "Permission",
                 Summary = $"set {resourceName} permission",
                 SuccessCode = 200,
                 SuccessDescription = $"successful update",
-                Body = userPermissionSchema,
+                Body = userPermissionClass,
                 Parameters = path.Parameters
             });
             route.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Delete,
-                Name = "delete" + resource.Schema.Name + "Permission",
+                Name = "delete" + resource.ClassModel.Name + "Permission",
                 Summary = $"delete {resourceName} permission",
                 SuccessCode = 200,
                 SuccessDescription = $"successful deletion",

@@ -17,42 +17,42 @@ namespace BootGen
     }
     public class BootGenApi
     {
-        internal SchemaStore SchemaStore { get; }
-        internal EnumSchemaStore EnumSchemaStore { get; }
-        private SchemaBuilder SchemaBuilder { get; }
+        internal ClassStore ClassStore { get; }
+        internal EnumStore EnumStore { get; }
+        private TypeBuilder ClassBuilder { get; }
         internal ResourceStore ResourceStore { get; }
         private readonly ResourceBuilder resourceBuilder;
         public List<Resource> Resources => ResourceStore.Resources.ToList();
         public List<Controller> Controllers { get; } = new List<Controller>();
-        public List<Schema> StoredSchemas => SchemaStore.Schemas.Where(s => s.Persisted).ToList();
-        public List<Schema> Schemas => SchemaStore.Schemas.Concat(wrappedTypes).ToList();
-        public List<Schema> ServerSchemas => Schemas.Where(p => p.Location != Location.ClientOnly).ToList();
-        public List<Schema> ClientSchemas => Schemas.Where(p => p.Location != Location.ServerOnly).ToList();
-        public List<Schema> CommonSchemas => Schemas.Where(p => p.Location == Location.Both).ToList();
-        public List<EnumSchema> EnumSchemas => EnumSchemaStore.EnumSchemas;
-        private List<Schema> wrappedTypes = new List<Schema>();
+        public List<ClassModel> StoredClasses => ClassStore.Classes.Where(s => s.Persisted).ToList();
+        public List<ClassModel> Classes => ClassStore.Classes.Concat(wrappedTypes).ToList();
+        public List<ClassModel> ServerClasses => Classes.Where(p => p.Location != Location.ClientOnly).ToList();
+        public List<ClassModel> ClientClasses => Classes.Where(p => p.Location != Location.ServerOnly).ToList();
+        public List<ClassModel> CommonClasses => Classes.Where(p => p.Location == Location.Both).ToList();
+        public List<EnumModel> Enums => EnumStore.Enums;
+        private List<ClassModel> wrappedTypes = new List<ClassModel>();
         public List<Route> Routes { get; } = new List<Route>();
 
         public BootGenApi()
         {
-            SchemaStore = new SchemaStore();
-            EnumSchemaStore = new EnumSchemaStore();
+            ClassStore = new ClassStore();
+            EnumStore = new EnumStore();
             ResourceStore = new ResourceStore();
-            resourceBuilder = new ResourceBuilder(SchemaStore, EnumSchemaStore);
-            SchemaBuilder = new SchemaBuilder(SchemaStore, EnumSchemaStore);
-            var permissionSchema = SchemaBuilder.FromType(typeof(UserPermission));
-            Schemas.First(s => s.Name == "PermissionToken").Location = Location.ServerOnly;
-            foreach (var schema in Schemas)
+            resourceBuilder = new ResourceBuilder(ClassStore, EnumStore);
+            ClassBuilder = new TypeBuilder(ClassStore, EnumStore);
+            var permissionClass = ClassBuilder.FromType(typeof(UserPermission));
+            Classes.First(s => s.Name == "PermissionToken").Location = Location.ServerOnly;
+            foreach (var c in Classes)
             {
-                schema.Persisted = true;
-                OnSchemaAdded(schema);
+                c.Persisted = true;
+                OnClassAdded(c);
             }
-            permissionSchema.Properties.First(p => p.Name == "Id").Location = Location.ServerOnly;
-            permissionSchema.Properties.First(p => p.Name == "PermissionToken").Location = Location.ServerOnly;
-            permissionSchema.Properties.First(p => p.Name == "PermissionTokenId").Location = Location.ServerOnly;
+            permissionClass.Properties.First(p => p.Name == "Id").Location = Location.ServerOnly;
+            permissionClass.Properties.First(p => p.Name == "PermissionToken").Location = Location.ServerOnly;
+            permissionClass.Properties.First(p => p.Name == "PermissionTokenId").Location = Location.ServerOnly;
         }
 
-        private static Schema CreatePivot(Resource parent, Resource resource, string pivotName)
+        private static ClassModel CreatePivot(Resource parent, Resource resource, string pivotName)
         {
             Property idProperty = new Property
             {
@@ -60,7 +60,7 @@ namespace BootGen
                 BuiltInType = BuiltInType.Int32,
                 IsRequired = true
             };
-            var pivotSchema = new Schema
+            var pivotClass = new ClassModel
             {
                 Name = pivotName,
                 Location = Location.ServerOnly,
@@ -68,35 +68,35 @@ namespace BootGen
                 Properties = new List<Property> {
                         idProperty,
                         new Property {
-                            Name = parent.Schema.Name + "Id",
-                            BuiltInType = parent.Schema.IdProperty.BuiltInType,
+                            Name = parent.ClassModel.Name + "Id",
+                            BuiltInType = parent.ClassModel.IdProperty.BuiltInType,
                             IsRequired = true
                         },
                         new Property {
-                            Name = parent.Schema.Name,
+                            Name = parent.ClassModel.Name,
                             BuiltInType = BuiltInType.Object,
-                            Schema = parent.Schema,
+                            ClassModel = parent.ClassModel,
                             IsRequired = true
                         },
                         new Property {
-                            Name = resource.Schema.Name + "Id",
-                            BuiltInType = resource.Schema.IdProperty.BuiltInType,
+                            Name = resource.ClassModel.Name + "Id",
+                            BuiltInType = resource.ClassModel.IdProperty.BuiltInType,
                             IsRequired = true
                         },
                         new Property {
-                            Name = resource.Schema.Name,
+                            Name = resource.ClassModel.Name,
                             BuiltInType = BuiltInType.Object,
-                            Schema = resource.Schema,
+                            ClassModel = resource.ClassModel,
                             IsRequired = true
                         }
                     }
             };
-            return pivotSchema;
+            return pivotClass;
         }
 
         public Resource AddResource<T>(string name, bool isReadonly = false, bool hasPermissions = false, bool usePermissions = false, Resource parent = null, string pivotName = null)
         {
-            var schemaCount = Schemas.Count;
+            var classCount = Classes.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
             resource.Get = true;
             resource.Post = !isReadonly;
@@ -111,18 +111,18 @@ namespace BootGen
             else
                 parent.NestedResources.Add(resource);
 
-            Routes.AddRange(resource.GetRoutes(SchemaStore));
+            Routes.AddRange(resource.GetRoutes(ClassStore));
             if (pivotName != null)
             {
-                Schema pivotSchema = CreatePivot(parent, resource, pivotName);
-                resource.Pivot = pivotSchema;
-                SchemaStore.Add(pivotSchema);
+                ClassModel pivotClass = CreatePivot(parent, resource, pivotName);
+                resource.Pivot = pivotClass;
+                ClassStore.Add(pivotClass);
             }
             OnResourceAdded(resource);
-            foreach (var schema in Schemas.Skip(schemaCount))
+            foreach (var c in Classes.Skip(classCount))
             {
-                schema.Persisted = true;
-                OnSchemaAdded(schema);
+                c.Persisted = true;
+                OnClassAdded(c);
             }
             return resource;
         }
@@ -145,13 +145,13 @@ namespace BootGen
                 controller.Methods.Add(controllerMethod);
                 foreach (var param in method.GetParameters())
                 {
-                    var property = SchemaBuilder.GetTypeDescription<Property>(param.ParameterType);
+                    var property = ClassBuilder.GetTypeDescription<Property>(param.ParameterType);
                     property.Name = param.Name;
                     property.IsRequired = param.ParameterType.IsValueType;
                     controllerMethod.Parameters.Add(property);
                 }
 
-                TypeDescription responseType = SchemaBuilder.GetTypeDescription<Property>(method.ReturnType);
+                TypeDescription responseType = ClassBuilder.GetTypeDescription<Property>(method.ReturnType);
                 if (responseType.BuiltInType == BuiltInType.Object)
                 {
                     controllerMethod.ReturnType = responseType;
@@ -168,7 +168,7 @@ namespace BootGen
 
         private TypeDescription WrapType(string name, TypeDescription type)
         {
-            Schema schema = new Schema
+            var c = new ClassModel
             {
                 Name = name,
                 Properties = new List<Property>
@@ -181,28 +181,28 @@ namespace BootGen
                         }
                     }
             };
-            wrappedTypes.Add(schema);
+            wrappedTypes.Add(c);
             return new TypeDescription
             {
                 BuiltInType = BuiltInType.Object,
                 IsCollection = false,
-                Schema = schema
+                ClassModel = c
             };
         }
 
-        HashSet<int> ProcessedSchemas = new HashSet<int>();
+        HashSet<int> ProcessedClassIds = new HashSet<int>();
         private void OnResourceAdded(Resource resource)
         {
             if (resource.Pivot == null)
                 AddEfRelations(resource);
         }
-        private void OnSchemaAdded(Schema schema)
+        private void OnClassAdded(ClassModel c)
         {
-            if (!ProcessedSchemas.Contains(schema.Id))
+            if (!ProcessedClassIds.Contains(c.Id))
             {
-                AddEfRelationsParentToChild(schema);
+                AddEfRelationsParentToChild(c);
             }
-            AddEfRelationsChildToParent(schema);
+            AddEfRelationsChildToParent(c);
         }
 
 
@@ -211,26 +211,26 @@ namespace BootGen
             Resource parent = resource.ParentResource;
             if (parent == null)
                 return;
-            if (!resource.Schema.Properties.Any(p => p.Name == parent.Schema.Name))
+            if (!resource.ClassModel.Properties.Any(p => p.Name == parent.ClassModel.Name))
             {
                 Property referenceProperty = new Property
                 {
-                    Name = parent.Schema.Name,
+                    Name = parent.ClassModel.Name,
                     BuiltInType = BuiltInType.Object,
-                    Schema = parent.Schema,
+                    ClassModel = parent.ClassModel,
                     IsCollection = false,
                     IsRequired = true,
                     Location = Location.ServerOnly,
                     ParentReference = true
                 };
-                resource.Schema.Properties.Add(referenceProperty);
+                resource.ClassModel.Properties.Add(referenceProperty);
             }
 
-            if (!resource.Schema.Properties.Any(p => p.Name == parent.Schema.Name + "Id"))
-                resource.Schema.Properties.Add(new Property
+            if (!resource.ClassModel.Properties.Any(p => p.Name == parent.ClassModel.Name + "Id"))
+                resource.ClassModel.Properties.Add(new Property
                 {
-                    Name = parent.Schema.Name + "Id",
-                    BuiltInType = parent.Schema.IdProperty.BuiltInType,
+                    Name = parent.ClassModel.Name + "Id",
+                    BuiltInType = parent.ClassModel.IdProperty.BuiltInType,
                     IsCollection = false,
                     IsRequired = true,
                     Location = Location.ServerOnly
@@ -238,68 +238,68 @@ namespace BootGen
         }
 
 
-        public void AddEfRelationsParentToChild(Schema schema)
+        public void AddEfRelationsParentToChild(ClassModel c)
         {
-            ProcessedSchemas.Add(schema.Id);
-            foreach (var property in schema.Properties)
+            ProcessedClassIds.Add(c.Id);
+            foreach (var property in c.Properties)
             {
-                if (property.Schema == null || !property.IsCollection || property.MirrorProperty != null)
+                if (property.ClassModel == null || !property.IsCollection || property.MirrorProperty != null)
                     continue;
 
-                Property referenceProperty = property.Schema.Properties.FirstOrDefault(p => p.Name == schema.Name);
+                Property referenceProperty = property.ClassModel.Properties.FirstOrDefault(p => p.Name == c.Name);
                 if (referenceProperty == null)
                 {
                     referenceProperty = new Property
                     {
-                        Name = schema.Name,
+                        Name = c.Name,
                         BuiltInType = BuiltInType.Object,
-                        Schema = schema,
+                        ClassModel = c,
                         IsCollection = false,
                         IsRequired = true,
                         Location = Location.ServerOnly,
                         ParentReference = true
                     };
-                    property.Schema.Properties.Add(referenceProperty);
+                    property.ClassModel.Properties.Add(referenceProperty);
                 }
                 referenceProperty.MirrorProperty = property;
                 property.MirrorProperty = referenceProperty;
 
-                if (!property.Schema.Properties.Any(p => p.Name == schema.Name + "Id"))
-                    property.Schema.Properties.Add(new Property
+                if (!property.ClassModel.Properties.Any(p => p.Name == c.Name + "Id"))
+                    property.ClassModel.Properties.Add(new Property
                     {
-                        Name = schema.Name + "Id",
-                        BuiltInType = schema.IdProperty.BuiltInType,
+                        Name = c.Name + "Id",
+                        BuiltInType = c.IdProperty.BuiltInType,
                         IsCollection = false,
                         IsRequired = true
                     });
-                AddEfRelationsParentToChild(property.Schema);
+                AddEfRelationsParentToChild(property.ClassModel);
             }
         }
 
-        public void AddEfRelationsChildToParent(Schema schema)
+        public void AddEfRelationsChildToParent(ClassModel c)
         {
-            var properties = new List<Property>(schema.Properties);
+            var properties = new List<Property>(c.Properties);
             var propertyIdx = -1;
             foreach (var property in properties)
             {
                 propertyIdx += 1;
-                if (property.Schema == null)
+                if (property.ClassModel == null)
                     continue;
-                if (!property.IsCollection && property.Schema != null)
+                if (!property.IsCollection && property.ClassModel != null)
                 {
-                    if (!schema.Properties.Any(p => p.Name == property.Name + "Id"))
+                    if (!c.Properties.Any(p => p.Name == property.Name + "Id"))
                     {
-                        schema.Properties.Insert(propertyIdx + 1, new Property
+                        c.Properties.Insert(propertyIdx + 1, new Property
                         {
                             Name = property.Name + "Id",
-                            BuiltInType = property.Schema.IdProperty.BuiltInType,
+                            BuiltInType = property.ClassModel.IdProperty.BuiltInType,
                             IsCollection = false,
                             Location = Location.Both,
                             IsRequired = true
                         });
                         property.Location = Location.ServerOnly;
                         propertyIdx += 1;
-                        AddEfRelationsChildToParent(property.Schema);
+                        AddEfRelationsChildToParent(property.ClassModel);
                     }
                 }
             }

@@ -8,7 +8,7 @@ namespace BootGen
     public class SeedDataStore
     {
         private const string PermissionTokenId = "PermissionTokenId";
-        private readonly SchemaStore schemaStore;
+        private readonly ClassStore classStore;
         private readonly ResourceStore resourceStore;
 
         private class SeedData
@@ -28,13 +28,13 @@ namespace BootGen
 
         public SeedDataStore(BootGenApi api)
         {
-            this.schemaStore = api.SchemaStore;
+            this.classStore = api.ClassStore;
             this.resourceStore = api.ResourceStore;
         }
 
-        private SeedRecord ToSeedRecord(Schema schema, JObject obj)
+        private SeedRecord ToSeedRecord(ClassModel c, JObject obj)
         {
-            var record = new SeedRecord { Name = schema.Name };
+            var record = new SeedRecord { Name = c.Name };
             foreach (var property in obj.Properties())
             {
                 switch (property.Value.Type)
@@ -56,10 +56,10 @@ namespace BootGen
                         record.Values.Add(new KeyValuePair<string, string>(property.Name, $"\"{property.Value.ToString()}\""));
                         break;
                     case JTokenType.Integer:
-                        var pp = schema.Properties.First(p => p.Name == property.Name);
+                        var pp = c.Properties.First(p => p.Name == property.Name);
                         if (pp.BuiltInType == BuiltInType.Enum)
                         {
-                            record.Values.Add(new KeyValuePair<string, string>(property.Name, $"{pp.EnumSchema.Name}.{pp.EnumSchema.Values[(int)property.Value]}"));
+                            record.Values.Add(new KeyValuePair<string, string>(property.Name, $"{pp.EnumModel.Name}.{pp.EnumModel.Values[(int)property.Value]}"));
                         }
                         else
                             record.Values.Add(new KeyValuePair<string, string>(property.Name, property.Value.ToString()));
@@ -75,9 +75,9 @@ namespace BootGen
         public void Add<T>(Resource resource, IEnumerable<T> data, Dictionary<int, Permission> permissions = null)
         {
             List<JObject> rawDataList = data.Select(i => JObject.FromObject(i)).ToList();
-            List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Schema, o))).ToList();
-            Data[resource.Schema.Id] = seedDataList;
-            if (resource.Schema.UsePermissions)
+            List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.ClassModel, o))).ToList();
+            Data[resource.ClassModel.Id] = seedDataList;
+            if (resource.ClassModel.UsePermissions)
                 foreach (var seedData in seedDataList)
                 {
                     if (seedData.SeedRecord.Values.Any(t => t.Key == PermissionTokenId))
@@ -98,13 +98,13 @@ namespace BootGen
                         }
                 }
 
-            PushSeedDataToProperties(resource.Schema);
+            PushSeedDataToProperties(resource.ClassModel);
             PushSeedDataToNestedResources(resource);
         }
 
-        public List<SeedRecord> Get(Schema schema)
+        public List<SeedRecord> Get(ClassModel c)
         {
-            Data.TryGetValue(schema.Id, out var data);
+            Data.TryGetValue(c.Id, out var data);
             return data.Select(t => t.SeedRecord).ToList() ?? new List<SeedRecord>();
         }
 
@@ -113,20 +113,20 @@ namespace BootGen
             return Data.SelectMany(i => i.Value).Select(t => t.SeedRecord).ToList();
         }
 
-        internal void PushSeedDataToProperties(Schema schema)
+        internal void PushSeedDataToProperties(ClassModel c)
         {
-            foreach (var property in schema.Properties)
+            foreach (var property in c.Properties)
             {
-                if (property.Schema == null)
+                if (property.ClassModel == null)
                     continue;
-                foreach (var item in Data[schema.Id])
+                foreach (var item in Data[c.Id])
                 {
-                    if (SplitData(item, property, property.Schema))
+                    if (SplitData(item, property, property.ClassModel))
                     {
-                        PushSeedDataToProperties(property.Schema);
+                        PushSeedDataToProperties(property.ClassModel);
                         foreach (var resource in resourceStore.Resources)
                         {
-                            if (resource.Schema == property.Schema)
+                            if (resource.ClassModel == property.ClassModel)
                                 PushSeedDataToNestedResources(resource);
                         }
                     }
@@ -134,16 +134,16 @@ namespace BootGen
             }
         }
 
-        private bool SplitData(SeedData item, Property property, Schema schema, Schema pivot = null)
+        private bool SplitData(SeedData item, Property property, ClassModel c, ClassModel pivot = null)
         {
             var token = item.JObject.GetValue(property.Name);
             item.JObject.Remove(property.Name);
-            var dataList = GetDataList(schema);
+            var dataList = GetDataList(c);
             if (token is JObject obj)
             {
-                SeedRecord record = ToSeedRecord(schema, obj);
-                var id = record.GetId(schema);
-                if (!dataList.Any(d => d.SeedRecord.GetId(schema) == id))
+                SeedRecord record = ToSeedRecord(c, obj);
+                var id = record.GetId(c);
+                if (!dataList.Any(d => d.SeedRecord.GetId(c) == id))
                 {
                     dataList.Add(new SeedData(obj, record));
                 }
@@ -155,9 +155,9 @@ namespace BootGen
                 foreach (var o in array)
                 {
                     JObject jObj = o as JObject;
-                    SeedRecord record = ToSeedRecord(schema, jObj);
-                    var id = record.GetId(schema);
-                    if (!dataList.Any(d => d.SeedRecord.GetId(schema) == id))
+                    SeedRecord record = ToSeedRecord(c, jObj);
+                    var id = record.GetId(c);
+                    if (!dataList.Any(d => d.SeedRecord.GetId(c) == id))
                     {
                         dataList.Add(new SeedData(jObj, record));
                     }
@@ -176,7 +176,7 @@ namespace BootGen
                     else
                     {
                         record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
-                        if (schema.UsePermissions)
+                        if (c.UsePermissions)
                         {
                             var tokenId = item.SeedRecord.Values.FirstOrDefault(t => t.Key == PermissionTokenId);
                             if (!string.IsNullOrEmpty(tokenId.Value))
@@ -192,12 +192,12 @@ namespace BootGen
             return false;
         }
 
-        private List<SeedData> GetDataList(Schema schema)
+        private List<SeedData> GetDataList(ClassModel c)
         {
-            if (!Data.TryGetValue(schema.Id, out var dataList))
+            if (!Data.TryGetValue(c.Id, out var dataList))
             {
                 dataList = new List<SeedData>();
-                Data.Add(schema.Id, dataList);
+                Data.Add(c.Id, dataList);
             }
 
             return dataList;
@@ -207,17 +207,17 @@ namespace BootGen
         {
             foreach (var nestedResource in resource.NestedResources)
             {
-                foreach (var item in Data[resource.Schema.Id])
+                foreach (var item in Data[resource.ClassModel.Id])
                 {
                     var property = new Property
                     {
                         Name = nestedResource.PluralName,
                         BuiltInType = BuiltInType.Object,
-                        Schema = nestedResource.Schema
+                        ClassModel = nestedResource.ClassModel
                     };
-                    if (SplitData(item, property, nestedResource.Schema, nestedResource.Pivot))
+                    if (SplitData(item, property, nestedResource.ClassModel, nestedResource.Pivot))
                     {
-                        PushSeedDataToProperties(nestedResource.Schema);
+                        PushSeedDataToProperties(nestedResource.ClassModel);
                         PushSeedDataToNestedResources(nestedResource);
                     }
                 }
@@ -230,9 +230,9 @@ namespace BootGen
         public string Name { get; set; }
         public List<KeyValuePair<string, string>> Values { get; set; } = new List<KeyValuePair<string, string>>();
 
-        internal string GetId(Schema schema)
+        internal string GetId(ClassModel c)
         {
-            return Values.FirstOrDefault(kvp => kvp.Key == schema.IdProperty.Name).Value;
+            return Values.FirstOrDefault(kvp => kvp.Key == c.IdProperty.Name).Value;
         }
     }
 

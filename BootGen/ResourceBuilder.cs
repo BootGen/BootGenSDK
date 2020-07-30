@@ -6,13 +6,13 @@ namespace BootGen
 {
     public class ResourceBuilder
     {
-        private readonly SchemaStore schemaStore;
-        private readonly EnumSchemaStore enumSchemaStore;
+        private readonly ClassStore classStore;
+        private readonly EnumStore enumStore;
 
-        public ResourceBuilder(SchemaStore schemaStore, EnumSchemaStore enumSchemaStore)
+        public ResourceBuilder(ClassStore classStore, EnumStore enumStore)
         {
-            this.schemaStore = schemaStore;
-            this.enumSchemaStore = enumSchemaStore;
+            this.classStore = classStore;
+            this.enumStore = enumStore;
         }
         public Resource FromClass<T>(Resource parent = null)
         {
@@ -54,8 +54,8 @@ namespace BootGen
                 type = type.GetGenericArguments()[0];
             }
 
-            result.Schema = new SchemaBuilder(schemaStore, enumSchemaStore).FromType(type);
-            if (result.Schema.IdProperty == null) {
+            result.ClassModel = new TypeBuilder(classStore, enumStore).FromType(type);
+            if (result.ClassModel.IdProperty == null) {
                 throw new InvalidResourceException("A resource must have an ID.");
             }
             result.NestedResources = new List<Resource>();

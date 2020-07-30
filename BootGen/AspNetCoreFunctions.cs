@@ -62,31 +62,31 @@ namespace IssueTrackerGenerator
         }
 
 
-        public void RenderSchemas(string folderName, Func<Schema, string> targetFileName, string templateFile, List<Schema> schemas)
+        public void RenderClasses(string folderName, Func<ClassModel, string> targetFileName, string templateFile, List<ClassModel> classes)
         {
             var dir = GetPath(folderName);
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
-            foreach (var schema in schemas)
+            foreach (var c in classes)
             {
                 var context = new TemplateContext();
                 context.PushGlobal(this);
-                context.SetValue(new ScriptVariableGlobal("schema"), schema);
+                context.SetValue(new ScriptVariableGlobal("class"), c);
                 var renderedModel = template.Render(context);
-                File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(schema)), renderedModel);
+                File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(c)), renderedModel);
             }
         }
 
-        public void RenderEnums(string folderName, Func<EnumSchema, string> targetFileName, string templateFile, List<EnumSchema> schemas)
+        public void RenderEnums(string folderName, Func<BootGen.EnumModel, string> targetFileName, string templateFile, List<BootGen.EnumModel> enums)
         {
             var dir = GetPath(folderName);
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
-            foreach (var schema in schemas)
+            foreach (var e in enums)
             {
                 var context = new TemplateContext();
                 context.PushGlobal(this);
-                context.SetValue(new ScriptVariableGlobal("schema"), schema);
+                context.SetValue(new ScriptVariableGlobal("enum"), e);
                 var renderedModel = template.Render(context);
-                File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(schema)), renderedModel);
+                File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(e)), renderedModel);
             }
         }
         private string GetPath(string folderName)
@@ -160,16 +160,16 @@ namespace IssueTrackerGenerator
             return string.Empty;
         }
 
-        public static List<string> GetPropertiesToLoad(Schema schema)
+        public static List<string> GetPropertiesToLoad(ClassModel c)
         {
-            return GetPropertiesToLoadR(schema);
+            return GetPropertiesToLoadR(c);
 
         }
 
-        private static List<string> GetPropertiesToLoadR(Schema schema, List<Schema> parents = null, string prefix = null)
+        private static List<string> GetPropertiesToLoadR(ClassModel c, List<ClassModel> parents = null, string prefix = null)
         {
             var result = new List<string>();
-            foreach (var property in schema.Properties)
+            foreach (var property in c.Properties)
             {
                 if (property.BuiltInType == BuiltInType.Object && !property.ParentReference)
                 {
@@ -184,11 +184,11 @@ namespace IssueTrackerGenerator
                     }
                     result.Add(newPrefix);
 
-                    if (parents?.Contains(schema) != true)
+                    if (parents?.Contains(c) != true)
                     {
-                        var newParents = parents != null ? new List<Schema>(parents) : new List<Schema>();
-                        newParents.Add(schema);
-                        result.AddRange(GetPropertiesToLoadR(property.Schema, newParents, newPrefix));
+                        var newParents = parents != null ? new List<ClassModel>(parents) : new List<ClassModel>();
+                        newParents.Add(c);
+                        result.AddRange(GetPropertiesToLoadR(property.ClassModel, newParents, newPrefix));
                     }
                 }
             }
@@ -210,9 +210,9 @@ namespace IssueTrackerGenerator
                 case BuiltInType.DateTime:
                     return "DateTime";
                 case BuiltInType.Object:
-                    return property.Schema.Name;
+                    return property.ClassModel.Name;
                 case BuiltInType.Enum:
-                    return property.EnumSchema.Name;
+                    return property.EnumModel.Name;
             }
             return "object";
         }
@@ -337,12 +337,12 @@ namespace IssueTrackerGenerator
 
         public static bool IsLazyLoaded(Property property)
         {
-            return property.Schema != null && property.Location != Location.ServerOnly;
+            return property.ClassModel != null && property.Location != Location.ServerOnly;
         }
 
-        public static bool HasLazyLoadedProperties(Schema schema)
+        public static bool HasLazyLoadedProperties(ClassModel c)
         {
-            return schema.Properties.Any(IsLazyLoaded);
+            return c.Properties.Any(IsLazyLoaded);
         }
     }
 
