@@ -10,11 +10,7 @@ namespace BootGen
         public string PluralName { get; set; }
         public string SingularName => PluralName.Substring(0, PluralName.Length - 1);
         public ClassModel Class { get; set; }
-        public bool Get { get; set; }
-        public bool Post { get; set; }
-        public bool ItemGet { get; set; }
-        public bool ItemPut { get; set; }
-        public bool ItemDelete { get; set; }
+        public bool IsReadonly { get; set; }
         public Route Route { get; set; }
         public Route ItemRoute { get; set; }
         public Route PermissionRoute { get; set; }

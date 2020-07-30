@@ -73,5 +73,33 @@ namespace IssueTrackerGenerator
             builder.Append("`");
             return builder.ToString();
         }
+
+        public static string ItemPathTemplate(Resource resource)
+        {
+            var builder = new StringBuilder();
+            builder.Append("`");
+            foreach (var component in resource.ItemRoute.PathModel)
+            {
+                if (builder.Length != 1)
+                {
+                    builder.Append("/");
+                }
+                if (component.IsVariable)
+                {
+                    builder.Append("${");
+                    if (component == resource.ItemRoute.PathModel.Last())
+                        builder.Append(resource.SingularName.ToLower());
+                    else
+                        builder.Append(resource.ParentResource.Class.Name.ToLower());
+                    builder.Append(".id}");
+                }
+                else
+                {
+                    builder.Append(component.Name);
+                }
+            }
+            builder.Append("`");
+            return builder.ToString();
+        }
     }
 }

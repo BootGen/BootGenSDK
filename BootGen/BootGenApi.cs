@@ -98,11 +98,7 @@ namespace BootGen
         {
             var classCount = Classes.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
-            resource.Get = true;
-            resource.Post = !isReadonly;
-            resource.ItemDelete = !isReadonly;
-            resource.ItemPut = pivotName == null && !isReadonly;
-            resource.ItemGet = pivotName == null;
+            resource.IsReadonly = isReadonly;
             resource.PluralName = name;
             resource.HasPermissions = hasPermissions;
             resource.UsePermissions = hasPermissions || usePermissions || parent?.HasPermissions == true;

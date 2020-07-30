@@ -86,7 +86,7 @@ namespace BootGen
             switch (property.BuiltInType)
             {
                 case BuiltInType.Bool:
-                    oasProp.IsRequired = true;;
+                    oasProp.IsRequired = true; ;
                     break;
                 case BuiltInType.Int32:
                     oasProp.IsRequired = true;
@@ -111,19 +111,18 @@ namespace BootGen
         private static void AddCollectionOperations(Resource resource, Route route, Path path)
         {
             string resourceName = resource.PluralName.ToWords();
-            if (resource.Get)
-                route.Operations.Add(new Operation
-                {
-                    Verb = HttpVerb.Get,
-                    Name = "get" + resource.PluralName,
-                    Summary = $"retrieve list of {resourceName}",
-                    Response = resource.Class,
-                    ResponseIsCollection = true,
-                    SuccessCode = 200,
-                    SuccessDescription = $"successful query",
-                    Parameters = path.Parameters
-                });
-            if (resource.Post)
+            route.Operations.Add(new Operation
+            {
+                Verb = HttpVerb.Get,
+                Name = "get" + resource.PluralName,
+                Summary = $"retrieve list of {resourceName}",
+                Response = resource.Class,
+                ResponseIsCollection = true,
+                SuccessCode = 200,
+                SuccessDescription = $"successful query",
+                Parameters = path.Parameters
+            });
+            if (!resource.IsReadonly)
                 route.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Post,
@@ -142,29 +141,29 @@ namespace BootGen
         {
             string resourceName = resource.PluralName.ToWords();
             var path = subRoute.PathModel;
-            if (resource.ItemGet)
-                subRoute.Operations.Add(new Operation
-                {
-                    Verb = HttpVerb.Get,
-                    Name = "get" + resource.Class.Name + "ById",
-                    Summary = $"retrieve {resourceName} resource",
-                    SuccessCode = 200,
-                    SuccessDescription = $"successful query",
-                    Response = resource.Class,
-                    Parameters = path.Parameters
-                });
-            if (resource.ItemPut)
-                subRoute.Operations.Add(new Operation
-                {
-                    Verb = HttpVerb.Put,
-                    Name = "update" + resource.Class.Name + "ById",
-                    Summary = $"update {resourceName} resource",
-                    SuccessCode = 200,
-                    SuccessDescription = $"successful update",
-                    Body = resource.Class,
-                    Parameters = path.Parameters
-                });
-            if (resource.ItemDelete)
+            subRoute.Operations.Add(new Operation
+            {
+                Verb = HttpVerb.Get,
+                Name = "get" + resource.Class.Name + "ById",
+                Summary = $"retrieve {resourceName} resource",
+                SuccessCode = 200,
+                SuccessDescription = $"successful query",
+                Response = resource.Class,
+                Parameters = path.Parameters
+            });
+            if (!resource.IsReadonly)
+            {
+                if (resource.Pivot == null)
+                    subRoute.Operations.Add(new Operation
+                    {
+                        Verb = HttpVerb.Put,
+                        Name = "update" + resource.Class.Name + "ById",
+                        Summary = $"update {resourceName} resource",
+                        SuccessCode = 200,
+                        SuccessDescription = $"successful update",
+                        Body = resource.Class,
+                        Parameters = path.Parameters
+                    });
                 subRoute.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Delete,
@@ -174,6 +173,7 @@ namespace BootGen
                     SuccessDescription = $"successful deletion",
                     Parameters = path.Parameters
                 });
+            }
         }
         private static void AddPermissionOperations(Resource resource, Route route, ClassStore classStore)
         {
