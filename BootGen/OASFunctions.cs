@@ -46,7 +46,7 @@ namespace IssueTrackerGenerator
 
         public static string GetEnum(TypeDescription property)
         {
-            return $"[{property.EnumModel.Values.Aggregate((s1, s2) => $"{s1}, {s2}")}]";
+            return $"[{property.Enum.Values.Select(s => $"'{s}'").Aggregate((s1, s2) => $"{s1}, {s2}")}]";
         }
     }
 }

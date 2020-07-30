@@ -10,8 +10,8 @@ namespace BootGen
         public BuiltInType BuiltInType { get; set; }
         public bool IsCollection { get; set; }
         public bool IsRequired { get; set; }
-        public ClassModel ClassModel { get; set; }
-        public EnumModel EnumModel { get; set; }
+        public ClassModel Class { get; set; }
+        public EnumModel Enum { get; set; }
     }
 
     public enum Location { Both, ServerOnly, ClientOnly }

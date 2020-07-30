@@ -36,8 +36,8 @@ namespace BootGen
         private static Route GetItemRoute(Resource resource, Path basePath)
         {
             var subRoute = new Route();
-            string itemIdName = resource.ClassModel.Name.ToCamelCase() + "Id";
-            Parameter idParameter = ConvertToParameter(resource.ClassModel.IdProperty);
+            string itemIdName = resource.Class.Name.ToCamelCase() + "Id";
+            Parameter idParameter = ConvertToParameter(resource.Class.IdProperty);
             idParameter.Name = itemIdName;
             idParameter.Kind = RestParamterKind.Path;
             var itemPath = basePath.Adding(new PathComponent { Parameter = idParameter, Name = itemIdName });
@@ -60,10 +60,10 @@ namespace BootGen
                             {
                                 Verb = HttpVerb.Post,
                                 Name = method.Name.ToCamelCase(),
-                                Parameters = method.Parameters.Where(p => p.ClassModel == null).Select(ToParam).ToList(),
-                                Body = method.Parameters.FirstOrDefault( p => p.ClassModel != null)?.ClassModel,
-                                BodyIsCollection = method.Parameters.FirstOrDefault( p => p.ClassModel != null)?.IsCollection == true,
-                                Response = method.ReturnType.ClassModel,
+                                Parameters = method.Parameters.Where(p => p.Class == null).Select(ToParam).ToList(),
+                                Body = method.Parameters.FirstOrDefault( p => p.Class != null)?.Class,
+                                BodyIsCollection = method.Parameters.FirstOrDefault( p => p.Class != null)?.IsCollection == true,
+                                Response = method.ReturnType.Class,
                                 ResponseIsCollection = method.ReturnType.IsCollection,
                                 SuccessCode = 200,
                                 SuccessDescription = method.Name + " success",
@@ -102,7 +102,7 @@ namespace BootGen
                     break;
             }
             oasProp.BuiltInType = property.BuiltInType;
-            oasProp.ClassModel = property.ClassModel;
+            oasProp.Class = property.Class;
             oasProp.IsCollection = property.IsCollection;
 
             return oasProp;
@@ -117,7 +117,7 @@ namespace BootGen
                     Verb = HttpVerb.Get,
                     Name = "get" + resource.PluralName,
                     Summary = $"retrieve list of {resourceName}",
-                    Response = resource.ClassModel,
+                    Response = resource.Class,
                     ResponseIsCollection = true,
                     SuccessCode = 200,
                     SuccessDescription = $"successful query",
@@ -129,7 +129,7 @@ namespace BootGen
                     Verb = HttpVerb.Post,
                     Name = "add" + resource.PluralName,
                     Summary = $"add a new element to the collection",
-                    Body = resource.ClassModel,
+                    Body = resource.Class,
                     BodyIsCollection = false,
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion",
@@ -146,29 +146,29 @@ namespace BootGen
                 subRoute.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Get,
-                    Name = "get" + resource.ClassModel.Name + "ById",
+                    Name = "get" + resource.Class.Name + "ById",
                     Summary = $"retrieve {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful query",
-                    Response = resource.ClassModel,
+                    Response = resource.Class,
                     Parameters = path.Parameters
                 });
             if (resource.ItemPut)
                 subRoute.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Put,
-                    Name = "update" + resource.ClassModel.Name + "ById",
+                    Name = "update" + resource.Class.Name + "ById",
                     Summary = $"update {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful update",
-                    Body = resource.ClassModel,
+                    Body = resource.Class,
                     Parameters = path.Parameters
                 });
             if (resource.ItemDelete)
                 subRoute.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Delete,
-                    Name = "delete" + resource.ClassModel.Name + "ById",
+                    Name = "delete" + resource.Class.Name + "ById",
                     Summary = $"delete {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion",
@@ -183,7 +183,7 @@ namespace BootGen
             route.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Get,
-                Name = "get" + resource.ClassModel.Name + "Permissions",
+                Name = "get" + resource.Class.Name + "Permissions",
                 Summary = $"get permissions for {resourceName}",
                 SuccessCode = 200,
                 SuccessDescription = $"successful query",
@@ -194,7 +194,7 @@ namespace BootGen
             route.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Post,
-                Name = "set" + resource.ClassModel.Name + "Permission",
+                Name = "set" + resource.Class.Name + "Permission",
                 Summary = $"set {resourceName} permission",
                 SuccessCode = 200,
                 SuccessDescription = $"successful update",
@@ -204,7 +204,7 @@ namespace BootGen
             route.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Delete,
-                Name = "delete" + resource.ClassModel.Name + "Permission",
+                Name = "delete" + resource.Class.Name + "Permission",
                 Summary = $"delete {resourceName} permission",
                 SuccessCode = 200,
                 SuccessDescription = $"successful deletion",

@@ -69,10 +69,10 @@ namespace BootGen
             typeDescription.BuiltInType = GetType(propertyType);
             if (typeDescription.BuiltInType == BuiltInType.Object)
             {
-                typeDescription.ClassModel = FromType(propertyType);
+                typeDescription.Class = FromType(propertyType);
             } else if (typeDescription.BuiltInType == BuiltInType.Enum)
             {
-                typeDescription.EnumModel = EnumFromType(propertyType);
+                typeDescription.Enum = EnumFromType(propertyType);
             }
             return typeDescription;
         }

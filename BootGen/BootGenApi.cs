@@ -68,25 +68,25 @@ namespace BootGen
                 Properties = new List<Property> {
                         idProperty,
                         new Property {
-                            Name = parent.ClassModel.Name + "Id",
-                            BuiltInType = parent.ClassModel.IdProperty.BuiltInType,
+                            Name = parent.Class.Name + "Id",
+                            BuiltInType = parent.Class.IdProperty.BuiltInType,
                             IsRequired = true
                         },
                         new Property {
-                            Name = parent.ClassModel.Name,
+                            Name = parent.Class.Name,
                             BuiltInType = BuiltInType.Object,
-                            ClassModel = parent.ClassModel,
+                            Class = parent.Class,
                             IsRequired = true
                         },
                         new Property {
-                            Name = resource.ClassModel.Name + "Id",
-                            BuiltInType = resource.ClassModel.IdProperty.BuiltInType,
+                            Name = resource.Class.Name + "Id",
+                            BuiltInType = resource.Class.IdProperty.BuiltInType,
                             IsRequired = true
                         },
                         new Property {
-                            Name = resource.ClassModel.Name,
+                            Name = resource.Class.Name,
                             BuiltInType = BuiltInType.Object,
-                            ClassModel = resource.ClassModel,
+                            Class = resource.Class,
                             IsRequired = true
                         }
                     }
@@ -186,7 +186,7 @@ namespace BootGen
             {
                 BuiltInType = BuiltInType.Object,
                 IsCollection = false,
-                ClassModel = c
+                Class = c
             };
         }
 
@@ -211,26 +211,26 @@ namespace BootGen
             Resource parent = resource.ParentResource;
             if (parent == null)
                 return;
-            if (!resource.ClassModel.Properties.Any(p => p.Name == parent.ClassModel.Name))
+            if (!resource.Class.Properties.Any(p => p.Name == parent.Class.Name))
             {
                 Property referenceProperty = new Property
                 {
-                    Name = parent.ClassModel.Name,
+                    Name = parent.Class.Name,
                     BuiltInType = BuiltInType.Object,
-                    ClassModel = parent.ClassModel,
+                    Class = parent.Class,
                     IsCollection = false,
                     IsRequired = true,
                     Location = Location.ServerOnly,
                     ParentReference = true
                 };
-                resource.ClassModel.Properties.Add(referenceProperty);
+                resource.Class.Properties.Add(referenceProperty);
             }
 
-            if (!resource.ClassModel.Properties.Any(p => p.Name == parent.ClassModel.Name + "Id"))
-                resource.ClassModel.Properties.Add(new Property
+            if (!resource.Class.Properties.Any(p => p.Name == parent.Class.Name + "Id"))
+                resource.Class.Properties.Add(new Property
                 {
-                    Name = parent.ClassModel.Name + "Id",
-                    BuiltInType = parent.ClassModel.IdProperty.BuiltInType,
+                    Name = parent.Class.Name + "Id",
+                    BuiltInType = parent.Class.IdProperty.BuiltInType,
                     IsCollection = false,
                     IsRequired = true,
                     Location = Location.ServerOnly
@@ -243,36 +243,36 @@ namespace BootGen
             ProcessedClassIds.Add(c.Id);
             foreach (var property in c.Properties)
             {
-                if (property.ClassModel == null || !property.IsCollection || property.MirrorProperty != null)
+                if (property.Class == null || !property.IsCollection || property.MirrorProperty != null)
                     continue;
 
-                Property referenceProperty = property.ClassModel.Properties.FirstOrDefault(p => p.Name == c.Name);
+                Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Name == c.Name);
                 if (referenceProperty == null)
                 {
                     referenceProperty = new Property
                     {
                         Name = c.Name,
                         BuiltInType = BuiltInType.Object,
-                        ClassModel = c,
+                        Class = c,
                         IsCollection = false,
                         IsRequired = true,
                         Location = Location.ServerOnly,
                         ParentReference = true
                     };
-                    property.ClassModel.Properties.Add(referenceProperty);
+                    property.Class.Properties.Add(referenceProperty);
                 }
                 referenceProperty.MirrorProperty = property;
                 property.MirrorProperty = referenceProperty;
 
-                if (!property.ClassModel.Properties.Any(p => p.Name == c.Name + "Id"))
-                    property.ClassModel.Properties.Add(new Property
+                if (!property.Class.Properties.Any(p => p.Name == c.Name + "Id"))
+                    property.Class.Properties.Add(new Property
                     {
                         Name = c.Name + "Id",
                         BuiltInType = c.IdProperty.BuiltInType,
                         IsCollection = false,
                         IsRequired = true
                     });
-                AddEfRelationsParentToChild(property.ClassModel);
+                AddEfRelationsParentToChild(property.Class);
             }
         }
 
@@ -283,23 +283,23 @@ namespace BootGen
             foreach (var property in properties)
             {
                 propertyIdx += 1;
-                if (property.ClassModel == null)
+                if (property.Class == null)
                     continue;
-                if (!property.IsCollection && property.ClassModel != null)
+                if (!property.IsCollection && property.Class != null)
                 {
                     if (!c.Properties.Any(p => p.Name == property.Name + "Id"))
                     {
                         c.Properties.Insert(propertyIdx + 1, new Property
                         {
                             Name = property.Name + "Id",
-                            BuiltInType = property.ClassModel.IdProperty.BuiltInType,
+                            BuiltInType = property.Class.IdProperty.BuiltInType,
                             IsCollection = false,
                             Location = Location.Both,
                             IsRequired = true
                         });
                         property.Location = Location.ServerOnly;
                         propertyIdx += 1;
-                        AddEfRelationsChildToParent(property.ClassModel);
+                        AddEfRelationsChildToParent(property.Class);
                     }
                 }
             }

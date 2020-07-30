@@ -54,8 +54,8 @@ namespace BootGen
                 type = type.GetGenericArguments()[0];
             }
 
-            result.ClassModel = new TypeBuilder(classStore, enumStore).FromType(type);
-            if (result.ClassModel.IdProperty == null) {
+            result.Class = new TypeBuilder(classStore, enumStore).FromType(type);
+            if (result.Class.IdProperty == null) {
                 throw new InvalidResourceException("A resource must have an ID.");
             }
             result.NestedResources = new List<Resource>();

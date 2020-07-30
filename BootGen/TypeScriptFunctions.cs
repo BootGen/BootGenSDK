@@ -35,16 +35,16 @@ namespace IssueTrackerGenerator
                 case BuiltInType.String:
                     return "string";
                 case BuiltInType.Enum:
-                    return property.EnumModel.Name;
+                    return property.Enum.Name;
                 case BuiltInType.Object:
-                    return property.ClassModel.Name;
+                    return property.Class.Name;
             }
             return "object";
         }
 
         public static List<string> ReferredClasses(ClassModel c)
         {
-            return c.Properties.Where(p => p.ClassModel != null && p.Location != Location.ServerOnly).Select(p => p.ClassModel.Name).Distinct().Concat(c.Properties.Where(p => p.EnumModel != null).Select(p => p.EnumModel.Name).Distinct()).ToList();
+            return c.Properties.Where(p => p.Class != null && p.Location != Location.ServerOnly).Select(p => p.Class.Name).Distinct().Concat(c.Properties.Where(p => p.Enum != null).Select(p => p.Enum.Name).Distinct()).ToList();
         }
 
         public static string PathTemplate(Resource resource)
@@ -60,7 +60,7 @@ namespace IssueTrackerGenerator
                 if (component.IsVariable)
                 {
                     builder.Append("${");
-                    builder.Append(resource.ParentResource.ClassModel.Name.ToLower());
+                    builder.Append(resource.ParentResource.Class.Name.ToLower());
                     builder.Append(".id}");
                 }
                 else

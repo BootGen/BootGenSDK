@@ -188,7 +188,7 @@ namespace IssueTrackerGenerator
                     {
                         var newParents = parents != null ? new List<ClassModel>(parents) : new List<ClassModel>();
                         newParents.Add(c);
-                        result.AddRange(GetPropertiesToLoadR(property.ClassModel, newParents, newPrefix));
+                        result.AddRange(GetPropertiesToLoadR(property.Class, newParents, newPrefix));
                     }
                 }
             }
@@ -210,9 +210,9 @@ namespace IssueTrackerGenerator
                 case BuiltInType.DateTime:
                     return "DateTime";
                 case BuiltInType.Object:
-                    return property.ClassModel.Name;
+                    return property.Class.Name;
                 case BuiltInType.Enum:
-                    return property.EnumModel.Name;
+                    return property.Enum.Name;
             }
             return "object";
         }
@@ -337,7 +337,7 @@ namespace IssueTrackerGenerator
 
         public static bool IsLazyLoaded(Property property)
         {
-            return property.ClassModel != null && property.Location != Location.ServerOnly;
+            return property.Class != null && property.Location != Location.ServerOnly;
         }
 
         public static bool HasLazyLoadedProperties(ClassModel c)

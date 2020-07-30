@@ -19,7 +19,7 @@ namespace BootGenTest
 
         private static void TestEntityResource(Resource resource)
         {
-            TestEntityClass(resource.ClassModel);
+            TestEntityClass(resource.Class);
         }
 
         private static void TestEntityClass(ClassModel c)
@@ -43,11 +43,11 @@ namespace BootGenTest
             Assert.AreEqual(BuiltInType.DateTime, c.Properties[5].BuiltInType);
             Assert.IsTrue(c.Properties[5].IsRequired);
             Assert.AreEqual("Weekday", c.Properties[6].Name);
-            Assert.AreEqual("Weekday", c.Properties[6].EnumModel.Name);
+            Assert.AreEqual("Weekday", c.Properties[6].Enum.Name);
             Assert.AreEqual(BuiltInType.Enum, c.Properties[6].BuiltInType);
             Assert.IsTrue(c.Properties[6].IsRequired);
-            Assert.AreEqual(7, c.Properties[6].EnumModel.Values.Count);
-            Assert.AreEqual("Monday", c.Properties[6].EnumModel.Values.First());
+            Assert.AreEqual(7, c.Properties[6].Enum.Values.Count);
+            Assert.AreEqual("Monday", c.Properties[6].Enum.Values.First());
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new ClassStore(), new EnumStore());
             var resource = resourceStore.FromClass<Complex>();
             Assert.AreEqual(0, resource.NestedResources.Count);
-            TestComplexClass(resource.ClassModel);
+            TestComplexClass(resource.Class);
         }
 
         private static void TestComplexClass(ClassModel c)
@@ -75,7 +75,7 @@ namespace BootGenTest
             Assert.AreEqual("Entity", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.BuiltInType);
             Assert.IsFalse(property.IsCollection);
-            TestEntityClass(property.ClassModel);
+            TestEntityClass(property.Class);
         }
 
         [TestMethod]
@@ -84,7 +84,7 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new ClassStore(), new EnumStore());
             var resource = resourceStore.FromClass<ComplexList>();
             Assert.AreEqual(0, resource.NestedResources.Count);
-            TestComplexListClass(resource.ClassModel);
+            TestComplexListClass(resource.Class);
         }
 
         private static void TestComplexListClass(ClassModel c)
@@ -94,7 +94,7 @@ namespace BootGenTest
             Assert.AreEqual("Entities", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.BuiltInType);
             Assert.IsTrue(property.IsCollection);
-            TestEntityClass(property.ClassModel);
+            TestEntityClass(property.Class);
         }
 
         [TestMethod]
@@ -102,7 +102,7 @@ namespace BootGenTest
         {
             var resourceStore = new ResourceBuilder(new ClassStore(), new EnumStore());
             var resource = resourceStore.FromClass<Recursive>();
-            Assert.AreEqual(4, resource.ClassModel.Properties.Count);
+            Assert.AreEqual(4, resource.Class.Properties.Count);
         }
 
         [TestMethod]
@@ -111,13 +111,13 @@ namespace BootGenTest
             var resourceStore = new ResourceBuilder(new ClassStore(), new EnumStore());
             var resource = resourceStore.FromClass<Tree>();
             Assert.AreEqual(0, resource.NestedResources.Count);
-            Property property = resource.ClassModel.Properties[3];
+            Property property = resource.Class.Properties[3];
             Assert.AreEqual("Entity", property.Name);
             Assert.AreEqual(BuiltInType.Object, property.BuiltInType);
             Assert.IsFalse(property.IsCollection);
-            TestEntityClass(property.ClassModel);
-            TestComplexClass(resource.ClassModel.Properties[4].ClassModel);
-            TestComplexListClass(resource.ClassModel.Properties[5].ClassModel);
+            TestEntityClass(property.Class);
+            TestComplexClass(resource.Class.Properties[4].Class);
+            TestComplexListClass(resource.Class.Properties[5].Class);
         }
         [TestMethod]
         public void TestDataSeed()

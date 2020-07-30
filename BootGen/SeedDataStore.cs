@@ -59,7 +59,7 @@ namespace BootGen
                         var pp = c.Properties.First(p => p.Name == property.Name);
                         if (pp.BuiltInType == BuiltInType.Enum)
                         {
-                            record.Values.Add(new KeyValuePair<string, string>(property.Name, $"{pp.EnumModel.Name}.{pp.EnumModel.Values[(int)property.Value]}"));
+                            record.Values.Add(new KeyValuePair<string, string>(property.Name, $"{pp.Enum.Name}.{pp.Enum.Values[(int)property.Value]}"));
                         }
                         else
                             record.Values.Add(new KeyValuePair<string, string>(property.Name, property.Value.ToString()));
@@ -75,9 +75,9 @@ namespace BootGen
         public void Add<T>(Resource resource, IEnumerable<T> data, Dictionary<int, Permission> permissions = null)
         {
             List<JObject> rawDataList = data.Select(i => JObject.FromObject(i)).ToList();
-            List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.ClassModel, o))).ToList();
-            Data[resource.ClassModel.Id] = seedDataList;
-            if (resource.ClassModel.UsePermissions)
+            List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Class, o))).ToList();
+            Data[resource.Class.Id] = seedDataList;
+            if (resource.Class.UsePermissions)
                 foreach (var seedData in seedDataList)
                 {
                     if (seedData.SeedRecord.Values.Any(t => t.Key == PermissionTokenId))
@@ -98,7 +98,7 @@ namespace BootGen
                         }
                 }
 
-            PushSeedDataToProperties(resource.ClassModel);
+            PushSeedDataToProperties(resource.Class);
             PushSeedDataToNestedResources(resource);
         }
 
@@ -117,16 +117,16 @@ namespace BootGen
         {
             foreach (var property in c.Properties)
             {
-                if (property.ClassModel == null)
+                if (property.Class == null)
                     continue;
                 foreach (var item in Data[c.Id])
                 {
-                    if (SplitData(item, property, property.ClassModel))
+                    if (SplitData(item, property, property.Class))
                     {
-                        PushSeedDataToProperties(property.ClassModel);
+                        PushSeedDataToProperties(property.Class);
                         foreach (var resource in resourceStore.Resources)
                         {
-                            if (resource.ClassModel == property.ClassModel)
+                            if (resource.Class == property.Class)
                                 PushSeedDataToNestedResources(resource);
                         }
                     }
@@ -207,17 +207,17 @@ namespace BootGen
         {
             foreach (var nestedResource in resource.NestedResources)
             {
-                foreach (var item in Data[resource.ClassModel.Id])
+                foreach (var item in Data[resource.Class.Id])
                 {
                     var property = new Property
                     {
                         Name = nestedResource.PluralName,
                         BuiltInType = BuiltInType.Object,
-                        ClassModel = nestedResource.ClassModel
+                        Class = nestedResource.Class
                     };
-                    if (SplitData(item, property, nestedResource.ClassModel, nestedResource.Pivot))
+                    if (SplitData(item, property, nestedResource.Class, nestedResource.Pivot))
                     {
-                        PushSeedDataToProperties(nestedResource.ClassModel);
+                        PushSeedDataToProperties(nestedResource.Class);
                         PushSeedDataToNestedResources(nestedResource);
                     }
                 }
