@@ -25,7 +25,6 @@ namespace BootGen
         public Property MirrorProperty { get; set; }
         internal bool ParentReference { get; set; }
     }
-
     public class ResourceAttribute : Attribute
     {
 

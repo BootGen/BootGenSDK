@@ -20,6 +20,7 @@ namespace BootGen
         public ClassModel Pivot { get; internal set; }
         public bool UsePermissions { get => Class.UsePermissions; internal set => Class.UsePermissions = value; }
         public bool HasPermissions { get => Class.HasPermissions; internal set => Class.HasPermissions = value; }
+        public bool HasTimestamps { get => Class.HasTimestamps; internal set => Class.HasTimestamps = value; }
     }
 
     public class InvalidResourceException : Exception

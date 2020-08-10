@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,5 +19,11 @@ namespace BootGen
         public bool Persisted { get; set; }
         public bool UsePermissions { get; internal set; }
         public bool HasPermissions { get; internal set; }
+        public bool HasTimestamps { get; internal set; }
+    }
+
+    public class HasTimestampsAttribute : Attribute
+    {
+
     }
 }

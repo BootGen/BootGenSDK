@@ -50,7 +50,7 @@ namespace BootGen
                         continue;
                     case JTokenType.Date:
                         var dateTime = (DateTime)property.Value;
-                        record.Values.Add(new KeyValuePair<string, string>(property.Name, $"new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second})"));
+                        AddDateTime(record, property.Name, dateTime);
                         break;
                     case JTokenType.String:
                         record.Values.Add(new KeyValuePair<string, string>(property.Name, $"\"{property.Value.ToString()}\""));
@@ -69,7 +69,16 @@ namespace BootGen
                         break;
                 }
             }
+            if (c.HasTimestamps) {
+                AddDateTime(record, "Created", DateTime.Now);
+                AddDateTime(record, "Updated", DateTime.Now);
+            }
             return record;
+        }
+
+        private static void AddDateTime(SeedRecord record, string propertyName, DateTime dateTime)
+        {
+            record.Values.Add(new KeyValuePair<string, string>(propertyName, $"new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second})"));
         }
 
         public void Add<T>(Resource resource, IEnumerable<T> data, Dictionary<int, Permission> permissions = null)

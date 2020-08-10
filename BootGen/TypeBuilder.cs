@@ -47,6 +47,20 @@ namespace BootGen
                 }
             }
 
+            if (type.CustomAttributes.Any( d => d.AttributeType == typeof(HasTimestampsAttribute))) {
+                c.HasTimestamps = true;
+                c.Properties.Add(new Property {
+                    Name = "Created",
+                    IsRequired = true,
+                    BuiltInType = BuiltInType.DateTime
+                });
+                c.Properties.Add(new Property {
+                    Name = "Updated",
+                    IsRequired = true,
+                    BuiltInType = BuiltInType.DateTime
+                });
+            }
+
             return c;
         }
 
