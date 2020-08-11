@@ -20,9 +20,15 @@ namespace BootGen
         public bool UsePermissions { get; internal set; }
         public bool HasPermissions { get; internal set; }
         public bool HasTimestamps { get; internal set; }
+        public bool ConcurrencyControl { get; internal set; }
     }
 
     public class HasTimestampsAttribute : Attribute
+    {
+
+    }
+
+    public class ConcurrencyControlAttribute : Attribute
     {
 
     }

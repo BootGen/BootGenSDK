@@ -61,6 +61,15 @@ namespace BootGen
                 });
             }
 
+            if (type.CustomAttributes.Any( d => d.AttributeType == typeof(ConcurrencyControlAttribute))) {
+                c.ConcurrencyControl = true;
+                c.Properties.Add(new Property {
+                    Name = "ConcurrencyToken",
+                    IsRequired = true,
+                    BuiltInType = BuiltInType.Int64,
+                    ConcurrencyControl = true
+                });
+            }
             return c;
         }
 
