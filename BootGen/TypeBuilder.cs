@@ -37,9 +37,8 @@ namespace BootGen
                     continue;
                 }
                 var propertyType = p.PropertyType;
-                var property = GetTypeDescription<Property>(propertyType);
+                var property = GetProperty(propertyType);
                 property.Name = p.Name;
-                property.IsRequired = propertyType.IsValueType && !propertyType.IsGenericType;
                 c.Properties.Add(property);
                 if (property.Name.ToLower() == "id")
                 {
@@ -73,31 +72,33 @@ namespace BootGen
             return c;
         }
 
-        public T GetTypeDescription<T>(Type propertyType) where T : TypeDescription, new()
+        public Property GetProperty(Type propertyType)
         {
-            T typeDescription = new T();
+            var property = new Property();
+            property.IsRequired = true;
             if (propertyType.IsGenericType)
             {
                 Type genericType = propertyType.GetGenericTypeDefinition();
                 if (genericType == typeof(List<>))
                 {
-                    typeDescription.IsCollection = true;
+                    property.IsCollection = true;
                     propertyType = propertyType.GetGenericArguments()[0];
                 }
                 if(genericType == typeof(Nullable<>))
                 {
+                    property.IsRequired = false;
                     propertyType = propertyType.GetGenericArguments()[0];
                 }
             }
-            typeDescription.BuiltInType = GetType(propertyType);
-            if (typeDescription.BuiltInType == BuiltInType.Object)
+            property.BuiltInType = GetType(propertyType);
+            if (property.BuiltInType == BuiltInType.Object)
             {
-                typeDescription.Class = FromType(propertyType);
-            } else if (typeDescription.BuiltInType == BuiltInType.Enum)
+                property.Class = FromType(propertyType);
+            } else if (property.BuiltInType == BuiltInType.Enum)
             {
-                typeDescription.Enum = EnumFromType(propertyType);
+                property.Enum = EnumFromType(propertyType);
             }
-            return typeDescription;
+            return property;
         }
 
         private EnumModel EnumFromType(Type type)

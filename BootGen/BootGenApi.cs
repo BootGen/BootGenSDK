@@ -141,13 +141,12 @@ namespace BootGen
                 controller.Methods.Add(controllerMethod);
                 foreach (var param in method.GetParameters())
                 {
-                    var property = ClassBuilder.GetTypeDescription<Property>(param.ParameterType);
+                    var property = ClassBuilder.GetProperty(param.ParameterType);
                     property.Name = param.Name;
-                    property.IsRequired = param.ParameterType.IsValueType;
                     controllerMethod.Parameters.Add(property);
                 }
 
-                TypeDescription responseType = ClassBuilder.GetTypeDescription<Property>(method.ReturnType);
+                TypeDescription responseType = ClassBuilder.GetProperty(method.ReturnType);
                 if (responseType.BuiltInType == BuiltInType.Object)
                 {
                     controllerMethod.ReturnType = responseType;
