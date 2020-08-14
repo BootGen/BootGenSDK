@@ -70,7 +70,8 @@ namespace BootGen
                         new Property {
                             Name = parent.Class.Name + "Id",
                             BuiltInType = parent.Class.IdProperty.BuiltInType,
-                            IsRequired = true
+                            IsRequired = true,
+                            IsSimple = true
                         },
                         new Property {
                             Name = parent.Class.Name,
@@ -81,7 +82,8 @@ namespace BootGen
                         new Property {
                             Name = resource.Class.Name + "Id",
                             BuiltInType = resource.Class.IdProperty.BuiltInType,
-                            IsRequired = true
+                            IsRequired = true,
+                            IsSimple = true
                         },
                         new Property {
                             Name = resource.Class.Name,
@@ -228,7 +230,8 @@ namespace BootGen
                     BuiltInType = parent.Class.IdProperty.BuiltInType,
                     IsCollection = false,
                     IsRequired = true,
-                    Location = Location.ServerOnly
+                    Location = Location.ServerOnly,
+                    IsSimple = true
                 });
         }
 
@@ -265,7 +268,8 @@ namespace BootGen
                         Name = c.Name + "Id",
                         BuiltInType = c.IdProperty.BuiltInType,
                         IsCollection = false,
-                        IsRequired = true
+                        IsRequired = true,
+                        IsSimple = true
                     });
                 AddEfRelationsParentToChild(property.Class);
             }

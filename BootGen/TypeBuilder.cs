@@ -39,10 +39,19 @@ namespace BootGen
                 var propertyType = p.PropertyType;
                 var property = GetProperty(propertyType);
                 property.Name = p.Name;
+                property.IsSimple = property.Class == null;
                 c.Properties.Add(property);
                 if (property.Name.ToLower() == "id")
                 {
                     c.IdProperty = property;
+                }
+                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ClientOnlyAttribute)))
+                {
+                    property.Location = Location.ClientOnly;
+                }
+                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ServerOnlyAttribute)))
+                {
+                    property.Location = Location.ServerOnly;
                 }
             }
 

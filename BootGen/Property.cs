@@ -25,6 +25,7 @@ namespace BootGen
         public Property MirrorProperty { get; set; }
         public bool ConcurrencyControl { get; internal set; }
         internal bool ParentReference { get; set; }
+        public bool IsSimple { get; set; }
     }
     public class ResourceAttribute : Attribute
     {
@@ -32,6 +33,14 @@ namespace BootGen
     }
 
     public class WithPivotAttribute : Attribute
+    {
+    }
+
+    public class ClientOnlyAttribute : Attribute
+    {
+    }
+
+    public class ServerOnlyAttribute : Attribute
     {
     }
 

@@ -37,6 +37,9 @@ namespace BootGen
             var record = new SeedRecord { Name = c.Name };
             foreach (var property in obj.Properties())
             {
+                var classProperty = c.Properties.FirstOrDefault(p => p.Name == property.Name);
+                if (classProperty != null && classProperty.Location == Location.ClientOnly)
+                    continue;
                 switch (property.Value.Type)
                 {
                     case JTokenType.None:
@@ -56,10 +59,9 @@ namespace BootGen
                         record.Values.Add(new KeyValuePair<string, string>(property.Name, $"\"{property.Value.ToString()}\""));
                         break;
                     case JTokenType.Integer:
-                        var pp = c.Properties.First(p => p.Name == property.Name);
-                        if (pp.BuiltInType == BuiltInType.Enum)
+                        if (classProperty.BuiltInType == BuiltInType.Enum)
                         {
-                            record.Values.Add(new KeyValuePair<string, string>(property.Name, $"{pp.Enum.Name}.{pp.Enum.Values[(int)property.Value]}"));
+                            record.Values.Add(new KeyValuePair<string, string>(property.Name, $"{classProperty.Enum.Name}.{classProperty.Enum.Values[(int)property.Value]}"));
                         }
                         else
                             record.Values.Add(new KeyValuePair<string, string>(property.Name, property.Value.ToString()));
