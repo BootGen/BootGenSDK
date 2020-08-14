@@ -171,7 +171,7 @@ namespace IssueTrackerGenerator
             var result = new List<string>();
             foreach (var property in c.Properties)
             {
-                if (property.BuiltInType == BuiltInType.Object && !property.ParentReference)
+                if (property.BuiltInType == BuiltInType.Object && !property.ParentReference && property.IsCollection)
                 {
                     string newPrefix;
                     if (prefix == null)

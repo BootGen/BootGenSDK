@@ -132,7 +132,7 @@ namespace BootGen
                     continue;
                 foreach (var item in Data[c.Id])
                 {
-                    if (SplitData(item, property, property.Class))
+                    if (SplitData(item, property))
                     {
                         PushSeedDataToProperties(property.Class);
                         foreach (var resource in resourceStore.Resources)
@@ -145,16 +145,16 @@ namespace BootGen
             }
         }
 
-        private bool SplitData(SeedData item, Property property, ClassModel c, ClassModel pivot = null)
+        private bool SplitData(SeedData item, Property property, ClassModel pivot = null)
         {
             var token = item.JObject.GetValue(property.Name);
             item.JObject.Remove(property.Name);
-            var dataList = GetDataList(c);
+            var dataList = GetDataList(property.Class);
             if (token is JObject obj)
             {
-                SeedRecord record = ToSeedRecord(c, obj);
-                var id = record.GetId(c);
-                if (!dataList.Any(d => d.SeedRecord.GetId(c) == id))
+                SeedRecord record = ToSeedRecord(property.Class, obj);
+                var id = record.GetId(property.Class);
+                if (!dataList.Any(d => d.SeedRecord.GetId(property.Class) == id))
                 {
                     dataList.Add(new SeedData(obj, record));
                 }
@@ -166,9 +166,9 @@ namespace BootGen
                 foreach (var o in array)
                 {
                     JObject jObj = o as JObject;
-                    SeedRecord record = ToSeedRecord(c, jObj);
-                    var id = record.GetId(c);
-                    if (!dataList.Any(d => d.SeedRecord.GetId(c) == id))
+                    SeedRecord record = ToSeedRecord(property.Class, jObj);
+                    var id = record.GetId(property.Class);
+                    if (!dataList.Any(d => d.SeedRecord.GetId(property.Class) == id))
                     {
                         dataList.Add(new SeedData(jObj, record));
                     }
@@ -187,7 +187,7 @@ namespace BootGen
                     else
                     {
                         record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
-                        if (c.UsePermissions)
+                        if (property.Class.UsePermissions)
                         {
                             var tokenId = item.SeedRecord.Values.FirstOrDefault(t => t.Key == PermissionTokenId);
                             if (!string.IsNullOrEmpty(tokenId.Value))
@@ -226,7 +226,7 @@ namespace BootGen
                         BuiltInType = BuiltInType.Object,
                         Class = nestedResource.Class
                     };
-                    if (SplitData(item, property, nestedResource.Class, nestedResource.Pivot))
+                    if (SplitData(item, property, nestedResource.Pivot))
                     {
                         PushSeedDataToProperties(nestedResource.Class);
                         PushSeedDataToNestedResources(nestedResource);
