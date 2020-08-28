@@ -219,7 +219,7 @@
     "/usr/share/dotnet/sdk/NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "0.0.176",
+    "version": "0.0.177",
     "restore": {
       "projectUniqueName": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
       "projectName": "BootGen",

@@ -44,5 +44,9 @@ namespace BootGen
     {
     }
 
+    public class ComposeAttribute : Attribute
+    {
+    }
+
     public enum BuiltInType { String, Int32, Int64, Bool, DateTime, Object, Enum }
 }

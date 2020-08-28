@@ -39,7 +39,7 @@ namespace BootGen
                 var propertyType = p.PropertyType;
                 var property = GetProperty(propertyType);
                 property.Name = p.Name;
-                property.IsSimple = property.Class == null;
+                property.IsSimple = property.Class == null || p.CustomAttributes.Any(d => d.AttributeType == typeof(ComposeAttribute));
                 c.Properties.Add(property);
                 if (property.Name.ToLower() == "id")
                 {
