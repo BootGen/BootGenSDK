@@ -11,3 +11,21 @@ Generators based on BootGen can generate:
 * API Client
 * Client side state management
 * Rest API documentation (Open API Specification / Swagger)
+
+The models that BootGen uses for code generation are simple C# classis, such as:
+
+```csharp
+class Ticket
+{
+    public int Id { get; set; }
+    public DateTime Deadline { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
+}
+```
+
+To read more about creating models, please visit the [[Models|models]] page.
+
+Models can be used as [[REST resources|resources]].
+
+BootGen provides a very convenient way to create database [[seeds|seeding]].
