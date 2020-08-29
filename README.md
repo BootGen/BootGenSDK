@@ -23,9 +23,4 @@ class Ticket
     public string Description { get; set; }
 }
 ```
-
-To read more about creating models, please visit the [[Models|models]] page.
-
-Models can be used as [[REST resources|resources]].
-
-BootGen provides a very convenient way to create database [[seeds|seeding]].
+Please visit the wiki to learn more!
