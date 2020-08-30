@@ -55,6 +55,7 @@ namespace BootGen
             }
 
             result.Class = new TypeBuilder(classStore, enumStore).FromType(type);
+            result.Class.IsResource = true;
             if (result.Class.IdProperty == null) {
                 throw new InvalidResourceException("A resource must have an ID.");
             }

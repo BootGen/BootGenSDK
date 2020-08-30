@@ -32,14 +32,13 @@ namespace BootGen
             classStore.Add(type, c);
             foreach (var p in type.GetProperties())
             {
-                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute) || d.AttributeType == typeof(WithPivotAttribute)))
+                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
                 {
                     continue;
                 }
                 var propertyType = p.PropertyType;
                 var property = GetProperty(propertyType);
                 property.Name = p.Name;
-                property.IsSimple = property.Class == null;
                 c.Properties.Add(property);
                 if (property.Name.ToLower() == "id")
                 {

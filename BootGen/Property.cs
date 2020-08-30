@@ -25,24 +25,8 @@ namespace BootGen
         public Property MirrorProperty { get; set; }
         public bool ConcurrencyControl { get; internal set; }
         internal bool ParentReference { get; set; }
-        public bool IsSimple { get; set; }
     }
-    public class ResourceAttribute : Attribute
-    {
-
-    }
-
-    public class WithPivotAttribute : Attribute
-    {
-    }
-
-    public class ClientOnlyAttribute : Attribute
-    {
-    }
-
-    public class ServerOnlyAttribute : Attribute
-    {
-    }
+    
 
     public enum BuiltInType { String, Int32, Int64, Bool, DateTime, Object, Enum }
 }

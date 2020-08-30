@@ -16,20 +16,11 @@ namespace BootGen
         public List<Property> CommonProperties => Properties.Where(p => p.Location == Location.Both).ToList();
         public bool HasRequiredProperties => Properties.Any(p => p.IsRequired);
         public Location Location { get; set; }
+        public bool IsResource { get; set; }
         public bool Persisted { get; set; }
         public bool UsePermissions { get; internal set; }
         public bool HasPermissions { get; internal set; }
         public bool HasTimestamps { get; internal set; }
         public bool ConcurrencyControl { get; internal set; }
-    }
-
-    public class HasTimestampsAttribute : Attribute
-    {
-
-    }
-
-    public class ConcurrencyControlAttribute : Attribute
-    {
-
     }
 }
