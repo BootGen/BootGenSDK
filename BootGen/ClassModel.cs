@@ -9,27 +9,15 @@ namespace BootGen
     {
         public int Id { get; internal set; }
         public string Name { get; internal set; }
-        public Property IdProperty { get; internal set; }
         public List<Property> Properties { get; internal set; }
         public List<Property> ServerProperties => Properties.Where(p => p.Location != Location.ClientOnly).ToList();
         public List<Property> ClientProperties => Properties.Where(p => p.Location != Location.ServerOnly).ToList();
         public List<Property> CommonProperties => Properties.Where(p => p.Location == Location.Both).ToList();
         public bool HasRequiredProperties => Properties.Any(p => p.IsRequired);
         public Location Location { get; set; }
+        public bool IsResource { get; set; }
         public bool Persisted { get; set; }
-        public bool UsePermissions { get; internal set; }
-        public bool HasPermissions { get; internal set; }
         public bool HasTimestamps { get; internal set; }
         public bool ConcurrencyControl { get; internal set; }
-    }
-
-    public class HasTimestampsAttribute : Attribute
-    {
-
-    }
-
-    public class ConcurrencyControlAttribute : Attribute
-    {
-
     }
 }

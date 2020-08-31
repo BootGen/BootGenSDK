@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using BootGen;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Scriban;
 using Scriban.Runtime;
 using Scriban.Syntax;
@@ -207,6 +205,8 @@ namespace IssueTrackerGenerator
                     return "long";
                 case BuiltInType.String:
                     return "string";
+                case BuiltInType.Guid:
+                    return "Guid";
                 case BuiltInType.DateTime:
                     return "DateTime";
                 case BuiltInType.Object:
@@ -261,21 +261,6 @@ namespace IssueTrackerGenerator
         public static string ItemGetParameters(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation);
-        }
-        public static string PermissionGetParameters(Resource resource)
-        {
-            var operation = resource.PermissionRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation);
-        }
-        public static string PermissionPostParameters(Resource resource)
-        {
-            var operation = resource.PermissionRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Post);
-            return Parameters(operation);
-        }
-        public static string PermissionDeleteParameters(Resource resource)
-        {
-            var operation = resource.PermissionRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
             return Parameters(operation);
         }
 
@@ -339,14 +324,6 @@ namespace IssueTrackerGenerator
             int count = resource.ItemRoute.PathModel.Count - resource.Route.PathModel.Count;
             var path = new BootGen.Path();
             path.AddRange(resource.ItemRoute.PathModel.TakeLast(count));
-            return path.ToString().Substring(1);
-        }
-
-        public static string PermissionRelativePath(Resource resource)
-        {
-            int count = resource.PermissionRoute.PathModel.Count - resource.Route.PathModel.Count;
-            var path = new BootGen.Path();
-            path.AddRange(resource.PermissionRoute.PathModel.TakeLast(count));
             return path.ToString().Substring(1);
         }
 

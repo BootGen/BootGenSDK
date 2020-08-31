@@ -7,7 +7,6 @@ namespace BootGen
 {
     public class SeedDataStore
     {
-        private const string PermissionTokenId = "PermissionTokenId";
         private readonly ClassStore classStore;
         private readonly ResourceStore resourceStore;
 
@@ -22,9 +21,6 @@ namespace BootGen
             }
         }
         private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
-
-        public List<PermissionToken> PermissionTokens { get; } = new List<PermissionToken>();
-        public List<UserPermission> UserPermissions { get; } = new List<UserPermission>();
 
         public SeedDataStore(BootGenApi api)
         {
@@ -83,31 +79,11 @@ namespace BootGen
             record.Values.Add(new KeyValuePair<string, string>(propertyName, $"new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second})"));
         }
 
-        public void Add<T>(Resource resource, IEnumerable<T> data, Dictionary<int, Permission> permissions = null)
+        public void Add<T>(Resource resource, IEnumerable<T> data)
         {
             List<JObject> rawDataList = data.Select(i => JObject.FromObject(i)).ToList();
             List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Class, o))).ToList();
             Data[resource.Class.Id] = seedDataList;
-            if (resource.Class.UsePermissions)
-                foreach (var seedData in seedDataList)
-                {
-                    if (seedData.SeedRecord.Values.Any(t => t.Key == PermissionTokenId))
-                        continue;
-                    var token = new PermissionToken { Id = PermissionTokens.Count + 1 };
-                    PermissionTokens.Add(token);
-                    seedData.SeedRecord.Values.Add(new KeyValuePair<string, string>(PermissionTokenId, token.Id.ToString()));
-                    if (permissions != null)
-                        foreach (var permission in permissions)
-                        {
-                            UserPermissions.Add(new UserPermission
-                            {
-                                Id = UserPermissions.Count + 1,
-                                PermissionToken = token,
-                                UserId = permission.Key,
-                                Permission = permission.Value
-                            });
-                        }
-                }
 
             PushSeedDataToProperties(resource.Class);
             PushSeedDataToNestedResources(resource);
@@ -153,8 +129,8 @@ namespace BootGen
             if (token is JObject obj)
             {
                 SeedRecord record = ToSeedRecord(property.Class, obj);
-                var id = record.GetId(property.Class);
-                if (!dataList.Any(d => d.SeedRecord.GetId(property.Class) == id))
+                var id = record.GetId();
+                if (!dataList.Any(d => d.SeedRecord.GetId() == id))
                 {
                     dataList.Add(new SeedData(obj, record));
                 }
@@ -167,8 +143,8 @@ namespace BootGen
                 {
                     JObject jObj = o as JObject;
                     SeedRecord record = ToSeedRecord(property.Class, jObj);
-                    var id = record.GetId(property.Class);
-                    if (!dataList.Any(d => d.SeedRecord.GetId(property.Class) == id))
+                    var id = record.GetId();
+                    if (!dataList.Any(d => d.SeedRecord.GetId() == id))
                     {
                         dataList.Add(new SeedData(jObj, record));
                     }
@@ -180,21 +156,16 @@ namespace BootGen
                             Name = pivot.Name,
                             Values = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("Id", (pivotDataList.Count + 1).ToString()) }
                         };
-                        pivotRecord.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
-                        pivotRecord.Values.Add(new KeyValuePair<string, string>(record.Name + "Id", record.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
+                        pivotRecord.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.GetId()));
+                        pivotRecord.Values.Add(new KeyValuePair<string, string>(record.Name + "Id", record.GetId()));
                         pivotDataList.Add(new SeedData(null, pivotRecord));
                     }
                     else
                     {
-                        record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
-                        if (property.Class.UsePermissions)
-                        {
-                            var tokenId = item.SeedRecord.Values.FirstOrDefault(t => t.Key == PermissionTokenId);
-                            if (!string.IsNullOrEmpty(tokenId.Value))
-                            {
-                                record.Values.Add(new KeyValuePair<string, string>(PermissionTokenId, tokenId.Value));
-                            }
-                        }
+                        record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.GetId()));
+                        string parentUuid = item.SeedRecord.GetUuid();
+                        if (!string.IsNullOrEmpty(parentUuid))
+                            record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Uuid", parentUuid));
                     }
 
                 }
@@ -241,24 +212,14 @@ namespace BootGen
         public string Name { get; set; }
         public List<KeyValuePair<string, string>> Values { get; set; } = new List<KeyValuePair<string, string>>();
 
-        internal string GetId(ClassModel c)
+        internal string GetId()
         {
-            return Values.FirstOrDefault(kvp => kvp.Key == c.IdProperty.Name).Value;
+            return Values.FirstOrDefault(kvp => kvp.Key == "Id").Value;
         }
-    }
-
-    public class PermissionToken
-    {
-        public int Id { get; set; }
-        public List<UserPermission> UserPermissions { get; set; }
-    }
-
-    public class UserPermission
-    {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public PermissionToken PermissionToken { get; set; }
-        public Permission Permission { get; set; }
+        internal string GetUuid()
+        {
+            return Values.FirstOrDefault(kvp => kvp.Key == "Uuid").Value;
+        }
     }
 
 }

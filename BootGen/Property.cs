@@ -23,30 +23,9 @@ namespace BootGen
         public bool IsServerOnly => Location == Location.ServerOnly;
         public bool IsClientOnly => Location == Location.ClientOnly;
         public Property MirrorProperty { get; set; }
-        public bool ConcurrencyControl { get; internal set; }
         internal bool ParentReference { get; set; }
-        public bool IsSimple { get; set; }
     }
-    public class ResourceAttribute : Attribute
-    {
+    
 
-    }
-
-    public class WithPivotAttribute : Attribute
-    {
-    }
-
-    public class ClientOnlyAttribute : Attribute
-    {
-    }
-
-    public class ServerOnlyAttribute : Attribute
-    {
-    }
-
-    public class ComposeAttribute : Attribute
-    {
-    }
-
-    public enum BuiltInType { String, Int32, Int64, Bool, DateTime, Object, Enum }
+    public enum BuiltInType { String, Int32, Int64, Bool, DateTime, Guid, Object, Enum }
 }

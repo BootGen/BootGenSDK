@@ -28,23 +28,22 @@ namespace BootGen
         {
             var c = new ClassModel();
             c.Name = type.Name.Split('.').Last();
-            c.Properties = new List<Property>();
+            c.Properties = new List<Property>{new Property {
+                Name = "Id",
+                BuiltInType = BuiltInType.Int32,
+                IsRequired = true
+            }};
             classStore.Add(type, c);
             foreach (var p in type.GetProperties())
             {
-                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute) || d.AttributeType == typeof(WithPivotAttribute)))
+                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
                 {
                     continue;
                 }
                 var propertyType = p.PropertyType;
                 var property = GetProperty(propertyType);
                 property.Name = p.Name;
-                property.IsSimple = property.Class == null || p.CustomAttributes.Any(d => d.AttributeType == typeof(ComposeAttribute));
                 c.Properties.Add(property);
-                if (property.Name.ToLower() == "id")
-                {
-                    c.IdProperty = property;
-                }
                 if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ClientOnlyAttribute)))
                 {
                     property.Location = Location.ClientOnly;
@@ -69,15 +68,6 @@ namespace BootGen
                 });
             }
 
-            if (type.CustomAttributes.Any( d => d.AttributeType == typeof(ConcurrencyControlAttribute))) {
-                c.ConcurrencyControl = true;
-                c.Properties.Add(new Property {
-                    Name = "ConcurrencyToken",
-                    IsRequired = true,
-                    BuiltInType = BuiltInType.Int64,
-                    ConcurrencyControl = true
-                });
-            }
             return c;
         }
 

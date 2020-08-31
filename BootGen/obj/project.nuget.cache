@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "N25I3mox7OWTAjEDOphvfnm7xKkek1ntmSXSaAnHl1ThRqXr1vn0cRcNV1cOgeWVU27C7q6HvZejb/+2guhI5w==",
+  "dgSpecHash": "+0ldRtm/+ZTZ+CJOrqhA7AWqSQXUPAhOVC7e66orp3YxKROdoiawlJBQ+iGru8ZihDKPux0XxJkCstjGmNPmMg==",
   "success": true,
-  "projectFilePath": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
+  "projectFilePath": "C:\\Users\\angya\\Documents\\bootgen\\BootGen\\BootGen.csproj",
   "expectedPackageFiles": [
-    "/usr/share/dotnet/sdk/NuGetFallbackFolder/microsoft.csharp/4.5.0/microsoft.csharp.4.5.0.nupkg.sha512",
-    "/home/agabor/.nuget/packages/newtonsoft.json/12.0.3/newtonsoft.json.12.0.3.nupkg.sha512",
-    "/home/agabor/.nuget/packages/scriban/2.1.3/scriban.2.1.3.nupkg.sha512",
-    "/usr/share/dotnet/sdk/NuGetFallbackFolder/system.threading.tasks.extensions/4.5.1/system.threading.tasks.extensions.4.5.1.nupkg.sha512"
+    "C:\\Users\\angya\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
+    "C:\\Users\\angya\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512",
+    "C:\\Users\\angya\\.nuget\\packages\\scriban\\2.1.3\\scriban.2.1.3.nupkg.sha512",
+    "C:\\Users\\angya\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.1\\system.threading.tasks.extensions.4.5.1.nupkg.sha512"
   ],
   "logs": []
 }
