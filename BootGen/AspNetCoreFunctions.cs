@@ -205,6 +205,8 @@ namespace IssueTrackerGenerator
                     return "long";
                 case BuiltInType.String:
                     return "string";
+                case BuiltInType.Guid:
+                    return "Guid";
                 case BuiltInType.DateTime:
                     return "DateTime";
                 case BuiltInType.Object:

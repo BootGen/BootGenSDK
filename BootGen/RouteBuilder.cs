@@ -28,7 +28,7 @@ namespace BootGen
         {
             var subRoute = new Route();
             string itemIdName = resource.Class.Name.ToCamelCase() + "Id";
-            Parameter idParameter = ConvertToParameter(resource.Class.IdProperty);
+            Parameter idParameter = ConvertToParameter(resource.Class.Properties.First(p => p.Name == "Uuid"));
             idParameter.Name = itemIdName;
             idParameter.Kind = RestParamterKind.Path;
             var itemPath = basePath.Adding(new PathComponent { Parameter = idParameter, Name = itemIdName });
@@ -87,6 +87,9 @@ namespace BootGen
                     break;
                 case BuiltInType.String:
                     oasProp.IsRequired = false;
+                    break;
+                case BuiltInType.Guid:
+                    oasProp.IsRequired = true;
                     break;
                 case BuiltInType.Object:
                     oasProp.IsRequired = false;

@@ -28,7 +28,11 @@ namespace BootGen
         {
             var c = new ClassModel();
             c.Name = type.Name.Split('.').Last();
-            c.Properties = new List<Property>();
+            c.Properties = new List<Property>{new Property {
+                Name = "Id",
+                BuiltInType = BuiltInType.Int32,
+                IsRequired = true
+            }};
             classStore.Add(type, c);
             foreach (var p in type.GetProperties())
             {
@@ -40,10 +44,6 @@ namespace BootGen
                 var property = GetProperty(propertyType);
                 property.Name = p.Name;
                 c.Properties.Add(property);
-                if (property.Name.ToLower() == "id")
-                {
-                    c.IdProperty = property;
-                }
                 if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ClientOnlyAttribute)))
                 {
                     property.Location = Location.ClientOnly;
@@ -59,14 +59,12 @@ namespace BootGen
                 c.Properties.Add(new Property {
                     Name = "Created",
                     IsRequired = true,
-                    BuiltInType = BuiltInType.DateTime,
-                    IsInternal = true
+                    BuiltInType = BuiltInType.DateTime
                 });
                 c.Properties.Add(new Property {
                     Name = "Updated",
                     IsRequired = true,
-                    BuiltInType = BuiltInType.DateTime,
-                    IsInternal = true
+                    BuiltInType = BuiltInType.DateTime
                 });
             }
 

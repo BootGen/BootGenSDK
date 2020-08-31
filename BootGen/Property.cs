@@ -24,9 +24,8 @@ namespace BootGen
         public bool IsClientOnly => Location == Location.ClientOnly;
         public Property MirrorProperty { get; set; }
         internal bool ParentReference { get; set; }
-        public bool IsInternal { get; internal set; }
     }
     
 
-    public enum BuiltInType { String, Int32, Int64, Bool, DateTime, Object, Enum }
+    public enum BuiltInType { String, Int32, Int64, Bool, DateTime, Guid, Object, Enum }
 }

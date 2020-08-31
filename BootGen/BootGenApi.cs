@@ -40,36 +40,24 @@ namespace BootGen
             ResourceStore = new ResourceStore();
             resourceBuilder = new ResourceBuilder(ClassStore, EnumStore);
             ClassBuilder = new TypeBuilder(ClassStore, EnumStore);
-            var permissionClass = ClassBuilder.FromType(typeof(UserPermission));
-            Classes.First(s => s.Name == "PermissionToken").Location = Location.ServerOnly;
-            foreach (var c in Classes)
-            {
-                c.Persisted = true;
-                OnClassAdded(c);
-            }
-            permissionClass.Properties.First(p => p.Name == "Id").Location = Location.ServerOnly;
-            permissionClass.Properties.First(p => p.Name == "PermissionToken").Location = Location.ServerOnly;
-            permissionClass.Properties.First(p => p.Name == "PermissionTokenId").Location = Location.ServerOnly;
         }
 
         private static ClassModel CreatePivot(Resource parent, Resource resource, string pivotName)
         {
-            Property idProperty = new Property
-            {
-                Name = "Id",
-                BuiltInType = BuiltInType.Int32,
-                IsRequired = true
-            };
             var pivotClass = new ClassModel
             {
                 Name = pivotName,
                 Location = Location.ServerOnly,
-                IdProperty = idProperty,
                 Properties = new List<Property> {
-                        idProperty,
+                        new Property
+                        {
+                            Name = "Id",
+                            BuiltInType = BuiltInType.Int32,
+                            IsRequired = true
+                        },
                         new Property {
                             Name = parent.Class.Name + "Id",
-                            BuiltInType = parent.Class.IdProperty.BuiltInType,
+                            BuiltInType = BuiltInType.Int32,
                             IsRequired = true
                         },
                         new Property {
@@ -80,7 +68,7 @@ namespace BootGen
                         },
                         new Property {
                             Name = resource.Class.Name + "Id",
-                            BuiltInType = resource.Class.IdProperty.BuiltInType,
+                            BuiltInType = BuiltInType.Int32,
                             IsRequired = true
                         },
                         new Property {
@@ -223,11 +211,10 @@ namespace BootGen
                 resource.Class.Properties.Add(new Property
                 {
                     Name = parent.Class.Name + "Id",
-                    BuiltInType = parent.Class.IdProperty.BuiltInType,
+                    BuiltInType = BuiltInType.Int32,
                     IsCollection = false,
                     IsRequired = true,
-                    Location = Location.ServerOnly,
-                    IsInternal = true
+                    Location = Location.ServerOnly
                 });
         }
 
@@ -262,7 +249,7 @@ namespace BootGen
                     property.Class.Properties.Add(new Property
                     {
                         Name = c.Name + "Id",
-                        BuiltInType = c.IdProperty.BuiltInType,
+                        BuiltInType = BuiltInType.Int32,
                         IsCollection = false,
                         IsRequired = true,
                     });
@@ -286,7 +273,7 @@ namespace BootGen
                         c.Properties.Insert(propertyIdx + 1, new Property
                         {
                             Name = property.Name + "Id",
-                            BuiltInType = property.Class.IdProperty.BuiltInType,
+                            BuiltInType = BuiltInType.Int32,
                             IsCollection = false,
                             Location = Location.Both,
                             IsRequired = true

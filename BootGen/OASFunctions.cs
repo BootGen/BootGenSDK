@@ -22,6 +22,8 @@ namespace IssueTrackerGenerator
                     return "integer";
                 case BuiltInType.String:
                     return "string";
+                case BuiltInType.Guid:
+                    return "string";
                 case BuiltInType.Enum:
                     return "string";
                 case BuiltInType.DateTime:
@@ -40,6 +42,8 @@ namespace IssueTrackerGenerator
                     return "int64";
                 case BuiltInType.DateTime:
                     return "date-time";
+                case BuiltInType.Guid:
+                    return "uuid";
             }
             return null;
         }

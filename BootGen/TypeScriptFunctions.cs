@@ -36,6 +36,8 @@ namespace IssueTrackerGenerator
                     return "string";
                 case BuiltInType.DateTime:
                     return "Date";
+                case BuiltInType.Guid:
+                    return "string";
                 case BuiltInType.Enum:
                     return property.Enum.Name;
                 case BuiltInType.Object:

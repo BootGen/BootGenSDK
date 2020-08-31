@@ -20,20 +20,5 @@ namespace BootGen
         public bool HasTimestamps { get => Class.HasTimestamps; internal set => Class.HasTimestamps = value; }
     }
 
-    public class InvalidResourceException : Exception
-    {
-        public InvalidResourceException(string message) : base(message)
-        {
-
-        }
-    }
-
-    public enum Permission
-    {
-        None,
-        Read,
-        Write,
-        Own
-    }
 
 }
