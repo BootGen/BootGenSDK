@@ -88,26 +88,6 @@ namespace BootGen
             List<JObject> rawDataList = data.Select(i => JObject.FromObject(i)).ToList();
             List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Class, o))).ToList();
             Data[resource.Class.Id] = seedDataList;
-            if (resource.Class.UsePermissions)
-                foreach (var seedData in seedDataList)
-                {
-                    if (seedData.SeedRecord.Values.Any(t => t.Key == PermissionTokenId))
-                        continue;
-                    var token = new PermissionToken { Id = PermissionTokens.Count + 1 };
-                    PermissionTokens.Add(token);
-                    seedData.SeedRecord.Values.Add(new KeyValuePair<string, string>(PermissionTokenId, token.Id.ToString()));
-                    if (permissions != null)
-                        foreach (var permission in permissions)
-                        {
-                            UserPermissions.Add(new UserPermission
-                            {
-                                Id = UserPermissions.Count + 1,
-                                PermissionToken = token,
-                                UserId = permission.Key,
-                                Permission = permission.Value
-                            });
-                        }
-                }
 
             PushSeedDataToProperties(resource.Class);
             PushSeedDataToNestedResources(resource);
@@ -187,14 +167,6 @@ namespace BootGen
                     else
                     {
                         record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
-                        if (property.Class.UsePermissions)
-                        {
-                            var tokenId = item.SeedRecord.Values.FirstOrDefault(t => t.Key == PermissionTokenId);
-                            if (!string.IsNullOrEmpty(tokenId.Value))
-                            {
-                                record.Values.Add(new KeyValuePair<string, string>(PermissionTokenId, tokenId.Value));
-                            }
-                        }
                     }
 
                 }

@@ -94,14 +94,12 @@ namespace BootGen
             return pivotClass;
         }
 
-        public Resource AddResource<T>(string name, bool isReadonly = false, bool hasPermissions = false, bool usePermissions = false, Resource parent = null, string pivotName = null)
+        public Resource AddResource<T>(string name, bool isReadonly = false, Resource parent = null, string pivotName = null)
         {
             var classCount = Classes.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
             resource.IsReadonly = isReadonly;
             resource.PluralName = name;
-            resource.HasPermissions = hasPermissions;
-            resource.UsePermissions = hasPermissions || usePermissions || parent?.HasPermissions == true;
             if (parent == null)
                 ResourceStore.Add(resource);
             else

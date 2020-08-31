@@ -18,8 +18,6 @@ namespace BootGen
         public Location Location { get; set; }
         public bool IsResource { get; set; }
         public bool Persisted { get; set; }
-        public bool UsePermissions { get; internal set; }
-        public bool HasPermissions { get; internal set; }
         public bool HasTimestamps { get; internal set; }
         public bool ConcurrencyControl { get; internal set; }
     }
