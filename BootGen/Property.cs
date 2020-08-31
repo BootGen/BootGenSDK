@@ -25,6 +25,7 @@ namespace BootGen
         public Property MirrorProperty { get; set; }
         public bool ConcurrencyControl { get; internal set; }
         internal bool ParentReference { get; set; }
+        public bool IsInternal { get; internal set; }
     }
     
 

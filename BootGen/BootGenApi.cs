@@ -228,7 +228,8 @@ namespace BootGen
                     BuiltInType = parent.Class.IdProperty.BuiltInType,
                     IsCollection = false,
                     IsRequired = true,
-                    Location = Location.ServerOnly
+                    Location = Location.ServerOnly,
+                    IsInternal = true
                 });
         }
 
@@ -265,7 +266,7 @@ namespace BootGen
                         Name = c.Name + "Id",
                         BuiltInType = c.IdProperty.BuiltInType,
                         IsCollection = false,
-                        IsRequired = true
+                        IsRequired = true,
                     });
                 AddEfRelationsParentToChild(property.Class);
             }

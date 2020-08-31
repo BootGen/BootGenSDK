@@ -59,12 +59,14 @@ namespace BootGen
                 c.Properties.Add(new Property {
                     Name = "Created",
                     IsRequired = true,
-                    BuiltInType = BuiltInType.DateTime
+                    BuiltInType = BuiltInType.DateTime,
+                    IsInternal = true
                 });
                 c.Properties.Add(new Property {
                     Name = "Updated",
                     IsRequired = true,
-                    BuiltInType = BuiltInType.DateTime
+                    BuiltInType = BuiltInType.DateTime,
+                    IsInternal = true
                 });
             }
 
@@ -74,7 +76,8 @@ namespace BootGen
                     Name = "ConcurrencyToken",
                     IsRequired = true,
                     BuiltInType = BuiltInType.Int64,
-                    ConcurrencyControl = true
+                    ConcurrencyControl = true,
+                    IsInternal = true
                 });
             }
             return c;
