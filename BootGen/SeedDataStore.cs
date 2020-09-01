@@ -83,11 +83,11 @@ namespace BootGen
                 AddDateTime(record, "Created", DateTime.Now);
                 AddDateTime(record, "Updated", DateTime.Now);
             }
-            if (c.Persisted) {
-                record.Values.Add(new KeyValuePair<string, string>("Id", GetNextId(c).ToString()));
-            }
             if (c.IsResource) {
-                record.Values.Add(new KeyValuePair<string, string>("Uuid", Guid.NewGuid().ToString()));
+                record.Values.Insert(0, new KeyValuePair<string, string>("Uuid", $"Guid.Parse(\"{Guid.NewGuid()}\")"));
+            }
+            if (c.Persisted) {
+                record.Values.Insert(0, new KeyValuePair<string, string>("Id", GetNextId(c).ToString()));
             }
             return record;
         }
