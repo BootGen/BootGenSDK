@@ -55,12 +55,15 @@ namespace BootGen
             }
 
             result.Class = new TypeBuilder(classStore, enumStore).FromType(type);
-            result.Class.IsResource = true;
-            result.Class.Properties.Insert(0, new Property {
-                Name = "Uuid",
-                BuiltInType = BuiltInType.Guid,
-                IsRequired = true
-            });
+            if (!result.Class.IsResource)
+            {
+                result.Class.IsResource = true;
+                result.Class.Properties.Insert(0, new Property {
+                    Name = "Uuid",
+                    BuiltInType = BuiltInType.Guid,
+                    IsRequired = true
+                });
+            }
             result.NestedResources = new List<Resource>();
             result.ParentResources = parentResources ?? new List<Resource>();
             return result;

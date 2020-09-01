@@ -152,7 +152,8 @@ namespace BootGen
                 {
                     dataList.Add(new SeedData(obj, record));
                 }
-                item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + "Id", record.Values.First(kvp => kvp.Key.ToLower() == "id").Value));
+                item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + "Id", record.GetId()));
+                item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + "Uuid", record.GetUuid()));
                 return true;
             }
             else if (token is JArray array)

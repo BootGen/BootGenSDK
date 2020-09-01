@@ -49,12 +49,6 @@ namespace BootGen
                 Name = pivotName,
                 Location = Location.ServerOnly,
                 Properties = new List<Property> {
-                        new Property
-                        {
-                            Name = "Id",
-                            BuiltInType = BuiltInType.Int32,
-                            IsRequired = true
-                        },
                         new Property {
                             Name = parent.Class.Name + "Id",
                             BuiltInType = BuiltInType.Int32,
@@ -82,7 +76,7 @@ namespace BootGen
             return pivotClass;
         }
 
-        public Resource AddResource<T>(string name, bool isReadonly = false, Resource parent = null, string pivotName = null)
+        public Resource AddResource<T>(string name, bool isReadonly = false, Resource parent = null, bool withPivot = false)
         {
             var classCount = Classes.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
@@ -94,9 +88,9 @@ namespace BootGen
                 parent.NestedResources.Add(resource);
 
             Routes.AddRange(resource.GetRoutes(ClassStore));
-            if (pivotName != null)
+            if (withPivot)
             {
-                ClassModel pivotClass = CreatePivot(parent, resource, pivotName);
+                ClassModel pivotClass = CreatePivot(parent, resource, name.Substring(0, name.Length-1));
                 resource.Pivot = pivotClass;
                 ClassStore.Add(pivotClass);
             }
@@ -264,6 +258,15 @@ namespace BootGen
                         BuiltInType = BuiltInType.Int32,
                         IsCollection = false,
                         IsRequired = true,
+                        Location = Location.ServerOnly
+                    });
+                if (!property.Class.Properties.Any(p => p.Name == c.Name + "Uuid"))
+                    property.Class.Properties.Add(new Property
+                    {
+                        Name = c.Name + "Uuid",
+                        BuiltInType = BuiltInType.Guid,
+                        IsCollection = false,
+                        IsRequired = true
                     });
                 AddEfRelationsParentToChild(property.Class);
             }
@@ -287,7 +290,14 @@ namespace BootGen
                             Name = property.Name + "Id",
                             BuiltInType = BuiltInType.Int32,
                             IsCollection = false,
-                            Location = Location.Both,
+                            Location = Location.ServerOnly,
+                            IsRequired = true
+                        });
+                        c.Properties.Insert(propertyIdx + 2, new Property
+                        {
+                            Name = property.Name + "Uuid",
+                            BuiltInType = BuiltInType.Guid,
+                            IsCollection = false,
                             IsRequired = true
                         });
                         property.Location = Location.ServerOnly;
