@@ -100,10 +100,22 @@ namespace BootGen
                 resource.Pivot = pivotClass;
                 ClassStore.Add(pivotClass);
             }
-            OnResourceAdded(resource);
-            foreach (var c in Classes.Skip(classCount))
+
+            var newClasses = Classes.Skip(classCount).ToList();
+            foreach (var c in newClasses)
             {
+                c.Properties.Insert(0, new Property
+                {
+                    Name = "Id",
+                    BuiltInType = BuiltInType.Int32,
+                    IsRequired = true,
+                    Location = Location.ServerOnly
+                });
                 c.Persisted = true;
+            }
+            OnResourceAdded(resource);
+            foreach (var c in newClasses)
+            {
                 OnClassAdded(c);
             }
             return resource;

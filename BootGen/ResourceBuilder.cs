@@ -56,7 +56,7 @@ namespace BootGen
 
             result.Class = new TypeBuilder(classStore, enumStore).FromType(type);
             result.Class.IsResource = true;
-            result.Class.Properties.Add(new Property {
+            result.Class.Properties.Insert(0, new Property {
                 Name = "Uuid",
                 BuiltInType = BuiltInType.Guid,
                 IsRequired = true

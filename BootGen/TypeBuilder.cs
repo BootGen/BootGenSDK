@@ -28,11 +28,7 @@ namespace BootGen
         {
             var c = new ClassModel();
             c.Name = type.Name.Split('.').Last();
-            c.Properties = new List<Property>{new Property {
-                Name = "Id",
-                BuiltInType = BuiltInType.Int32,
-                IsRequired = true
-            }};
+            c.Properties = new List<Property>{};
             classStore.Add(type, c);
             foreach (var p in type.GetProperties())
             {

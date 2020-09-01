@@ -21,11 +21,23 @@ namespace BootGen
             }
         }
         private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
+        private Dictionary<int, int> NextClassIds = new Dictionary<int, int>();
 
         public SeedDataStore(BootGenApi api)
         {
             this.classStore = api.ClassStore;
             this.resourceStore = api.ResourceStore;
+        }
+
+        private int GetNextId(ClassModel c) {
+            if (!NextClassIds.Keys.Contains(c.Id))
+            {
+                NextClassIds[c.Id] = 2;
+                return 1;
+            }
+            int id = NextClassIds[c.Id];
+            NextClassIds[c.Id] += 1;
+            return id;
         }
 
         private SeedRecord ToSeedRecord(ClassModel c, JObject obj)
@@ -70,6 +82,12 @@ namespace BootGen
             if (c.HasTimestamps) {
                 AddDateTime(record, "Created", DateTime.Now);
                 AddDateTime(record, "Updated", DateTime.Now);
+            }
+            if (c.Persisted) {
+                record.Values.Add(new KeyValuePair<string, string>("Id", GetNextId(c).ToString()));
+            }
+            if (c.IsResource) {
+                record.Values.Add(new KeyValuePair<string, string>("Uuid", Guid.NewGuid().ToString()));
             }
             return record;
         }
