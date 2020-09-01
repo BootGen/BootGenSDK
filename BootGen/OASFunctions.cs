@@ -2,7 +2,7 @@ using System.Linq;
 using BootGen;
 using Scriban.Runtime;
 
-namespace IssueTrackerGenerator
+namespace BootGen
 {
     public class OASFunctions : LanguageBase
     {

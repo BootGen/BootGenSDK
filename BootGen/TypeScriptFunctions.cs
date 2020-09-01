@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Scriban.Runtime;
 
-namespace IssueTrackerGenerator
+namespace BootGen
 {
     public class TypeScriptFunctions : LanguageBase
     {

@@ -1,20 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\angya\\Documents\\bootgen\\BootGen\\BootGen.csproj": {}
+    "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj": {}
   },
   "projects": {
-    "C:\\Users\\angya\\Documents\\bootgen\\BootGen\\BootGen.csproj": {
-      "version": "0.0.180",
+    "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj": {
+      "version": "0.0.182",
       "restore": {
-        "projectUniqueName": "C:\\Users\\angya\\Documents\\bootgen\\BootGen\\BootGen.csproj",
+        "projectUniqueName": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
         "projectName": "BootGen",
-        "projectPath": "C:\\Users\\angya\\Documents\\bootgen\\BootGen\\BootGen.csproj",
-        "packagesPath": "C:\\Users\\angya\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\angya\\Documents\\bootgen\\BootGen\\obj\\",
+        "projectPath": "/home/agabor/Documents/BootGen/BootGen/BootGen.csproj",
+        "packagesPath": "/home/agabor/.nuget/packages/",
+        "outputPath": "/home/agabor/Documents/BootGen/BootGen/obj/",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\angya\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/agabor/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
@@ -60,7 +63,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.301/RuntimeIdentifierGraph.json"
         }
       }
     }
