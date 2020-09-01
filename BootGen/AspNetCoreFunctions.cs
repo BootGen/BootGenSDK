@@ -12,8 +12,6 @@ namespace BootGen
         {
         }
 
-        public static string NameSpace { get; set; }
-
         public static string GetType(TypeDescription property)
         {
             string baseType = GetBaseType(property);

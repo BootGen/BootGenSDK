@@ -10,7 +10,7 @@ namespace BootGen
     public class LanguageBase : ScriptObject
     {
         public string Folder { get; }
-
+        public string NameSpace { get; set; }
         public LanguageBase(string folder)
         {
             Folder = folder;
@@ -65,6 +65,7 @@ namespace BootGen
             {
                 var context = new TemplateContext();
                 context.PushGlobal(this);
+                context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
                 context.SetValue(new ScriptVariableGlobal("class"), c);
                 var renderedModel = template.Render(context);
                 File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(c)), renderedModel);
@@ -79,6 +80,7 @@ namespace BootGen
             {
                 var context = new TemplateContext();
                 context.PushGlobal(this);
+                context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
                 context.SetValue(new ScriptVariableGlobal("enum"), e);
                 var renderedModel = template.Render(context);
                 File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(e)), renderedModel);
@@ -102,6 +104,7 @@ namespace BootGen
             {
                 var context = new TemplateContext();
                 context.PushGlobal(this);
+                context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
                 context.SetValue(new ScriptVariableGlobal("controller"), controller);
                 var renderedController = template.Render(context);
                 File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(controller)), renderedController);
@@ -116,6 +119,7 @@ namespace BootGen
             {
                 var context = new TemplateContext();
                 context.PushGlobal(this);
+                context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
                 context.SetValue(new ScriptVariableGlobal("resource"), resource);
                 var renderedController = template.Render(context);
                 File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(resource)), renderedController);
