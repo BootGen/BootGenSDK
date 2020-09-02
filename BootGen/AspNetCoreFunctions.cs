@@ -109,14 +109,9 @@ namespace BootGen
             var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
             return Parameters(operation);
         }
-        public static string PutParameters(Resource resource)
+        public static string ItemGetParameters(Resource resource)
         {
-            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Put);
-            return Parameters(operation);
-        }
-        public static string DeleteParameters(Resource resource)
-        {
-            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
+            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
             return Parameters(operation);
         }
         public static string PostParameters(Resource resource)
@@ -135,10 +130,56 @@ namespace BootGen
             return Parameters(operation);
         }
 
-        public static string ItemGetParameters(Resource resource)
+        public static string GetParametersService(Resource resource)
+        {
+            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
+            return Parameters(operation, false);
+        }
+        public static string ItemGetParametersService(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation);
+            return Parameters(operation, false);
+        }
+        public static string PostParametersService(Resource resource)
+        {
+            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Post);
+            return Parameters(operation, false);
+        }
+        public static string ItemDeleteParametersService(Resource resource)
+        {
+            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
+            return Parameters(operation, false);
+        }
+        public static string ItemPutParametersService(Resource resource)
+        {
+            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Put);
+            return Parameters(operation, false);
+        }
+
+        public static string GetParametersCall(Resource resource)
+        {
+            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
+            return Parameters(operation, false, false);
+        }
+        public static string ItemGetParametersCall(Resource resource)
+        {
+            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
+            return Parameters(operation, false, false);
+        }
+        public static string PostParametersCall(Resource resource)
+        {
+            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Post);
+            return Parameters(operation, false, false);
+        }
+        public static string ItemDeleteParametersCall(Resource resource)
+        {
+            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
+            return Parameters(operation, false, false);
+        }
+        public static string ItemPutParametersCall(Resource resource)
+        {
+            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Put);
+            return Parameters(operation, false, false);
         }
 
         public static string Parameters(Method method)
@@ -157,7 +198,7 @@ namespace BootGen
             return builder.ToString();
         }
 
-        private static string Parameters(Operation operation)
+        private static string Parameters(Operation operation, bool withAttributes = true, bool withTypes = true)
         {
             StringBuilder builder = new StringBuilder();
             if (operation != null)
@@ -166,29 +207,42 @@ namespace BootGen
                 {
                     if (builder.Length != 0)
                         builder.Append(", ");
-                    builder.Append(GetKind(param));
-                    builder.Append(" ");
-                    builder.Append(GetType(param));
-                    builder.Append(" ");
+                    if (withAttributes)
+                    {
+                        builder.Append(GetKind(param));
+                        builder.Append(" ");
+                    }
+                    if (withTypes)
+                    {
+                        builder.Append(GetType(param));
+                        builder.Append(" ");
+                    }
                     builder.Append(param.Name);
                 }
                 if (operation.Body != null)
                 {
                     if (builder.Length != 0)
                         builder.Append(", ");
-                    builder.Append("[FromBody] ");
+                    if (withAttributes) 
+                        builder.Append("[FromBody] ");
                     if (operation.BodyIsCollection)
                     {
-                        builder.Append("List<");
-                        builder.Append(operation.Body.Name);
-                        builder.Append("> ");
+                        if (withTypes)
+                        {
+                            builder.Append("List<");
+                            builder.Append(operation.Body.Name);
+                            builder.Append("> ");
+                        }
                         builder.Append(operation.Body.Name.ToLower());
                         builder.Append("s");
                     }
                     else
                     {
-                        builder.Append(operation.Body.Name);
-                        builder.Append(" ");
+                        if (withTypes)
+                        {
+                            builder.Append(operation.Body.Name);
+                            builder.Append(" ");
+                        }
                         builder.Append(operation.Body.Name.ToLower());
                     }
                 }

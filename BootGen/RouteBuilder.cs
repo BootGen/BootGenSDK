@@ -125,7 +125,7 @@ namespace BootGen
                     Body = resource.Class,
                     BodyIsCollection = false,
                     SuccessCode = 200,
-                    SuccessDescription = $"successful deletion",
+                    SuccessDescription = $"successful insertion",
                     Parameters = path.Parameters
                 });
         }
