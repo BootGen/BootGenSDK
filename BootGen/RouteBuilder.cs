@@ -58,7 +58,8 @@ namespace BootGen
                                 ResponseIsCollection = method.ReturnType.IsCollection,
                                 SuccessCode = 200,
                                 SuccessDescription = method.Name + " success",
-                                Summary = method.Name
+                                Summary = method.Name,
+                                Authenticate = controller.Authenticate
                             }
                         }
                 };
@@ -114,7 +115,8 @@ namespace BootGen
                 ResponseIsCollection = true,
                 SuccessCode = 200,
                 SuccessDescription = $"successful query",
-                Parameters = path.Parameters
+                Parameters = path.Parameters,
+                Authenticate = resource.Authenticate
             });
             if (!resource.IsReadonly)
                 route.Operations.Add(new Operation
@@ -126,7 +128,8 @@ namespace BootGen
                     BodyIsCollection = false,
                     SuccessCode = 200,
                     SuccessDescription = $"successful insertion",
-                    Parameters = path.Parameters
+                    Parameters = path.Parameters,
+                    Authenticate = resource.Authenticate
                 });
         }
 
@@ -143,7 +146,8 @@ namespace BootGen
                 SuccessCode = 200,
                 SuccessDescription = $"successful query",
                 Response = resource.Class,
-                Parameters = path.Parameters
+                Parameters = path.Parameters,
+                Authenticate = resource.Authenticate
             });
             if (!resource.IsReadonly)
             {
@@ -156,7 +160,8 @@ namespace BootGen
                         SuccessCode = 200,
                         SuccessDescription = $"successful update",
                         Body = resource.Class,
-                        Parameters = path.Parameters
+                        Parameters = path.Parameters,
+                        Authenticate = resource.Authenticate
                     });
                 subRoute.Operations.Add(new Operation
                 {
@@ -165,7 +170,8 @@ namespace BootGen
                     Summary = $"delete {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion",
-                    Parameters = path.Parameters
+                    Parameters = path.Parameters,
+                    Authenticate = resource.Authenticate
                 });
             }
         }

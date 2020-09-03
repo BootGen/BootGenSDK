@@ -16,5 +16,6 @@ namespace BootGen
         public string SuccessDescription { get; internal set; }
         public List<Parameter> Parameters { get; internal set; } = new List<Parameter>();
         public bool HasParameters => Parameters.Any();
+        public bool Authenticate { get; internal set; }
     }
 }

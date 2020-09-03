@@ -6,5 +6,6 @@ namespace BootGen
     {
         public string Name { get; set; }
         public List<Method> Methods { get; set; }
+        public bool Authenticate { get; internal set; }
     }
 }

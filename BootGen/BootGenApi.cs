@@ -76,10 +76,11 @@ namespace BootGen
             return pivotClass;
         }
 
-        public Resource AddResource<T>(string name, bool isReadonly = false, Resource parent = null, bool withPivot = false)
+        public Resource AddResource<T>(string name, bool isReadonly = false, Resource parent = null, bool withPivot = false, bool authenticate = false)
         {
             var classCount = Classes.Count;
             Resource resource = resourceBuilder.FromClass<T>(parent);
+            resource.Authenticate = authenticate;
             resource.IsReadonly = isReadonly;
             resource.PluralName = name;
             if (parent == null)
@@ -115,13 +116,14 @@ namespace BootGen
             return resource;
         }
 
-        public Controller AddController<T>()
+        public Controller AddController<T>(bool authenticate = false)
         {
             var type = typeof(T);
             var controller = new Controller
             {
                 Name = type.Name.Split('.').Last(),
-                Methods = new List<Method>()
+                Methods = new List<Method>(),
+                Authenticate = authenticate
             };
             foreach (var method in type.GetMethods())
             {

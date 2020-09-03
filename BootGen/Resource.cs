@@ -18,6 +18,7 @@ namespace BootGen
         public List<Resource> NestedResources { get; set; }
         public ClassModel Pivot { get; internal set; }
         public bool HasTimestamps { get => Class.HasTimestamps; internal set => Class.HasTimestamps = value; }
+        public bool Authenticate { get; internal set; }
     }
 
 
