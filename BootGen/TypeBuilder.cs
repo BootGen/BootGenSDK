@@ -55,12 +55,14 @@ namespace BootGen
                 c.Properties.Add(new Property {
                     Name = "Created",
                     IsRequired = true,
-                    BuiltInType = BuiltInType.DateTime
+                    BuiltInType = BuiltInType.DateTime,
+                    IsClientReadonly = true
                 });
                 c.Properties.Add(new Property {
                     Name = "Updated",
                     IsRequired = true,
-                    BuiltInType = BuiltInType.DateTime
+                    BuiltInType = BuiltInType.DateTime,
+                    IsClientReadonly = true
                 });
             }
 

@@ -24,6 +24,7 @@ namespace BootGen
         public bool IsClientOnly => Location == Location.ClientOnly;
         public Property MirrorProperty { get; set; }
         internal bool ParentReference { get; set; }
+        public bool IsClientReadonly { get; set; }
     }
     
 

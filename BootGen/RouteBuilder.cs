@@ -11,7 +11,7 @@ namespace BootGen
             var result = new List<Route>();
             var route = new Route();
             string resourceName = resource.PluralName.ToCamelCase();
-            basePath = basePath.Adding(new PathComponent { Name = resourceName });
+            basePath = basePath.Adding(new PathComponent { Name = resourceName.ToKebabCase() });
             route.PathModel = basePath;
             result.Add(route);
             resource.Route = route;
@@ -74,7 +74,7 @@ namespace BootGen
         }
         public static Parameter ConvertToParameter(Property property)
         {
-            var oasProp = new Parameter { Name = property.Name.ToSnakeCase() };
+            var oasProp = new Parameter { Name = property.Name.ToCamelCase() };
             switch (property.BuiltInType)
             {
                 case BuiltInType.Bool:

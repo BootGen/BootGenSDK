@@ -233,7 +233,7 @@ namespace BootGen
                             builder.Append(operation.Body.Name);
                             builder.Append("> ");
                         }
-                        builder.Append(operation.Body.Name.ToLower());
+                        builder.Append(operation.Body.Name.ToCamelCase());
                         builder.Append("s");
                     }
                     else
@@ -243,7 +243,7 @@ namespace BootGen
                             builder.Append(operation.Body.Name);
                             builder.Append(" ");
                         }
-                        builder.Append(operation.Body.Name.ToLower());
+                        builder.Append(operation.Body.Name.ToCamelCase());
                     }
                 }
             }

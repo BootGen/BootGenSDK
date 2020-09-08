@@ -33,7 +33,8 @@ namespace BootGen
                 {
                     Name = "Id",
                     BuiltInType = BuiltInType.Int32,
-                    IsRequired = true
+                    IsRequired = true,
+                    IsClientReadonly = true
                 });
             return resource;
         }
