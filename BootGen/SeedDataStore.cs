@@ -29,15 +29,18 @@ namespace BootGen
             this.resourceStore = api.ResourceStore;
         }
 
-        private int GetNextId(ClassModel c) {
+        private string GetNextId(ClassModel c)
+        {
+            if (c.IdProperty.BuiltInType == BuiltInType.Guid)
+                return $"Guid.Parse(\"{Guid.NewGuid().ToString()}\")";
             if (!NextClassIds.Keys.Contains(c.Id))
             {
                 NextClassIds[c.Id] = 2;
-                return 1;
+                return 1.ToString();
             }
             int id = NextClassIds[c.Id];
             NextClassIds[c.Id] += 1;
-            return id;
+            return id.ToString();
         }
 
         private SeedRecord ToSeedRecord(ClassModel c, JObject obj)
@@ -64,34 +67,39 @@ namespace BootGen
                         AddDateTime(record, property.Name, dateTime);
                         break;
                     case JTokenType.String:
-                        record.Values.Add(new KeyValuePair<string, string>(property.Name, $"\"{property.Value.ToString()}\""));
+                        record.Set(property.Name, $"\"{property.Value.ToString()}\"");
                         break;
                     case JTokenType.Integer:
                         if (classProperty.BuiltInType == BuiltInType.Enum)
                         {
-                            record.Values.Add(new KeyValuePair<string, string>(property.Name, $"{classProperty.Enum.Name}.{classProperty.Enum.Values[(int)property.Value]}"));
+                            record.Set(property.Name, $"{classProperty.Enum.Name}.{classProperty.Enum.Values[(int)property.Value]}");
                         }
                         else
-                            record.Values.Add(new KeyValuePair<string, string>(property.Name, property.Value.ToString()));
+                            record.Set(property.Name, property.Value.ToString());
                         break;
                     default:
-                        record.Values.Add(new KeyValuePair<string, string>(property.Name, property.Value.ToString()));
+                        record.Set(property.Name, property.Value.ToString());
                         break;
                 }
             }
-            if (c.HasTimestamps) {
+            if (c.HasTimestamps)
+            {
                 AddDateTime(record, "Created", DateTime.Now);
                 AddDateTime(record, "Updated", DateTime.Now);
             }
-            if (c.Persisted) {
-                record.Values.Insert(0, new KeyValuePair<string, string>("Id", GetNextId(c).ToString()));
+            if (c.Persisted)
+            {
+                if (record.HasKey("Id"))
+                    record.Set("Id", GetNextId(c));
+                else
+                    record.Values.Insert(0, KeyValuePair.Create("Id", GetNextId(c)));
             }
             return record;
         }
 
         private static void AddDateTime(SeedRecord record, string propertyName, DateTime dateTime)
         {
-            record.Values.Add(new KeyValuePair<string, string>(propertyName, $"new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second})"));
+            record.Set(propertyName, $"new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second})");
         }
 
         public void Add<T>(Resource resource, IEnumerable<T> data)
@@ -227,6 +235,28 @@ namespace BootGen
         internal string GetId()
         {
             return Values.FirstOrDefault(kvp => kvp.Key == "Id").Value;
+        }
+
+        internal bool HasKey(string key)
+        {
+            return Values.Any(kvp => kvp.Key == key);
+        }
+        public string Get(string key)
+        {
+            return Values.FirstOrDefault(kvp => kvp.Key == key).Value;
+        }
+
+        internal void Set(string key, string value)
+        {
+            for (int i = 0; i < Values.Count; ++i)
+            {
+                if (Values[i].Key == key)
+                {
+                    Values[i] = KeyValuePair.Create(key, value);
+                    return;
+                }
+            }
+            Values.Add(new KeyValuePair<string, string>(key, value));
         }
     }
 
