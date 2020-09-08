@@ -83,9 +83,6 @@ namespace BootGen
                 AddDateTime(record, "Created", DateTime.Now);
                 AddDateTime(record, "Updated", DateTime.Now);
             }
-            if (c.IsResource) {
-                record.Values.Insert(0, new KeyValuePair<string, string>("Uuid", $"Guid.Parse(\"{Guid.NewGuid()}\")"));
-            }
             if (c.Persisted) {
                 record.Values.Insert(0, new KeyValuePair<string, string>("Id", GetNextId(c).ToString()));
             }
@@ -153,7 +150,6 @@ namespace BootGen
                     dataList.Add(new SeedData(obj, record));
                 }
                 item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + "Id", record.GetId()));
-                item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + "Uuid", record.GetUuid()));
                 return true;
             }
             else if (token is JArray array)
@@ -182,9 +178,6 @@ namespace BootGen
                     else
                     {
                         record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.GetId()));
-                        string parentUuid = item.SeedRecord.GetUuid();
-                        if (!string.IsNullOrEmpty(parentUuid))
-                            record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Uuid", parentUuid));
                     }
 
                 }
@@ -234,10 +227,6 @@ namespace BootGen
         internal string GetId()
         {
             return Values.FirstOrDefault(kvp => kvp.Key == "Id").Value;
-        }
-        internal string GetUuid()
-        {
-            return Values.FirstOrDefault(kvp => kvp.Key == "Uuid").Value;
         }
     }
 

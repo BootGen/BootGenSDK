@@ -20,5 +20,11 @@ namespace BootGen
         public bool Persisted { get; set; }
         public bool HasTimestamps { get; internal set; }
         public bool ConcurrencyControl { get; internal set; }
+        public Property IdProperty => PropertyWithName("Id");
+
+        public Property PropertyWithName(string name)
+        {
+            return Properties.FirstOrDefault(p => p.Name == name);
+        }
     }
 }

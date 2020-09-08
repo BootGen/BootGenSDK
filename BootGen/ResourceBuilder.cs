@@ -28,6 +28,13 @@ namespace BootGen
             }
             Resource resource = FromType(typeof(T), parentResources);
             CheckDanglingResources(typeof(T));
+            if (resource.Class.Properties.All(p => p.Name != "Id"))
+                resource.Class.Properties.Insert(0, new Property
+                {
+                    Name = "Id",
+                    BuiltInType = BuiltInType.Int32,
+                    IsRequired = true
+                });
             return resource;
         }
 
@@ -41,8 +48,8 @@ namespace BootGen
             }
             foreach (var p in type.GetProperties())
             {
-                    if (!checkedTypes.Contains(p.PropertyType))
-                        CheckDanglingResources(p.PropertyType, checkedTypes);
+                if (!checkedTypes.Contains(p.PropertyType))
+                    CheckDanglingResources(p.PropertyType, checkedTypes);
             }
         }
 
@@ -55,15 +62,7 @@ namespace BootGen
             }
 
             result.Class = new TypeBuilder(classStore, enumStore).FromType(type);
-            if (!result.Class.IsResource)
-            {
-                result.Class.IsResource = true;
-                result.Class.Properties.Insert(0, new Property {
-                    Name = "Uuid",
-                    BuiltInType = BuiltInType.Guid,
-                    IsRequired = true
-                });
-            }
+            result.Class.IsResource = true;
             result.NestedResources = new List<Resource>();
             result.ParentResources = parentResources ?? new List<Resource>();
             return result;

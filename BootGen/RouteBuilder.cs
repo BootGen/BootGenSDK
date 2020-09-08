@@ -28,7 +28,7 @@ namespace BootGen
         {
             var subRoute = new Route();
             string itemIdName = resource.Class.Name.ToCamelCase() + "Id";
-            Parameter idParameter = ConvertToParameter(resource.Class.Properties.First(p => p.Name == "Uuid"));
+            Parameter idParameter = ConvertToParameter(resource.Class.Properties.First(p => p.Name == "Id"));
             idParameter.Name = itemIdName;
             idParameter.Kind = RestParamterKind.Path;
             var itemPath = basePath.Adding(new PathComponent { Parameter = idParameter, Name = itemIdName });

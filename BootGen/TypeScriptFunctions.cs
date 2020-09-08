@@ -117,7 +117,7 @@ namespace BootGen
                 {
                     builder.Append("${");
                     if (component == resource.ItemRoute.PathModel.Last())
-                        builder.Append("uuid");
+                        builder.Append("id");
                     else
                     {
                         builder.Append(resource.ParentResource.Class.Name.ToLower());

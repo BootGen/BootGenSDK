@@ -133,6 +133,8 @@ namespace BootGen
                     return BuiltInType.Bool;
                 case "datetime":
                     return BuiltInType.DateTime;
+                case "guid":
+                    return BuiltInType.Guid;
                 default:
                     return BuiltInType.Object;
             }

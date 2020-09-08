@@ -99,13 +99,13 @@ namespace BootGen
             var newClasses = Classes.Skip(classCount).ToList();
             foreach (var c in newClasses)
             {
-                c.Properties.Insert(0, new Property
-                {
-                    Name = "Id",
-                    BuiltInType = BuiltInType.Int32,
-                    IsRequired = true,
-                    Location = Location.ServerOnly
-                });
+                if (c.Properties.All(p => p.Name != "Id"))
+                    c.Properties.Insert(0, new Property
+                    {
+                        Name = "Id",
+                        BuiltInType = BuiltInType.Int32,
+                        IsRequired = true
+                    });
                 c.Persisted = true;
             }
             OnResourceAdded(resource);
@@ -257,17 +257,7 @@ namespace BootGen
                     property.Class.Properties.Add(new Property
                     {
                         Name = c.Name + "Id",
-                        BuiltInType = BuiltInType.Int32,
-                        IsCollection = false,
-                        IsRequired = true,
-                        Location = Location.ServerOnly
-                    });
-                if (!property.Class.Properties.Any(p => p.Name == c.Name + "Uuid"))
-                    property.Class.Properties.Add(new Property
-                    {
-                        Name = c.Name + "Uuid",
-                        BuiltInType = BuiltInType.Guid,
-                        IsCollection = false,
+                        BuiltInType = c.IdProperty.BuiltInType,
                         IsRequired = true
                     });
                 AddEfRelationsParentToChild(property.Class);
@@ -290,16 +280,7 @@ namespace BootGen
                         c.Properties.Insert(propertyIdx + 1, new Property
                         {
                             Name = property.Name + "Id",
-                            BuiltInType = BuiltInType.Int32,
-                            IsCollection = false,
-                            Location = Location.ServerOnly,
-                            IsRequired = true
-                        });
-                        c.Properties.Insert(propertyIdx + 2, new Property
-                        {
-                            Name = property.Name + "Uuid",
-                            BuiltInType = BuiltInType.Guid,
-                            IsCollection = false,
+                            BuiltInType = property.Class.IdProperty.BuiltInType,
                             IsRequired = true
                         });
                         property.Location = Location.ServerOnly;
