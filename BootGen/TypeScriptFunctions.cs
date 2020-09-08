@@ -64,7 +64,7 @@ namespace BootGen
                 if (component.IsVariable)
                 {
                     builder.Append("${");
-                    builder.Append(resource.ParentResource.Class.Name.ToLower());
+                    builder.Append(resource.ParentResource.Class.Name.ToCamelCase());
                     builder.Append(".id}");
                 }
                 else
