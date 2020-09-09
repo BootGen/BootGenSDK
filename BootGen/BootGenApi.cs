@@ -50,23 +50,23 @@ namespace BootGen
                 Location = Location.ServerOnly,
                 Properties = new List<Property> {
                         new Property {
-                            Name = parent.Class.Name + "Id",
+                            Name = parent.SingularName + "Id",
                             BuiltInType = BuiltInType.Int32,
                             IsRequired = true
                         },
                         new Property {
-                            Name = parent.Class.Name,
+                            Name = parent.SingularName,
                             BuiltInType = BuiltInType.Object,
                             Class = parent.Class,
                             IsRequired = true
                         },
                         new Property {
-                            Name = resource.Class.Name + "Id",
+                            Name = resource.SingularName + "Id",
                             BuiltInType = BuiltInType.Int32,
                             IsRequired = true
                         },
                         new Property {
-                            Name = resource.Class.Name,
+                            Name = resource.SingularName,
                             BuiltInType = BuiltInType.Object,
                             Class = resource.Class,
                             IsRequired = true
@@ -91,7 +91,7 @@ namespace BootGen
             Routes.AddRange(resource.GetRoutes(ClassStore));
             if (withPivot)
             {
-                ClassModel pivotClass = CreatePivot(parent, resource, name.Substring(0, name.Length-1));
+                ClassModel pivotClass = CreatePivot(parent, resource, resource.SingularName + "Pivot");
                 resource.Pivot = pivotClass;
                 ClassStore.Add(pivotClass);
             }

@@ -107,79 +107,79 @@ namespace BootGen
         public static string GetParameters(Resource resource)
         {
             var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation);
+            return Parameters(operation, resource);
         }
         public static string ItemGetParameters(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation);
+            return Parameters(operation, resource);
         }
         public static string PostParameters(Resource resource)
         {
             var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Post);
-            return Parameters(operation);
+            return Parameters(operation, resource);
         }
         public static string ItemDeleteParameters(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
-            return Parameters(operation);
+            return Parameters(operation, resource);
         }
         public static string ItemPutParameters(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Put);
-            return Parameters(operation);
+            return Parameters(operation, resource);
         }
 
         public static string GetParametersService(Resource resource)
         {
             var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation, false);
+            return Parameters(operation, resource, false);
         }
         public static string ItemGetParametersService(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation, false);
+            return Parameters(operation, resource, false);
         }
         public static string PostParametersService(Resource resource)
         {
             var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Post);
-            return Parameters(operation, false);
+            return Parameters(operation, resource, false);
         }
         public static string ItemDeleteParametersService(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
-            return Parameters(operation, false);
+            return Parameters(operation, resource, false);
         }
         public static string ItemPutParametersService(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Put);
-            return Parameters(operation, false);
+            return Parameters(operation, resource, false);
         }
 
         public static string GetParametersCall(Resource resource)
         {
             var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation, false, false);
+            return Parameters(operation, resource, false, false);
         }
         public static string ItemGetParametersCall(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation, false, false);
+            return Parameters(operation, resource, false, false);
         }
         public static string PostParametersCall(Resource resource)
         {
             var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Post);
-            return Parameters(operation, false, false);
+            return Parameters(operation, resource, false, false);
         }
         public static string ItemDeleteParametersCall(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
-            return Parameters(operation, false, false);
+            return Parameters(operation, resource, false, false);
         }
         public static string ItemPutParametersCall(Resource resource)
         {
             var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Put);
-            return Parameters(operation, false, false);
+            return Parameters(operation, resource, false, false);
         }
 
         public static string Parameters(Method method)
@@ -198,7 +198,7 @@ namespace BootGen
             return builder.ToString();
         }
 
-        private static string Parameters(Operation operation, bool withAttributes = true, bool withTypes = true)
+        private static string Parameters(Operation operation, Resource resource, bool withAttributes = true, bool withTypes = true)
         {
             StringBuilder builder = new StringBuilder();
             if (operation != null)
@@ -233,8 +233,7 @@ namespace BootGen
                             builder.Append(operation.Body.Name);
                             builder.Append("> ");
                         }
-                        builder.Append(operation.Body.Name.ToCamelCase());
-                        builder.Append("s");
+                        builder.Append(resource.PluralName.ToCamelCase());
                     }
                     else
                     {
@@ -243,7 +242,7 @@ namespace BootGen
                             builder.Append(operation.Body.Name);
                             builder.Append(" ");
                         }
-                        builder.Append(operation.Body.Name.ToCamelCase());
+                        builder.Append(resource.SingularName.ToCamelCase());
                     }
                 }
             }
