@@ -77,6 +77,9 @@ namespace BootGen
                         else
                             record.Set(property.Name, property.Value.ToString());
                         break;
+                    case JTokenType.Boolean:
+                        record.Set(property.Name, ((bool)property.Value).ToString().ToLower());
+                        break;
                     default:
                         record.Set(property.Name, property.Value.ToString());
                         break;

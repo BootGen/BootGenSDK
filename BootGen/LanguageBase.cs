@@ -45,7 +45,7 @@ namespace BootGen
             var rendered = template.Render(context);
             File.WriteAllText(System.IO.Path.Combine(dir, targetFileName), rendered);
         }
-        public void RenderApi(string folderName, string targetFileName, string templateFile, string baseURL, BootGenApi api)
+        public void RenderApi(string folderName, string targetFileName, string templateFile, string baseURL, string projectTitle, BootGenApi api)
         {
             var dir = GetPath(folderName);
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
@@ -53,6 +53,7 @@ namespace BootGen
             context.PushGlobal(this);
             context.SetValue(new ScriptVariableGlobal("api"), api);
             context.SetValue(new ScriptVariableGlobal("base_url"), baseURL);
+            context.SetValue(new ScriptVariableGlobal("project_title"), projectTitle);
             var rendered = template.Render(context);
             File.WriteAllText(System.IO.Path.Combine(dir, targetFileName), rendered);
         }
