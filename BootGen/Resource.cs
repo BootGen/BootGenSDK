@@ -19,9 +19,9 @@ namespace BootGen
         public ClassModel Pivot { get; internal set; }
         public bool HasTimestamps { get => Class.HasTimestamps; internal set => Class.HasTimestamps = value; }
         public bool Authenticate { get; internal set; }
-        public bool GenerateControler { get; set; }
-        public bool GenerateServiceInterface { get; set; }
-        public bool GenerateService { get; set; }
+        public bool GenerateControler { get; set; } = true;
+        public bool GenerateServiceInterface { get; set; } = true;
+        public bool GenerateService { get; set; } = true;
     }
 
 }
