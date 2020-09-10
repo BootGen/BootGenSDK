@@ -28,6 +28,8 @@ namespace BootGen
         {
             var c = new ClassModel();
             c.Name = type.Name.Split('.').Last();
+            var pluralNameAttribute = type.CustomAttributes.FirstOrDefault(d => d.AttributeType == typeof(PluralName));
+            c.PluralName = pluralNameAttribute?.ConstructorArguments?.FirstOrDefault().Value as string ?? c.Name + "s";
             c.Properties = new List<Property>{};
             classStore.Add(type, c);
             foreach (var p in type.GetProperties())

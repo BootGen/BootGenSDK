@@ -90,7 +90,7 @@ namespace BootGen
                 {
                     builder.Append("${");
                     if (component == resource.ItemRoute.PathModel.Last())
-                        builder.Append(resource.SingularName.ToCamelCase());
+                        builder.Append(resource.Name.ToCamelCase());
                     else
                         builder.Append(resource.ParentResource.Class.Name.ToCamelCase());
                     builder.Append(".id}");

@@ -50,23 +50,23 @@ namespace BootGen
                 Location = Location.ServerOnly,
                 Properties = new List<Property> {
                         new Property {
-                            Name = parent.SingularName + "Id",
+                            Name = parent.Name + "Id",
                             BuiltInType = BuiltInType.Int32,
                             IsRequired = true
                         },
                         new Property {
-                            Name = parent.SingularName,
+                            Name = parent.Name,
                             BuiltInType = BuiltInType.Object,
                             Class = parent.Class,
                             IsRequired = true
                         },
                         new Property {
-                            Name = resource.SingularName + "Id",
+                            Name = resource.Name + "Id",
                             BuiltInType = BuiltInType.Int32,
                             IsRequired = true
                         },
                         new Property {
-                            Name = resource.SingularName,
+                            Name = resource.Name,
                             BuiltInType = BuiltInType.Object,
                             Class = resource.Class,
                             IsRequired = true
@@ -76,22 +76,25 @@ namespace BootGen
             return pivotClass;
         }
 
-        public Resource AddResource<T>(string name, bool isReadonly = false, Resource parent = null, bool withPivot = false, bool authenticate = false)
+        public Resource AddResource<T>(string name, string pluralName = null, bool isReadonly = false, ParentRelation parent = null, bool withPivot = false, bool authenticate = false)
         {
+            if (parent?.Resource.ParentResource != null)
+                throw new Exception("Only a single layer of resource nesting is supported.");
             var classCount = Classes.Count;
-            Resource resource = resourceBuilder.FromClass<T>(parent);
+            Resource resource = resourceBuilder.FromClass<T>(parent?.Resource);
             resource.Authenticate = authenticate;
             resource.IsReadonly = isReadonly;
-            resource.PluralName = name;
+            resource.Name = name;
+            resource.PluralName = pluralName ?? name + "s";
             if (parent == null)
                 ResourceStore.Add(resource);
             else
-                parent.NestedResources.Add(resource);
+                parent.Resource.NestedResources.Add(resource);
 
             Routes.AddRange(resource.GetRoutes(ClassStore));
             if (withPivot)
             {
-                ClassModel pivotClass = CreatePivot(parent, resource, resource.SingularName + "Pivot");
+                ClassModel pivotClass = CreatePivot(parent.Resource, resource, resource.Name + "Pivot");
                 resource.Pivot = pivotClass;
                 ClassStore.Add(pivotClass);
             }
@@ -109,7 +112,7 @@ namespace BootGen
                     });
                 c.Persisted = true;
             }
-            OnResourceAdded(resource);
+            OnResourceAdded(resource, parent);
             foreach (var c in newClasses)
             {
                 OnClassAdded(c);
@@ -181,10 +184,10 @@ namespace BootGen
         }
 
         HashSet<int> ProcessedClassIds = new HashSet<int>();
-        private void OnResourceAdded(Resource resource)
+        private void OnResourceAdded(Resource resource, ParentRelation parent)
         {
             if (resource.Pivot == null)
-                AddEfRelations(resource);
+                AddEfRelations(resource, parent);
         }
         private void OnClassAdded(ClassModel c)
         {
@@ -196,18 +199,17 @@ namespace BootGen
         }
 
 
-        public static void AddEfRelations(Resource resource)
+        public static void AddEfRelations(Resource resource, ParentRelation parent)
         {
-            Resource parent = resource.ParentResource;
             if (parent == null)
                 return;
-            if (!resource.Class.Properties.Any(p => p.Name == parent.Class.Name))
+            if (!resource.Class.Properties.Any(p => p.Name == parent.Resource.Class.Name))
             {
                 Property referenceProperty = new Property
                 {
-                    Name = parent.Class.Name,
+                    Name = parent.Name,
                     BuiltInType = BuiltInType.Object,
-                    Class = parent.Class,
+                    Class = parent.Resource.Class,
                     IsCollection = false,
                     IsRequired = true,
                     Location = Location.ServerOnly,
@@ -216,14 +218,15 @@ namespace BootGen
                 resource.Class.Properties.Add(referenceProperty);
             }
 
-            if (!resource.Class.Properties.Any(p => p.Name == parent.Class.Name + "Id"))
+            if (!resource.Class.Properties.Any(p => p.Name == parent.Name + "Id"))
                 resource.Class.Properties.Add(new Property
                 {
-                    Name = parent.Class.Name + "Id",
+                    Name = parent.Name + "Id",
                     BuiltInType = BuiltInType.Int32,
                     IsCollection = false,
                     IsRequired = true,
-                    Location = Location.ServerOnly
+                    Location = Location.ServerOnly,
+                    IdReferenceToParent = parent.Resource
                 });
         }
 
@@ -298,5 +301,11 @@ namespace BootGen
         public string Name { get; set; }
         public List<Property> Parameters { get; set; }
         public TypeDescription ReturnType { get; set; }
+    }
+
+    public class ParentRelation
+    {
+        public string Name { get; set; }
+        public Resource Resource { get; set; }
     }
 }

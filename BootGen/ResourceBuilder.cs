@@ -16,17 +16,7 @@ namespace BootGen
         }
         public Resource FromClass<T>(Resource parent = null)
         {
-            List<Resource> parentResources = null;
-            if (parent != null)
-            {
-                parentResources = new List<Resource>();
-                while (parent != null)
-                {
-                    parentResources.Insert(0, parent);
-                    parent = parent.ParentResource;
-                }
-            }
-            Resource resource = FromType(typeof(T), parentResources);
+            Resource resource = FromType(typeof(T), parent);
             CheckDanglingResources(typeof(T));
             if (resource.Class.Properties.All(p => p.Name != "Id"))
                 resource.Class.Properties.Insert(0, new Property
@@ -54,7 +44,7 @@ namespace BootGen
             }
         }
 
-        private Resource FromType(Type type, List<Resource> parentResources = null)
+        private Resource FromType(Type type, Resource parentResource = null)
         {
             var result = new Resource();
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
@@ -65,7 +55,7 @@ namespace BootGen
             result.Class = new TypeBuilder(classStore, enumStore).FromType(type);
             result.Class.IsResource = true;
             result.NestedResources = new List<Resource>();
-            result.ParentResources = parentResources ?? new List<Resource>();
+            result.ParentResource = parentResource;
             return result;
         }
     }

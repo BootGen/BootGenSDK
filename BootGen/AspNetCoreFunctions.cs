@@ -41,6 +41,13 @@ namespace BootGen
 
         }
 
+        public static string ParentIdName(Resource resource)
+        {
+            if (resource.ParentResource == null)
+                return null;
+            return resource.Class.Properties.FirstOrDefault(p => p.IdReferenceToParent == resource.ParentResource)?.Name;
+        }
+
         private static List<string> GetPropertiesToLoadR(ClassModel c, List<ClassModel> parents = null, string prefix = null)
         {
             var result = new List<string>();
@@ -97,8 +104,8 @@ namespace BootGen
         public static string ControllerName(Resource resource)
         {
             var builder = new StringBuilder();
-            foreach (var res in resource.ParentResources)
-                builder.Append(res.PluralName);
+            if (resource.ParentResource != null)
+                builder.Append(resource.ParentResource.PluralName);
             builder.Append(resource.PluralName);
             builder.Append("Controller");
             return builder.ToString();
@@ -242,7 +249,7 @@ namespace BootGen
                             builder.Append(operation.Body.Name);
                             builder.Append(" ");
                         }
-                        builder.Append(resource.SingularName.ToCamelCase());
+                        builder.Append(resource.Name.ToCamelCase());
                     }
                 }
             }

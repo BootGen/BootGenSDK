@@ -25,6 +25,7 @@ namespace BootGen
         public Property MirrorProperty { get; set; }
         internal bool ParentReference { get; set; }
         public bool IsClientReadonly { get; set; }
+        internal Resource IdReferenceToParent { get; set; }
     }
     
 

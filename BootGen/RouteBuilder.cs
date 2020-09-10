@@ -27,7 +27,7 @@ namespace BootGen
         private static Route GetItemRoute(Resource resource, Path basePath)
         {
             var subRoute = new Route();
-            string itemIdName = resource.SingularName.ToCamelCase() + "Id";
+            string itemIdName = resource.Name.ToCamelCase() + "Id";
             Parameter idParameter = ConvertToParameter(resource.Class.Properties.First(p => p.Name == "Id"));
             idParameter.Name = itemIdName;
             idParameter.Kind = RestParamterKind.Path;
@@ -141,7 +141,7 @@ namespace BootGen
             subRoute.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Get,
-                Name = "get" + resource.SingularName + "ById",
+                Name = "get" + resource.Name + "ById",
                 Summary = $"retrieve {resourceName} resource",
                 SuccessCode = 200,
                 SuccessDescription = $"successful query",
@@ -155,7 +155,7 @@ namespace BootGen
                     subRoute.Operations.Add(new Operation
                     {
                         Verb = HttpVerb.Put,
-                        Name = "update" + resource.SingularName + "ById",
+                        Name = "update" + resource.Name + "ById",
                         Summary = $"update {resourceName} resource",
                         SuccessCode = 200,
                         SuccessDescription = $"successful update",
@@ -166,7 +166,7 @@ namespace BootGen
                 subRoute.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Delete,
-                    Name = "delete" + resource.SingularName + "ById",
+                    Name = "delete" + resource.Name + "ById",
                     Summary = $"delete {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion",
