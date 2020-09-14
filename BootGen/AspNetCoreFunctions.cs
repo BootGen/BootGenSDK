@@ -43,9 +43,7 @@ namespace BootGen
 
         public static string ParentIdName(Resource resource)
         {
-            if (resource.ParentResource == null)
-                return null;
-            return resource.Class.Properties.FirstOrDefault(p => p.IdReferenceToParent == resource.ParentResource)?.Name;
+            return resource?.ParentRelation?.ParentIdProperty?.Name;
         }
 
         private static List<string> GetPropertiesToLoadR(ClassModel c, List<ClassModel> parents = null, string prefix = null)

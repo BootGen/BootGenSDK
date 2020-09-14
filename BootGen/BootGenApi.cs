@@ -81,7 +81,7 @@ namespace BootGen
             if (parent?.Resource.ParentResource != null)
                 throw new Exception("Only a single layer of resource nesting is supported.");
             var classCount = Classes.Count;
-            Resource resource = resourceBuilder.FromClass<T>(parent?.Resource);
+            Resource resource = resourceBuilder.FromClass<T>(parent);
             resource.Authenticate = authenticate;
             resource.IsReadonly = isReadonly;
             resource.Name = name;
@@ -203,9 +203,9 @@ namespace BootGen
         {
             if (parent == null)
                 return;
-            if (!resource.Class.Properties.Any(p => p.Name == parent.Resource.Class.Name))
+            if (!resource.Class.Properties.Any(p => p.Name == parent.Name))
             {
-                Property referenceProperty = new Property
+                var referenceProperty = new Property
                 {
                     Name = parent.Name,
                     BuiltInType = BuiltInType.Object,
@@ -216,10 +216,14 @@ namespace BootGen
                     ParentReference = true
                 };
                 resource.Class.Properties.Add(referenceProperty);
+            } else {
+                var referenceProperty = resource.Class.Properties.First(p => p.Name == parent.Name);
+                referenceProperty.ParentReference = true;
             }
 
             if (!resource.Class.Properties.Any(p => p.Name == parent.Name + "Id"))
-                resource.Class.Properties.Add(new Property
+            {
+                Property property = new Property
                 {
                     Name = parent.Name + "Id",
                     BuiltInType = BuiltInType.Int32,
@@ -227,7 +231,14 @@ namespace BootGen
                     IsRequired = true,
                     Location = Location.ServerOnly,
                     IdReferenceToParent = parent.Resource
-                });
+                };
+                resource.Class.Properties.Add(property);
+                parent.ParentIdProperty = property;
+            } else {
+                var property = resource.Class.Properties.First(p => p.Name == parent.Name + "Id");
+                property.IdReferenceToParent = parent.Resource;
+                parent.ParentIdProperty = property;
+            }
         }
 
 
@@ -307,5 +318,6 @@ namespace BootGen
     {
         public string Name { get; set; }
         public Resource Resource { get; set; }
+        internal Property ParentIdProperty { get; set; }
     }
 }
