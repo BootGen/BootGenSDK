@@ -10,8 +10,6 @@ namespace BootGen
         private readonly ClassStore classStore;
         private readonly EnumStore enumStore;
 
-        private List<string> reservedClassNames = new List<string> { "Entry" };
-
         internal TypeBuilder(ClassStore classStore, EnumStore enumStore)
         {
             this.classStore = classStore;
@@ -34,8 +32,8 @@ namespace BootGen
             var c = new ClassModel();
             c.Name = type.Name.Split('.').Last();
             var cs = new CSharpCodeProvider();
-            if (!cs.IsValidIdentifier(c.Name) || !cs.IsValidIdentifier(c.Name.ToCamelCase()) || !cs.IsValidIdentifier(c.Name.ToLower()) || reservedClassNames.Contains(c.Name)) {
-                throw new Exception($"{c.Name} can not be used as class name, because it is a reserved word.");
+            if (!cs.IsValidIdentifier(c.Name) || !cs.IsValidIdentifier(c.Name.ToCamelCase()) || !cs.IsValidIdentifier(c.Name.ToLower())) {
+                throw new Exception($"\"{c.Name}\" can not be used as class name, because it is a reserved word.");
             }
             var pluralNameAttribute = type.CustomAttributes.FirstOrDefault(d => d.AttributeType == typeof(PluralName));
             c.PluralName = pluralNameAttribute?.ConstructorArguments?.FirstOrDefault().Value as string ?? c.Name + "s";
