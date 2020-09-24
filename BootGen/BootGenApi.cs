@@ -76,7 +76,7 @@ namespace BootGen
             return pivotClass;
         }
 
-        public Resource AddResource<T>(string name, string pluralName = null, bool isReadonly = false, ParentRelation parent = null, bool withPivot = false, bool authenticate = false)
+        public Resource AddResource<T>(string name = null, string pluralName = null, bool isReadonly = false, ParentRelation parent = null, bool withPivot = false, bool authenticate = false)
         {
             if (parent?.Resource.ParentResource != null)
                 throw new Exception("Only a single layer of resource nesting is supported.");
@@ -84,8 +84,16 @@ namespace BootGen
             Resource resource = resourceBuilder.FromClass<T>(parent);
             resource.Authenticate = authenticate;
             resource.IsReadonly = isReadonly;
-            resource.Name = name;
-            resource.PluralName = pluralName ?? name + "s";
+            if (name != null)
+            {
+                resource.Name = name;
+                resource.PluralName = pluralName ?? name + "s";
+            }
+            else
+            {
+                resource.Name = resource.Class.Name;
+                resource.PluralName = pluralName ?? resource.Class.PluralName;
+            }
             if (parent == null)
                 ResourceStore.Add(resource);
             else
@@ -216,7 +224,9 @@ namespace BootGen
                     ParentReference = true
                 };
                 resource.Class.Properties.Add(referenceProperty);
-            } else {
+            }
+            else
+            {
                 var referenceProperty = resource.Class.Properties.First(p => p.Name == parent.Name);
                 referenceProperty.ParentReference = true;
             }
@@ -234,7 +244,9 @@ namespace BootGen
                 };
                 resource.Class.Properties.Add(property);
                 parent.ParentIdProperty = property;
-            } else {
+            }
+            else
+            {
                 var property = resource.Class.Properties.First(p => p.Name == parent.Name + "Id");
                 property.IdReferenceToParent = parent.Resource;
                 parent.ParentIdProperty = property;
@@ -316,6 +328,11 @@ namespace BootGen
 
     public class ParentRelation
     {
+        public ParentRelation(Resource resource, string name = null)
+        {
+            Resource = resource;
+            Name = name ?? resource.Name;
+        }
         public string Name { get; set; }
         public Resource Resource { get; set; }
         internal Property ParentIdProperty { get; set; }
