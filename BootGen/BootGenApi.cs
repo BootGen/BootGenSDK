@@ -76,7 +76,7 @@ namespace BootGen
             return pivotClass;
         }
 
-        public Resource AddResource<T>(string name = null, string pluralName = null, bool isReadonly = false, ParentRelation parent = null, bool withPivot = false, bool authenticate = false)
+        public Resource AddResource<T>(string name = null, string pluralName = null, bool isReadonly = false, ParentRelation parent = null, bool manyToMany = false, bool authenticate = false)
         {
             if (parent?.Resource.ParentResource != null)
                 throw new Exception("Only a single layer of resource nesting is supported.");
@@ -100,7 +100,7 @@ namespace BootGen
                 parent.Resource.NestedResources.Add(resource);
 
             Routes.AddRange(resource.GetRoutes(ClassStore));
-            if (withPivot)
+            if (manyToMany)
             {
                 ClassModel pivotClass = CreatePivot(parent.Resource, resource, resource.Name + "Pivot");
                 resource.Pivot = pivotClass;
