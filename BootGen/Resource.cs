@@ -14,7 +14,7 @@ namespace BootGen
         public Route Route { get; set; }
         public Route ItemRoute { get; set; }
         public Resource ParentResource => ParentRelation?.Resource;
-        public ParentRelation ParentRelation { get; set; }
+        internal ParentRelation ParentRelation { get; set; }
         public List<Resource> NestedResources { get; set; }
         public ClassModel Pivot { get; internal set; }
         public bool HasTimestamps { get => Class.HasTimestamps; internal set => Class.HasTimestamps = value; }

@@ -42,11 +42,12 @@ namespace BootGen
             ClassBuilder = new TypeBuilder(ClassStore, EnumStore);
         }
 
-        private static ClassModel CreatePivot(Resource parent, Resource resource, string pivotName)
+        private static ClassModel CreatePivot(Resource parent, Resource resource)
         {
             var pivotClass = new ClassModel
             {
-                Name = pivotName,
+                Name = resource.Name + "Pivot",
+                PluralName = resource.Name + "Pivots",
                 Location = Location.ServerOnly,
                 Properties = new List<Property> {
                         new Property {
@@ -76,12 +77,15 @@ namespace BootGen
             return pivotClass;
         }
 
-        public Resource AddResource<T>(string name = null, string pluralName = null, bool isReadonly = false, ParentRelation parent = null, bool manyToMany = false, bool authenticate = false)
+        public Resource AddResource<T>(string name = null, string pluralName = null, bool isReadonly = false, Resource parent = null, string parentName = null, bool manyToMany = false, bool authenticate = false)
         {
-            if (parent?.Resource.ParentResource != null)
+            if (parent?.ParentResource != null)
                 throw new Exception("Only a single layer of resource nesting is supported.");
+            ParentRelation parentRel = null;
+            if (parent != null)
+                parentRel = new ParentRelation(parent, parentName);
             var classCount = Classes.Count;
-            Resource resource = resourceBuilder.FromClass<T>(parent);
+            Resource resource = resourceBuilder.FromClass<T>(parentRel);
             resource.Authenticate = authenticate;
             resource.IsReadonly = isReadonly;
             if (name != null)
@@ -97,12 +101,12 @@ namespace BootGen
             if (parent == null)
                 ResourceStore.Add(resource);
             else
-                parent.Resource.NestedResources.Add(resource);
+                parent.NestedResources.Add(resource);
 
             Routes.AddRange(resource.GetRoutes(ClassStore));
             if (manyToMany)
             {
-                ClassModel pivotClass = CreatePivot(parent.Resource, resource, resource.Name + "Pivot");
+                ClassModel pivotClass = CreatePivot(parent, resource);
                 resource.Pivot = pivotClass;
                 ClassStore.Add(pivotClass);
             }
@@ -120,7 +124,7 @@ namespace BootGen
                     });
                 c.Persisted = true;
             }
-            OnResourceAdded(resource, parent);
+            OnResourceAdded(resource, parentRel);
             foreach (var c in newClasses)
             {
                 OnClassAdded(c);
@@ -220,7 +224,7 @@ namespace BootGen
         }
 
 
-        public static void AddEfRelations(Resource resource, ParentRelation parent)
+        private static void AddEfRelations(Resource resource, ParentRelation parent)
         {
             if (parent == null)
                 return;
@@ -267,7 +271,7 @@ namespace BootGen
         }
 
 
-        public void AddEfRelationsParentToChild(ClassModel c)
+        private void AddEfRelationsParentToChild(ClassModel c)
         {
             ProcessedClassIds.Add(c.Id);
             foreach (var property in c.Properties)
@@ -340,7 +344,7 @@ namespace BootGen
         public TypeDescription ReturnType { get; set; }
     }
 
-    public class ParentRelation
+    internal class ParentRelation
     {
         public ParentRelation(Resource resource, string name = null)
         {

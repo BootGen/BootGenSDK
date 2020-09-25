@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BootGen
 {
-    public class ResourceBuilder
+    internal class ResourceBuilder
     {
         private readonly ClassStore classStore;
         private readonly EnumStore enumStore;
