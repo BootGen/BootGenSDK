@@ -49,7 +49,7 @@ namespace BootGen
                     Operations = new List<Operation> {
                             new Operation
                             {
-                                Verb = HttpVerb.Post,
+                                Verb = method.Verb,
                                 Name = method.Name.ToCamelCase(),
                                 Parameters = method.Parameters.Where(p => p.Class == null).Select(ToParam).ToList(),
                                 Body = method.Parameters.FirstOrDefault( p => p.Class != null)?.Class,

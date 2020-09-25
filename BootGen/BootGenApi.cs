@@ -139,10 +139,22 @@ namespace BootGen
             };
             foreach (var method in type.GetMethods())
             {
+                var verb = HttpVerb.Post;
+                if (method.CustomAttributes.Any(a => a.AttributeType == typeof(GetAttribute)))
+                    verb = HttpVerb.Get;
+                if (method.CustomAttributes.Any(a => a.AttributeType == typeof(PostAttribute)))
+                    verb = HttpVerb.Post;
+                if (method.CustomAttributes.Any(a => a.AttributeType == typeof(PatchAttribute)))
+                    verb = HttpVerb.Patch;
+                if (method.CustomAttributes.Any(a => a.AttributeType == typeof(PutAttribute)))
+                    verb = HttpVerb.Put;
+                if (method.CustomAttributes.Any(a => a.AttributeType == typeof(DeleteAttribute)))
+                    verb = HttpVerb.Delete;
                 var controllerMethod = new Method
                 {
                     Name = method.Name,
-                    Parameters = new List<Property>()
+                    Parameters = new List<Property>(),
+                    Verb = verb
                 };
                 controller.Methods.Add(controllerMethod);
                 foreach (var param in method.GetParameters())
@@ -178,7 +190,8 @@ namespace BootGen
                         {
                             Name = "Value",
                             BuiltInType = type.BuiltInType,
-                            IsCollection = type.IsCollection
+                            IsCollection = type.IsCollection,
+                            IsRequired = true
                         }
                     }
             };
@@ -322,6 +335,7 @@ namespace BootGen
     public class Method
     {
         public string Name { get; set; }
+        public HttpVerb Verb { get; set; }
         public List<Property> Parameters { get; set; }
         public TypeDescription ReturnType { get; set; }
     }
