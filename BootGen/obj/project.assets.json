@@ -251,7 +251,7 @@
     "C:\\Users\\angya\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "0.0.234",
+    "version": "0.0.237",
     "restore": {
       "projectUniqueName": "C:\\Users\\angya\\Documents\\bootgen\\BootGen\\BootGen.csproj",
       "projectName": "BootGen",

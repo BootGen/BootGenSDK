@@ -147,7 +147,7 @@ namespace BootGen
             }
         }
 
-        private bool SplitData(SeedData item, Property property, ClassModel pivot = null)
+        private bool SplitData(SeedData item, Property property, Resource nestedResource = null)
         {
             var token = item.JObject.GetValue(property.Name);
             item.JObject.Remove(property.Name);
@@ -174,12 +174,12 @@ namespace BootGen
                     {
                         dataList.Add(new SeedData(jObj, record));
                     }
-                    if (pivot != null)
+                    if (nestedResource.Pivot != null)
                     {
-                        var pivotDataList = GetDataList(pivot);
+                        var pivotDataList = GetDataList(nestedResource.Pivot);
                         var pivotRecord = new SeedRecord
                         {
-                            Name = pivot.Name,
+                            Name = nestedResource.Pivot.Name,
                             Values = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("Id", (pivotDataList.Count + 1).ToString()) }
                         };
                         pivotRecord.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.GetId()));
@@ -188,7 +188,7 @@ namespace BootGen
                     }
                     else
                     {
-                        record.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.GetId()));
+                        record.Values.Add(new KeyValuePair<string, string>(nestedResource.ParentRelation.Name + "Id", item.SeedRecord.GetId()));
                     }
 
                 }
@@ -220,7 +220,7 @@ namespace BootGen
                         BuiltInType = BuiltInType.Object,
                         Class = nestedResource.Class
                     };
-                    if (SplitData(item, property, nestedResource.Pivot))
+                    if (SplitData(item, property, nestedResource))
                     {
                         PushSeedDataToProperties(nestedResource.Class);
                         PushSeedDataToNestedResources(nestedResource);

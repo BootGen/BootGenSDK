@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>BootGen</PackageId>
-    <Version>0.0.235</Version>
+    <Version>0.0.237</Version>
     <Authors>Gabor Angyal</Authors>
     <Company>Code Sharp Kft.</Company>
   </PropertyGroup>
