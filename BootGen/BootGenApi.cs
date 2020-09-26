@@ -7,14 +7,6 @@ using Newtonsoft.Json.Linq;
 
 namespace BootGen
 {
-    public class ResourceStore
-    {
-        public List<Resource> Resources { get; } = new List<Resource>();
-        public void Add(Resource resource)
-        {
-            Resources.Add(resource);
-        }
-    }
     public class BootGenApi
     {
         internal ClassStore ClassStore { get; }
@@ -76,6 +68,10 @@ namespace BootGen
             };
             return pivotClass;
         }
+        public ClassModel AddEntity<T>()
+        {
+            return new TypeBuilder(ClassStore, EnumStore).FromType(typeof(T));
+        }
 
         public Resource AddResource<T>(string name = null, string pluralName = null, bool isReadonly = false, Resource parent = null, string parentName = null, bool manyToMany = false, bool authenticate = false)
         {
@@ -99,10 +95,18 @@ namespace BootGen
                 resource.PluralName = pluralName ?? resource.Class.PluralName;
             }
             if (parent == null)
+            {
+                if (ResourceStore.RootResources.Any(r => r.Name == resource.Name))
+                    throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
                 ResourceStore.Add(resource);
+            }
             else
+            {
+                
+                if (parent.NestedResources.Any(r => r.Name == resource.Name))
+                    throw new Exception($"A nested resource with name \"{resource.Name}\" already exists under \"{parent.Name}\".");
                 parent.NestedResources.Add(resource);
-
+            }
             Routes.AddRange(resource.GetRoutes(ClassStore));
             if (manyToMany)
             {

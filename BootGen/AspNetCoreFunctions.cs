@@ -101,11 +101,19 @@ namespace BootGen
 
         public static string ControllerName(Resource resource)
         {
+            return resource.GenerationSettings.ControllerName ?? $"{FullName(resource)}Controller";
+        }
+        
+        public static string ServiceName(Resource resource)
+        {
+            return resource.GenerationSettings.ServiceName ?? $"{FullName(resource)}Service";
+        }
+        private static string FullName(Resource resource)
+        {
             var builder = new StringBuilder();
             if (resource.ParentResource != null)
                 builder.Append(resource.ParentResource.PluralName);
             builder.Append(resource.PluralName);
-            builder.Append("Controller");
             return builder.ToString();
         }
 

@@ -137,7 +137,7 @@ namespace BootGen
                     if (SplitData(item, property))
                     {
                         PushSeedDataToProperties(property.Class);
-                        foreach (var resource in resourceStore.Resources)
+                        foreach (var resource in resourceStore.RootResources)
                         {
                             if (resource.Class == property.Class)
                                 PushSeedDataToNestedResources(resource);

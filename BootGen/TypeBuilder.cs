@@ -25,8 +25,6 @@ namespace BootGen
             return CreateClassForType(type);
         }
 
-
-
         private ClassModel CreateClassForType(Type type)
         {
             var c = new ClassModel();
