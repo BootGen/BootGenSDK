@@ -260,7 +260,6 @@ namespace BootGen
                     BuiltInType = BuiltInType.Int32,
                     IsCollection = false,
                     IsRequired = true,
-                    Location = Location.ServerOnly,
                     IdReferenceToParent = parent.Resource
                 };
                 resource.Class.Properties.Add(property);
