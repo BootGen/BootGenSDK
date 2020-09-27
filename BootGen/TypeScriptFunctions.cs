@@ -133,5 +133,48 @@ namespace BootGen
             builder.Append("`");
             return builder.ToString();
         }
+
+        public static string GetListFunctionName(Resource resource)
+        {
+            if (resource.ParentRelation != null)
+                return $"get{resource.PluralName}Of{resource.ParentResource.Name}";
+            return $"get{resource.PluralName}";
+        }
+        public static string GetItemFunctionName(Resource resource)
+        {
+            if (resource.ParentRelation != null)
+                return $"get{resource.Name}Of{resource.ParentResource.Name}";
+            return $"get{resource.Name}";
+        }
+        public static string AddFunctionName(Resource resource)
+        {
+            if (resource.ParentRelation != null)
+                return $"add{resource.Name}To{resource.ParentResource.Name}";
+            return $"add{resource.Name}";
+        }
+        public static string UpdateFunctionName(Resource resource)
+        {
+            if (resource.ParentRelation != null)
+                return $"update{resource.Name}Of{resource.ParentResource.Name}";
+            return $"update{resource.Name}";
+        }
+        public static string DeleteFunctionName(Resource resource)
+        {
+            if (resource.ParentRelation != null)
+                return $"delete{resource.Name}Of{resource.ParentResource.Name}";
+            return $"delete{resource.Name}";
+        }
+        public static string StateVariableName(Resource resource)
+        {
+            if (resource.ParentRelation != null)
+                return $"{resource.PluralName.ToCamelCase()}Of{resource.ParentResource.Name}";
+            return resource.PluralName.ToCamelCase();
+        }
+        public static string StateSetterName(Resource resource)
+        {
+            if (resource.ParentRelation != null)
+                return $"set{resource.PluralName}Of{resource.ParentResource.Name}";
+            return $"set{resource.PluralName}";
+        }
     }
 }
