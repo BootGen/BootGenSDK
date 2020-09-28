@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace BootGen
 {
-    public static class RouteBuilder
+    internal static class RouteBuilder
     {
         public static List<Route> GetRoutes(this Resource resource, ClassStore classStore)
         {

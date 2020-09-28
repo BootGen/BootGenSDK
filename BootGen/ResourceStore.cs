@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace BootGen
 {
-    public class ResourceStore
+    internal class ResourceStore
     {
         public List<Resource> RootResources { get; } = new List<Resource>();
         public List<Resource> Resources => Flatten(RootResources).ToList();
