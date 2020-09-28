@@ -68,10 +68,6 @@ namespace BootGen
             };
             return pivotClass;
         }
-        public ClassModel AddEntity<T>()
-        {
-            return new TypeBuilder(ClassStore, EnumStore).FromType(typeof(T));
-        }
 
         public Resource AddResource<T>(string name = null, string pluralName = null, bool isReadonly = false, Resource parent = null, string parentName = null, bool manyToMany = false, bool authenticate = false)
         {

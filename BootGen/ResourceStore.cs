@@ -21,5 +21,9 @@ namespace BootGen
                     yield return sr;
             }
         }
+        public Resource GetRootResource(Resource resource)
+        {
+            return RootResources.FirstOrDefault(r => r.Class == resource.Class);
+        }
     }
 }
