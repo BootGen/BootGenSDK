@@ -1,4 +1,4 @@
-# BootGen
+# BootGen [![Build Status](https://github.com/BootGen/BootGen/workflows/Test/badge.svg?branch=master)](https://github.com/BootGen/BootGen/actions)
 <img align="right" width="200px" height="85px" src="img/BootGenLogo.png">
 BootGen is a Library that helps you to create model based and template driven application code generators. With BootGen you can create code generators for ASP.NET or ASP.NET Core applications that use REST APIs.
 
