@@ -14,4 +14,4 @@ BootGen is a model based, template driven application code generator toolkit for
 
 In every software project there are interesting parts that need programmer creativity, and there are boring parts that do not. We usually have to develop the boring parts, before we can work on the interesting parts. The boring parts are repetitive, tedious and error prone. A significant amount of development time is spent on creating these parts, and also a significant amount of time is spent on finding bugs in these parts. Would not it be nice to start your next project with the boring parts already done?
 
-For more information please visit [bootgen.com](https://bootgen.com)
+For more information please visit [bootgen.com](https://bootgen.com)!
