@@ -28,6 +28,7 @@ jobs:
       working-directory: ./BootGenTest
     - name: Coveralls
       run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
+      working-directory: ./BootGenTest
     - name: Coveralls Upload
       uses: coverallsapp/github-action@v1.0.1
       with:
