@@ -1,9 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>BootGen</PackageId>
-    <Version>0.0.2</Version>
+    <Version>0.1.0-alpha</Version>
     <Authors>Gabor Angyal</Authors>
     <Company>Code Sharp Kft.</Company>
+    <Owner>Code Sharp Kft.</Owner>
+    <Description>Code Generator Toolkit for ASP.Net Core and Vue.js</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>BootGenLogo.png</PackageIcon>
+    <Copyright>Copyright 2020 Code Sharp Kft.</Copyright>
+    <RepositoryUrl>https://github.com/BootGen/BootGen.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType> 
+    <PackageProjectUrl>https://bootgen.com</PackageProjectUrl>
+    <PackageTags>ASP.Net Core;Vue.js;Generator</PackageTags>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -16,4 +25,7 @@
   <PropertyGroup>
     <GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="BootGenLogo.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
 </Project>
