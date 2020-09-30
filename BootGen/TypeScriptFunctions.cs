@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,6 +50,11 @@ namespace BootGen
         public static List<string> ReferredClasses(ClassModel c)
         {
             return c.Properties.Where(p => p.Class != null && p.Location != Location.ServerOnly).Select(p => p.Class.Name).Distinct().Concat(c.Properties.Where(p => p.Enum != null).Select(p => p.Enum.Name).Distinct()).ToList();
+        }
+
+        public void RenderApiClient(string folderName, string targetFileName, string templateFile, BootGenApi api)
+        {
+            Render(folderName, targetFileName, templateFile, new Dictionary<string, object> { { "base_url", api.BaseUrl }, { "resources", api.Resources }, { "classes", api.CommonClasses }, {"controllers", api.Controllers} });
         }
 
         public static string PathTemplate(Resource resource)

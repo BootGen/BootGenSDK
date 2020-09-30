@@ -24,6 +24,7 @@ namespace BootGen
         public List<EnumModel> Enums => EnumStore.Enums;
         private List<ClassModel> wrappedTypes = new List<ClassModel>();
         public List<Route> Routes { get; } = new List<Route>();
+        public string BaseUrl { get; set; }
 
         public BootGenApi()
         {

@@ -1,0 +1,261 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import axios from 'axios'
+import { User } from '@/models/User'
+import { Pet } from '@/models/Pet'
+
+Vue.use(Vuex)
+
+const baseUrl = "http://localhost/api"
+
+const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+
+function reviver(key: string, value: string) {
+  if (typeof value === "string" && dateFormat.test(value)) {
+    return new Date(value);
+  }
+  return value;
+}
+
+function transformResponse(response: string) {
+  if (response && response.trim()) {
+    return JSON.parse(response, reviver);
+  }
+  return null;
+}
+
+function headers(context: any) {
+  return {headers: {'Authorization': 'Bearer ' + context.state.jwt}, transformResponse: transformResponse };
+}
+
+interface ApiError {
+  status: number;
+  statusText: string;
+  message: string;
+}
+
+export default new Vuex.Store({
+  state: {
+    users: Array<User>(),
+    friendsOfUser: new Map<number, Array<User>>(),
+    petsOfUser: new Map<number, Array<Pet>>(),
+    jwt: ""
+  },
+  mutations: {
+    setUsers: function(state, users) {
+      state.users = users
+    },
+    setFriendsOfUser: function(state, data) {
+      state.friendsOfUser.set(data.parent.id, data.list)
+    },
+    setPetsOfUser: function(state, data) {
+      state.petsOfUser.set(data.parent.id, data.list)
+    },
+    init: function(state) {
+      const jwt = localStorage.getItem('jwt')
+      if (jwt) {
+        state.jwt = jwt;
+      }
+    },
+    setJwt: function(state, jwt) {
+      state.jwt = jwt
+      localStorage.setItem('jwt', jwt);
+    }
+  },
+  actions: {
+    getUsers: function(context): Promise<Array<User>> {
+      return new Promise((resolve, reject) => {
+        axios.get(baseUrl + `users`, headers(context)).then(response => {
+          context.commit("setUsers", response.data);
+          resolve(response.data)
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    getUser: function(context, id): Promise<User> {
+      return new Promise((resolve, reject) => {
+        axios.get(baseUrl + `users/${id}`, headers(context)).then(response => {
+          resolve(response.data);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    addUser: function(context, user): Promise<User> {
+
+      return new Promise((resolve, reject) => {
+        axios.post(baseUrl + `users`, user, headers(context)).then(response => {
+          const list = context.state.users;
+          list.push(response.data);
+          context.commit("setUsers", list)
+          resolve(response.data);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    updateUser: function(context, user): Promise<User> {
+
+      return new Promise((resolve, reject) => {
+        axios.put(baseUrl + `users/${user.id}`, user, headers(context)).then(response => {
+          const list = context.state.users;
+          Object.assign(user, response.data)
+          context.commit("setUsers", list)
+          resolve(user);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    deleteUser: function(context, user): Promise<void> {
+      let list = context.state.users;
+      list = list.filter(i => i !== user);
+      context.commit("setUsers", list)
+
+      return new Promise((resolve, reject) => {
+        axios.delete(baseUrl + `users/${user.id}`, headers(context)).then(() => {
+          resolve()
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    getFriendsOfUser: function(context, user): Promise<Array<User>> {
+      return new Promise((resolve, reject) => {
+        axios.get(baseUrl + `users/${user.id}/friends`, headers(context)).then(response => {
+          context.commit("setFriendsOfUser", { parent: user, list: response.data });
+          resolve(response.data)
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    getFriendOfUser: function(context, data): Promise<User> {
+      const id = data.id;
+      const user = data.user;
+      
+      return new Promise((resolve, reject) => {
+        axios.get(baseUrl + `users/${user.id}/friends/${id}`, headers(context)).then(response => {
+          resolve(response.data);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    addFriendToUser: function(context, data): Promise<User> {
+      const friend = data.friend;
+      const user = data.user;
+
+      return new Promise((resolve, reject) => {
+        axios.post(baseUrl + `users/${user.id}/friends`, friend, headers(context)).then(response => {
+          const list = context.state.friendsOfUser.get(user.id) ?? [];
+          list.push(response.data);
+          context.commit("setFriendsOfUser", { parent: user, list: list })
+          resolve(response.data);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    updateFriendOfUser: function(context, data): Promise<User> {
+      const friend = data.friend;
+      const user = data.user;
+
+      return new Promise((resolve, reject) => {
+        axios.put(baseUrl + `users/${user.id}/friends/${friend.id}`, friend, headers(context)).then(response => {
+          const list = context.state.friendsOfUser.get(user.id) ?? [];
+          Object.assign(friend, response.data)
+          context.commit("setFriendsOfUser", { parent: user, list: list })
+          resolve(friend);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    deleteFriendOfUser: function(context, data): Promise<void> {
+      const friend = data.friend;
+      const user = data.user;
+      let list = context.state.friendsOfUser.get(user.id) ?? [];
+      list = list.filter(i => i !== friend);
+      context.commit("setFriendsOfUser", { parent: user, list: list })
+
+      return new Promise((resolve, reject) => {
+        axios.delete(baseUrl + `users/${user.id}/friends/${friend.id}`, headers(context)).then(() => {
+          resolve()
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    getPetsOfUser: function(context, user): Promise<Array<Pet>> {
+      return new Promise((resolve, reject) => {
+        axios.get(baseUrl + `users/${user.id}/pets`, headers(context)).then(response => {
+          context.commit("setPetsOfUser", { parent: user, list: response.data });
+          resolve(response.data)
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    getPetOfUser: function(context, data): Promise<Pet> {
+      const id = data.id;
+      const user = data.user;
+      
+      return new Promise((resolve, reject) => {
+        axios.get(baseUrl + `users/${user.id}/pets/${id}`, headers(context)).then(response => {
+          resolve(response.data);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    addPetToUser: function(context, data): Promise<Pet> {
+      const pet = data.pet;
+      const user = data.user;
+
+      return new Promise((resolve, reject) => {
+        axios.post(baseUrl + `users/${user.id}/pets`, pet, headers(context)).then(response => {
+          const list = context.state.petsOfUser.get(user.id) ?? [];
+          list.push(response.data);
+          context.commit("setPetsOfUser", { parent: user, list: list })
+          resolve(response.data);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    updatePetOfUser: function(context, data): Promise<Pet> {
+      const pet = data.pet;
+      const user = data.user;
+
+      return new Promise((resolve, reject) => {
+        axios.put(baseUrl + `users/${user.id}/pets/${pet.id}`, pet, headers(context)).then(response => {
+          const list = context.state.petsOfUser.get(user.id) ?? [];
+          Object.assign(pet, response.data)
+          context.commit("setPetsOfUser", { parent: user, list: list })
+          resolve(pet);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    deletePetOfUser: function(context, data): Promise<void> {
+      const pet = data.pet;
+      const user = data.user;
+      let list = context.state.petsOfUser.get(user.id) ?? [];
+      list = list.filter(i => i !== pet);
+      context.commit("setPetsOfUser", { parent: user, list: list })
+
+      return new Promise((resolve, reject) => {
+        axios.delete(baseUrl + `users/${user.id}/pets/${pet.id}`, headers(context)).then(() => {
+          resolve()
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+  },
+  modules: {
+  }
+})

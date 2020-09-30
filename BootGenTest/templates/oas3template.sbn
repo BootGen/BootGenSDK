@@ -5,7 +5,7 @@ info:
   license:
     name: MIT
 servers:
-  - url: {{ base_url }}
+  - url: {{ api.base_url }}
 paths:
   {{~ for route in api.routes ~}}
   {{ route.path }}:

@@ -27,19 +27,41 @@ namespace BootGenTest
         public void GenerateAPITest()
         {
             BootGenApi api = CreateAPI();
-            new OASFunctions("testOutput").RenderApi("", "restapi.yml", "templates/oas3template.sbn", "http://localhost/api", "Friends With Pets", api);
+            new OASFunctions("testOutput").RenderApi("", "restapi.yml", "templates/oas3template.sbn", "Friends With Pets", api);
             CompareWithSample("restapi.yml");
         }
 
         [TestMethod]
-        public void GenerateClassTest()
+        public void GenerateTSClassTest()
+        {
+            BootGenApi api = CreateAPI();
+            var model = api.Classes.First();
+            var tsGenerator = new TypeScriptFunctions("testOutput");
+            tsGenerator.NameSpace = "UsersWithFriends";
+            tsGenerator.RenderClasses("", model => $"TS{model.Name}.txt", "templates/client/ts_model.sbn", new List<ClassModel> { model });
+            CompareWithSample($"TS{model.Name}.txt");
+        }
+
+        [TestMethod]
+        public void GenerateVuexTest()
+        {
+            BootGenApi api = CreateAPI();
+            var model = api.Classes.First();
+            var tsGenerator = new TypeScriptFunctions("testOutput");
+            tsGenerator.NameSpace = "UsersWithFriends";
+            tsGenerator.RenderApiClient($"", "vuex.txt", "templates/client/vuex.sbn", api);
+            CompareWithSample("vuex.txt");
+        }
+
+        [TestMethod]
+        public void GenerateCSClassTest()
         {
             BootGenApi api = CreateAPI();
             var model = api.Classes.First();
             var aspNetCoreFunctions = new AspNetCoreFunctions("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
-            aspNetCoreFunctions.RenderClasses("", model => $"{model.Name}.txt", "templates/server/csharp_model.sbn", new List<ClassModel> { model });
-            CompareWithSample($"{model.Name}.txt");
+            aspNetCoreFunctions.RenderClasses("", model => $"CS{model.Name}.txt", "templates/server/csharp_model.sbn", new List<ClassModel> { model });
+            CompareWithSample($"CS{model.Name}.txt");
         }
 
         [TestMethod]
@@ -61,6 +83,7 @@ namespace BootGenTest
         private static BootGenApi CreateAPI()
         {
             var api = new BootGenApi();
+            api.BaseUrl = "http://localhost/api";
             var UserResource = api.AddResource<User>(authenticate: true);
             api.AddResource<User>(name: "Friend", parent: UserResource, manyToMany: true, authenticate: true);
             api.AddResource<Pet>(parent: UserResource, authenticate: true);
