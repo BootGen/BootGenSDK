@@ -10,9 +10,11 @@ namespace BootGenTest
     [TestClass]
     public class ProjectGenerationTest
     {
+        enum PetKind { Dog, Cat, Bird, Fish }
         class Pet
         {
             public string Name { get; set; }
+            public PetKind Kind { get; set; }
         }
         class User
         {
@@ -40,6 +42,8 @@ namespace BootGenTest
             tsGenerator.NameSpace = "UsersWithFriends";
             tsGenerator.RenderClasses("", model => $"TS{model.Name}.txt", "templates/client/ts_model.sbn", new List<ClassModel> { model });
             CompareWithSample($"TS{model.Name}.txt");
+            tsGenerator.RenderEnums("", e => $"TS{e.Name}.txt", "templates/client/ts_enum.sbn", api.Enums);
+            CompareWithSample($"TS{api.Enums.First().Name}.txt");
         }
 
         [TestMethod]
@@ -62,10 +66,12 @@ namespace BootGenTest
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
             aspNetCoreFunctions.RenderClasses("", model => $"CS{model.Name}.txt", "templates/server/csharp_model.sbn", new List<ClassModel> { model });
             CompareWithSample($"CS{model.Name}.txt");
+            aspNetCoreFunctions.RenderEnums("", e => $"CS{e.Name}.txt", "templates/server/csharp_enum.sbn", api.Enums);
+            CompareWithSample($"CS{api.Enums.First().Name}.txt");
         }
 
         [TestMethod]
-        public void GenerateControllerTest()
+        public void GenerateResourceControllerTest()
         {
             BootGenApi api = CreateAPI();
             var resource = api.Resources.First();
@@ -73,6 +79,32 @@ namespace BootGenTest
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
             aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceController.txt", "templates/server/resourceController.sbn", new List<Resource> { resource });
             CompareWithSample($"{resource.Name}ResourceController.txt");
+        }
+
+        [TestMethod]
+        public void GenerateResourceServiceTest()
+        {
+            BootGenApi api = CreateAPI();
+            var resource = api.Resources.First();
+            var aspNetCoreFunctions = new AspNetCoreFunctions("testOutput");
+            aspNetCoreFunctions.NameSpace = "UsersWithFriends";
+            aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceService.txt", "templates/server/resourceService.sbn", new List<Resource> { resource });
+            CompareWithSample($"{resource.Name}ResourceService.txt");
+            aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceServiceInterface.txt", "templates/server/resourceServiceInterface.sbn", new List<Resource> { resource });
+            CompareWithSample($"{resource.Name}ResourceServiceInterface.txt");
+        }
+
+        [TestMethod]
+        public void GenerateNestedResourceServiceTest()
+        {
+            BootGenApi api = CreateAPI();
+            var resource = api.Resources.First().NestedResources.First();
+            var aspNetCoreFunctions = new AspNetCoreFunctions("testOutput");
+            aspNetCoreFunctions.NameSpace = "UsersWithFriends";
+            aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceService.txt", "templates/server/resourceService.sbn", new List<Resource> { resource });
+            CompareWithSample($"{resource.Name}ResourceService.txt");
+            aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceServiceInterface.txt", "templates/server/resourceServiceInterface.sbn", new List<Resource> { resource });
+            CompareWithSample($"{resource.Name}ResourceServiceInterface.txt");
         }
 
         private static void CompareWithSample(string fileName)

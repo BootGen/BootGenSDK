@@ -350,6 +350,7 @@ components:
       required:
         - id
         - name
+        - kind
         - user_id
       properties:
         id:
@@ -358,6 +359,9 @@ components:
           readOnly: true
         name:
           type: string
+        kind:
+          type: string
+          enum: ['Dog', 'Cat', 'Bird', 'Fish']
         user_id:
           type: integer
           format: int32
