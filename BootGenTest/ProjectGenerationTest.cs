@@ -24,6 +24,22 @@ namespace BootGenTest
             [Resource]
             public List<Pet> Pets { get; set; } 
         }
+            class AuthenticationData
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+    class LoginResponse
+    {
+        public string Jwt { get; set; }
+        public User User { get; set; }
+    }
+
+    interface Authentication
+    {
+        LoginResponse Login(AuthenticationData data);
+    }
 
         [TestMethod]
         public void GenerateAPITest()
@@ -105,6 +121,17 @@ namespace BootGenTest
             CompareWithSample($"{resource.Name}ResourceService.txt");
             aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceServiceInterface.txt", "templates/server/resourceServiceInterface.sbn", new List<Resource> { resource });
             CompareWithSample($"{resource.Name}ResourceServiceInterface.txt");
+        }
+
+        [TestMethod]
+        public void ControllerTest()
+        {
+            var api = new BootGenApi();
+            api.AddController<Authentication>();
+            var aspNetCoreFunctions = new AspNetCoreFunctions("testOutput");
+            aspNetCoreFunctions.NameSpace = "UsersWithFriends";
+            aspNetCoreFunctions.RenderControllers("", c => $"{c.Name}Controller.txt", "templates/server/controller.sbn", api.Controllers);
+            CompareWithSample($"{api.Controllers.First().Name}Controller.txt");
         }
 
         private static void CompareWithSample(string fileName)
