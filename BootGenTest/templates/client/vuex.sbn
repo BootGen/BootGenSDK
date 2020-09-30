@@ -1,0 +1,201 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import axios from 'axios'
+{{~ for class in classes ~}}
+import { {{class.name}} } from '@/models/{{class.name}}'
+{{~ end ~}}
+
+Vue.use(Vuex)
+
+const baseUrl = "{{ base_url }}"
+
+const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+
+function reviver(key: string, value: string) {
+  if (typeof value === "string" && dateFormat.test(value)) {
+    return new Date(value);
+  }
+  return value;
+}
+
+function transformResponse(response: string) {
+  if (response && response.trim()) {
+    return JSON.parse(response, reviver);
+  }
+  return null;
+}
+
+function headers(context: any) {
+  return {headers: {'Authorization': 'Bearer ' + context.state.jwt}, transformResponse: transformResponse };
+}
+
+interface ApiError {
+  status: number;
+  statusText: string;
+  message: string;
+}
+
+export default new Vuex.Store({
+  state: {
+    {{~ for resource in resources ~}}
+    {{~ if resource.parent_resource ~}}
+    {{ state_variable_name resource}}: new Map<number, Array<{{resource.class.name}}>>(),
+    {{~ else ~}}
+    {{ state_variable_name resource}}: Array<{{resource.class.name}}>(),
+    {{~ end ~}}
+    {{~ end ~}}
+    jwt: ""
+  },
+  mutations: {
+    {{~ for resource in resources ~}}
+    {{~ if resource.parent_resource ~}}
+    {{ state_setter_name resource}}: function(state, data) {
+      state.{{ state_variable_name resource}}.set(data.parent.id, data.list)
+    },
+    {{~ else ~}}
+    {{ state_setter_name resource}}: function(state, {{ state_variable_name resource}}) {
+      state.{{ state_variable_name resource}} = {{ state_variable_name resource}}
+    },
+    {{~ end ~}}
+    {{~ end ~}}
+    init: function(state) {
+      const jwt = localStorage.getItem('jwt')
+      if (jwt) {
+        state.jwt = jwt;
+      }
+    },
+    setJwt: function(state, jwt) {
+      state.jwt = jwt
+      localStorage.setItem('jwt', jwt);
+    }
+  },
+  actions: {
+    {{~ for resource in resources ~}}
+    {{~
+    parent = resource.parent_resource
+    ~}}
+    {{ get_list_function_name resource }}: function(context{{if parent}}, {{ camel_case parent.class.name}}{{end}}): Promise<Array<{{resource.class.name}}>> {
+      return new Promise((resolve, reject) => {
+        axios.get(baseUrl + {{path_template resource}}, headers(context)).then(response => {
+          {{~ if parent ~}}
+          context.commit("{{ state_setter_name resource}}", { parent: {{ camel_case parent.class.name}}, list: response.data });
+          {{~ else ~}}
+          context.commit("{{ state_setter_name resource}}", response.data);
+          {{~ end ~}}
+          resolve(response.data)
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    {{ get_item_function_name resource }}: function(context, {{ if parent }}data{{else}}id{{end}}): Promise<{{resource.class.name}}> {
+      {{~ if parent ~}}
+      const id = data.id;
+      const {{ camel_case parent.name}} = data.{{ camel_case parent.name}};
+      
+      {{~ end ~}}
+      return new Promise((resolve, reject) => {
+        axios.get(baseUrl + {{get_item_path_template resource}}, headers(context)).then(response => {
+          resolve(response.data);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    {{~ if !resource.is_readonly ~}}
+    {{ add_function_name resource }}: function(context, {{ if parent }}data{{else}}{{ camel_case resource.name}}{{end}}): Promise<{{resource.class.name}}> {
+      {{~ if parent ~}}
+      const {{ camel_case resource.name}} = data.{{ camel_case resource.name}};
+      const {{ camel_case parent.name}} = data.{{ camel_case parent.name}};
+      {{~ end ~}}
+
+      return new Promise((resolve, reject) => {
+        axios.post(baseUrl + {{path_template resource}}, {{ camel_case resource.name}}, headers(context)).then(response => {
+          {{~ if parent ~}}
+          const list = context.state.{{ state_variable_name resource}}.get({{ camel_case parent.name}}.id) ?? [];
+          {{~ else ~}}
+          const list = context.state.{{ state_variable_name resource}};
+          {{~ end ~}}
+          list.push(response.data);
+          {{~ if parent ~}}
+          context.commit("{{ state_setter_name resource}}", { parent: {{ camel_case parent.class.name}}, list: list })
+          {{~ else ~}}
+          context.commit("{{ state_setter_name resource}}", list)
+          {{~ end ~}}
+          resolve(response.data);
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    {{ update_function_name resource }}: function(context, {{ if parent }}data{{else}}{{ camel_case resource.name}}{{end}}): Promise<{{resource.class.name}}> {
+      {{~ if parent ~}}
+      const {{ camel_case resource.name}} = data.{{ camel_case resource.name}};
+      const {{ camel_case parent.name}} = data.{{ camel_case parent.name}};
+      {{~ end ~}}
+
+      return new Promise((resolve, reject) => {
+        axios.put(baseUrl + {{item_path_template resource}}, {{ camel_case resource.name}}, headers(context)).then(response => {
+          {{~ if parent ~}}
+          const list = context.state.{{ state_variable_name resource}}.get({{ camel_case parent.name}}.id) ?? [];
+          {{~ else ~}}
+          const list = context.state.{{ state_variable_name resource}};
+          {{~ end ~}}
+          Object.assign({{ camel_case resource.name}}, response.data)
+          {{~ if parent ~}}
+          context.commit("{{ state_setter_name resource}}", { parent: {{ camel_case parent.class.name}}, list: list })
+          {{~ else ~}}
+          context.commit("{{ state_setter_name resource}}", list)
+          {{~ end ~}}
+          resolve({{ camel_case resource.name}});
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    {{ delete_function_name resource }}: function(context, {{ if parent }}data{{else}}{{ camel_case resource.name}}{{end}}): Promise<void> {
+      {{~ if parent ~}}
+      const {{ camel_case resource.name}} = data.{{ camel_case resource.name}};
+      const {{ camel_case parent.name}} = data.{{ camel_case parent.name}};
+      let list = context.state.{{ state_variable_name resource}}.get({{ camel_case parent.name}}.id) ?? [];
+      {{~ else ~}}
+      let list = context.state.{{ state_variable_name resource}};
+      {{~ end ~}}
+      list = list.filter(i => i !== {{ camel_case resource.name}});
+      {{~ if parent ~}}
+      context.commit("{{ state_setter_name resource}}", { parent: {{ camel_case parent.class.name}}, list: list })
+      {{~ else ~}}
+      context.commit("{{ state_setter_name resource}}", list)
+      {{~ end ~}}
+
+      return new Promise((resolve, reject) => {
+        axios.delete(baseUrl + {{item_path_template resource}}, headers(context)).then(() => {
+          resolve()
+        }).catch(reason => {
+          reject(reason);
+        })
+      })
+    },
+    {{~ end ~}}
+    {{~ end ~}}
+    {{~ for controller in controllers ~}}
+    {{~ for method in controller.methods~}}
+    {{ camel_case method.name}}: function(context, data): Promise<{{method.return_type.class.name}}> {
+      return new Promise((resolve, reject) => {
+        axios.post(baseUrl + "{{ kebab_case controller.name }}/{{ kebab_case method.name }}", data).then(response => {
+          resolve(response.data);
+        }).catch(reason => {
+          reject({
+            status: reason.response.status,
+            statusText: reason.response.statusText,
+            message: reason.message
+          });
+        })
+      });
+    },
+    {{~ end ~}}
+    {{~ end ~}}
+  },
+  modules: {
+  }
+})
