@@ -52,6 +52,7 @@ namespace BootGen
         public bool Persisted { get; set; }
 
         /// <summary>Indicates that class usescreated nd updated timestamps</summary>
-        public bool HasTimestamps { get; internal set; }
+        public bool HasTimestamps { get; set; }
+        internal bool RelationsAreSetUp { get; set; }
     }
 }
