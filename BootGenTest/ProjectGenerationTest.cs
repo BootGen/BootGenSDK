@@ -126,7 +126,7 @@ namespace BootGenTest
         [TestMethod]
         public void ControllerTest()
         {
-            var api = new BootGenApi();
+            var api = new BootGenApi(new ResourceStore());
             api.AddController<Authentication>();
             var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
@@ -141,11 +141,16 @@ namespace BootGenTest
 
         private static BootGenApi CreateAPI()
         {
-            var api = new BootGenApi();
+            var resourceStore = new ResourceStore();
+            var userResource = resourceStore.AddResource<User>();
+            userResource.Authenticate = true;
+            var friendResource = resourceStore.AddResource<User>(parent: userResource, manyToMany: true);
+            friendResource.Name = "Friend";
+            friendResource.Authenticate = true;
+            var petResource = resourceStore.AddResource<Pet>(parent: userResource);
+            petResource.Authenticate = true;
+            var api = new BootGenApi(resourceStore);
             api.BaseUrl = "http://localhost/api";
-            var UserResource = api.AddResource<User>(authenticate: true);
-            api.AddResource<User>(name: "Friend", parent: UserResource, manyToMany: true, authenticate: true);
-            api.AddResource<Pet>(parent: UserResource, authenticate: true);
             return api;
         }
     }

@@ -10,15 +10,15 @@ namespace BootGen
         public string Name { get; set; }
         public string PluralName { get; set; }
         public ClassModel Class { get; set; }
-        public bool IsReadonly { get; set; }
         public Route Route { get; set; }
         public Route ItemRoute { get; set; }
         public Resource ParentResource => ParentRelation?.Resource;
         internal ParentRelation ParentRelation { get; set; }
         public List<Resource> NestedResources { get; set; }
-        public ClassModel Pivot { get; internal set; }
-        public bool HasTimestamps { get => Class.HasTimestamps; internal set => Class.HasTimestamps = value; }
-        public bool Authenticate { get; internal set; }
+        public ClassModel Pivot { get; set; }
+        public bool HasTimestamps { get => Class.HasTimestamps; set => Class.HasTimestamps = value; }
+        public bool Authenticate { get; set; }
+        public bool IsReadonly { get; set; }
         public ResourceGenerationSettings GenerationSettings { get; } = new ResourceGenerationSettings();
     }
 

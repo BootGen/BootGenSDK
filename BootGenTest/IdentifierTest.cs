@@ -19,8 +19,9 @@ namespace BootGenTest
         [TestMethod]
         public void TestResourceIds()
         {
-            var api = new BootGenApi();
-            var Users = api.AddResource<User>("Users");
+            var resourceStore = new ResourceStore();
+            var Users = resourceStore.AddResource<User>();
+            var api = new BootGenApi(resourceStore);
             Assert.AreEqual(3, Users.Class.Properties.Count);
             Assert.AreEqual(BuiltInType.Int32, Users.Class.IdProperty.BuiltInType);
             Assert.AreEqual("Id, Email, Name", GetPropertyList(Users.Class));
@@ -36,8 +37,9 @@ namespace BootGenTest
         [TestMethod]
         public void TestResourceIdsGuid()
         {
-            var api = new BootGenApi();
-            var Users = api.AddResource<User2>("Users");
+            var resourceStore = new ResourceStore();
+            var Users = resourceStore.AddResource<User2>();
+            var api = new BootGenApi(resourceStore);
             Assert.AreEqual(3, Users.Class.Properties.Count);
             Assert.AreEqual(BuiltInType.Guid, Users.Class.IdProperty.BuiltInType);
             Assert.AreEqual("Id, Email, Name", GetPropertyList(Users.Class));
@@ -54,8 +56,9 @@ namespace BootGenTest
         [TestMethod]
         public void TestParentId()
         {
-            var api = new BootGenApi();
-            var Issues = api.AddResource<Issue>("Issues");
+            var resourceStore = new ResourceStore();
+            var Issues = resourceStore.AddResource<Issue>();
+            var api = new BootGenApi(resourceStore);
             Assert.AreEqual(5, Issues.Class.Properties.Count);
             Assert.AreEqual(BuiltInType.Int32, Issues.Class.IdProperty.BuiltInType);
             Assert.AreEqual("Id, Title, Description, Assignee, AssigneeId", GetPropertyList(Issues.Class));
@@ -73,8 +76,9 @@ namespace BootGenTest
         [TestMethod]
         public void TestParentIdGuid()
         {
-            var api = new BootGenApi();
-            var Issues = api.AddResource<Issue2>("Issues");
+            var resourceStore = new ResourceStore();
+            var Issues = resourceStore.AddResource<Issue2>();
+            var api = new BootGenApi(resourceStore);
             Assert.AreEqual(5, Issues.Class.Properties.Count);
             Assert.AreEqual(BuiltInType.Int32, Issues.Class.IdProperty.BuiltInType);
             Assert.AreEqual("Id, Title, Description, Assignee, AssigneeId", GetPropertyList(Issues.Class));
@@ -97,9 +101,10 @@ namespace BootGenTest
         [TestMethod]
         public void TestParentIdOneToMany()
         {
-            var api = new BootGenApi();
-            var Users = api.AddResource<User3>("User3");
-            var Issues = api.AddResource<Issue3>("Issues");
+            var resourceStore = new ResourceStore();
+            var Users = resourceStore.AddResource<User3>();
+            var Issues = resourceStore.AddResource<Issue3>();
+            var api = new BootGenApi(resourceStore);
             Assert.AreEqual(5, Issues.Class.Properties.Count);
             Assert.AreEqual(BuiltInType.Int32, Issues.Class.IdProperty.BuiltInType);
             Assert.AreEqual("Id, Title, Description, User3, User3Id", GetPropertyList(Issues.Class));
@@ -118,9 +123,10 @@ namespace BootGenTest
         [TestMethod]
         public void TestParentIdOneToManyGuid()
         {
-            var api = new BootGenApi();
-            var Users = api.AddResource<User4>("User4");
-            var Issues = api.AddResource<Issue3>("Issues");
+            var resourceStore = new ResourceStore();
+            var Users = resourceStore.AddResource<User4>();
+            var Issues = resourceStore.AddResource<Issue3>();
+            var api = new BootGenApi(resourceStore);
             Assert.AreEqual(5, Issues.Class.Properties.Count);
             Assert.AreEqual(BuiltInType.Int32, Issues.Class.IdProperty.BuiltInType);
             Assert.AreEqual("Id, Title, Description, User4, User4Id", GetPropertyList(Issues.Class));

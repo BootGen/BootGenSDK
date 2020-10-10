@@ -9,128 +9,42 @@ namespace BootGen
 {
     public class BootGenApi
     {
-        internal ClassStore ClassStore { get; }
-        internal EnumStore EnumStore { get; }
-        private TypeBuilder ClassBuilder { get; }
+        internal ClassStore ClassStore => ResourceStore.ClassStore;
+        internal EnumStore EnumStore => ResourceStore.EnumStore;
+        private TypeBuilder TypeBuilder { get; }
         internal ResourceStore ResourceStore { get; }
-        private readonly ResourceBuilder resourceBuilder;
         public List<Resource> Resources => ResourceStore.Resources.ToList();
         public List<Controller> Controllers { get; } = new List<Controller>();
         public List<ClassModel> StoredClasses => ClassStore.Classes.Where(s => s.Persisted).ToList();
-        public List<ClassModel> Classes => ClassStore.Classes.Concat(wrappedTypes).ToList();
+        public List<ClassModel> Classes => ClassStore.Classes;
         public List<ClassModel> ServerClasses => Classes.Where(p => p.Location != Location.ClientOnly).ToList();
         public List<ClassModel> ClientClasses => Classes.Where(p => p.Location != Location.ServerOnly).ToList();
         public List<ClassModel> CommonClasses => Classes.Where(p => p.Location == Location.Both).ToList();
         public List<EnumModel> Enums => EnumStore.Enums;
-        private List<ClassModel> wrappedTypes = new List<ClassModel>();
         public List<Route> Routes { get; } = new List<Route>();
         public string BaseUrl { get; set; }
 
-        public BootGenApi()
+        public BootGenApi(ResourceStore resourceStore)
         {
-            ClassStore = new ClassStore();
-            EnumStore = new EnumStore();
-            ResourceStore = new ResourceStore();
-            resourceBuilder = new ResourceBuilder(ClassStore, EnumStore);
-            ClassBuilder = new TypeBuilder(ClassStore, EnumStore);
-        }
-
-        private static ClassModel CreatePivot(Resource parent, Resource resource)
-        {
-            var pivotClass = new ClassModel
+            ResourceStore = resourceStore;
+            TypeBuilder = new TypeBuilder(ClassStore, EnumStore);
+            
+            foreach (var resource in Resources)
             {
-                Name = resource.Name + "Pivot",
-                PluralName = resource.Name + "Pivots",
-                Location = Location.ServerOnly,
-                Properties = new List<Property> {
-                        new Property {
-                            Name = parent.Name + "Id",
-                            BuiltInType = BuiltInType.Int32,
-                            IsRequired = true
-                        },
-                        new Property {
-                            Name = parent.Name,
-                            BuiltInType = BuiltInType.Object,
-                            Class = parent.Class,
-                            IsRequired = true
-                        },
-                        new Property {
-                            Name = resource.Name + "Id",
-                            BuiltInType = BuiltInType.Int32,
-                            IsRequired = true
-                        },
-                        new Property {
-                            Name = resource.Name,
-                            BuiltInType = BuiltInType.Object,
-                            Class = resource.Class,
-                            IsRequired = true
-                        }
-                    }
-            };
-            return pivotClass;
-        }
-
-        public Resource AddResource<T>(string name = null, string pluralName = null, bool isReadonly = false, Resource parent = null, string parentName = null, bool manyToMany = false, bool authenticate = false)
-        {
-            if (parent?.ParentResource != null)
-                throw new Exception("Only a single layer of resource nesting is supported.");
-            ParentRelation parentRel = null;
-            if (parent != null)
-                parentRel = new ParentRelation(parent, parentName);
-            var classCount = Classes.Count;
-            Resource resource = resourceBuilder.FromClass<T>(parentRel);
-            resource.Authenticate = authenticate;
-            resource.IsReadonly = isReadonly;
-            if (name != null)
-            {
-                resource.Name = name;
-                resource.PluralName = pluralName ?? name + "s";
+                Routes.AddRange(resource.GetRoutes(ClassStore));
+                if (resource.Pivot == null)
+                    AddEfRelations(resource);
+                else
+                    Classes.Add(resource.Pivot);
             }
-            else
+            foreach (var c in Classes)
             {
-                resource.Name = resource.Class.Name;
-                resource.PluralName = pluralName ?? resource.Class.PluralName;
+                if (!c.RelationsAreSetUp)
+                {
+                    AddEfRelationsParentToChild(c);
+                }
+                AddEfRelationsChildToParent(c);
             }
-            if (parent == null)
-            {
-                if (ResourceStore.RootResources.Any(r => r.Name == resource.Name))
-                    throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
-                ResourceStore.Add(resource);
-            }
-            else
-            {
-                
-                if (parent.NestedResources.Any(r => r.Name == resource.Name))
-                    throw new Exception($"A nested resource with name \"{resource.Name}\" already exists under \"{parent.Name}\".");
-                parent.NestedResources.Add(resource);
-            }
-            Routes.AddRange(resource.GetRoutes(ClassStore));
-            if (manyToMany)
-            {
-                ClassModel pivotClass = CreatePivot(parent, resource);
-                resource.Pivot = pivotClass;
-                ClassStore.Add(pivotClass);
-            }
-
-            var newClasses = Classes.Skip(classCount).ToList();
-            foreach (var c in newClasses)
-            {
-                if (c.Properties.All(p => p.Name != "Id"))
-                    c.Properties.Insert(0, new Property
-                    {
-                        Name = "Id",
-                        BuiltInType = BuiltInType.Int32,
-                        IsRequired = true,
-                        IsClientReadonly = true
-                    });
-                c.Persisted = true;
-            }
-            OnResourceAdded(resource, parentRel);
-            foreach (var c in newClasses)
-            {
-                OnClassAdded(c);
-            }
-            return resource;
         }
 
         public Controller AddController<T>(bool authenticate = false)
@@ -164,12 +78,12 @@ namespace BootGen
                 controller.Methods.Add(controllerMethod);
                 foreach (var param in method.GetParameters())
                 {
-                    var property = ClassBuilder.GetProperty(param.ParameterType);
+                    var property = TypeBuilder.GetProperty(param.ParameterType);
                     property.Name = param.Name;
                     controllerMethod.Parameters.Add(property);
                 }
 
-                TypeDescription responseType = ClassBuilder.GetProperty(method.ReturnType);
+                TypeDescription responseType = TypeBuilder.GetProperty(method.ReturnType);
                 if (responseType.BuiltInType == BuiltInType.Object)
                 {
                     controllerMethod.ReturnType = responseType;
@@ -200,7 +114,7 @@ namespace BootGen
                         }
                     }
             };
-            wrappedTypes.Add(c);
+            ClassStore.Add(c);
             return new TypeDescription
             {
                 BuiltInType = BuiltInType.Object,
@@ -209,24 +123,11 @@ namespace BootGen
             };
         }
 
-        HashSet<int> ProcessedClassIds = new HashSet<int>();
-        private void OnResourceAdded(Resource resource, ParentRelation parent)
-        {
-            if (resource.Pivot == null)
-                AddEfRelations(resource, parent);
-        }
-        private void OnClassAdded(ClassModel c)
-        {
-            if (!ProcessedClassIds.Contains(c.Id))
-            {
-                AddEfRelationsParentToChild(c);
-            }
-            AddEfRelationsChildToParent(c);
-        }
 
 
-        private static void AddEfRelations(Resource resource, ParentRelation parent)
+        private static void AddEfRelations(Resource resource)
         {
+            var parent = resource.ParentRelation;
             if (parent == null)
                 return;
             if (!resource.Class.Properties.Any(p => p.Name == parent.Name))
@@ -270,10 +171,9 @@ namespace BootGen
             }
         }
 
-
         private void AddEfRelationsParentToChild(ClassModel c)
         {
-            ProcessedClassIds.Add(c.Id);
+            c.RelationsAreSetUp = true;
             foreach (var property in c.Properties)
             {
                 if (property.Class == null || !property.IsCollection || property.MirrorProperty != null)
@@ -334,25 +234,5 @@ namespace BootGen
                 }
             }
         }
-    }
-
-    public class Method
-    {
-        public string Name { get; set; }
-        public HttpVerb Verb { get; set; }
-        public List<Property> Parameters { get; set; }
-        public TypeDescription ReturnType { get; set; }
-    }
-
-    internal class ParentRelation
-    {
-        public ParentRelation(Resource resource, string name = null)
-        {
-            Resource = resource;
-            Name = name ?? resource.Name;
-        }
-        public string Name { get; set; }
-        public Resource Resource { get; set; }
-        internal Property ParentIdProperty { get; set; }
     }
 }
