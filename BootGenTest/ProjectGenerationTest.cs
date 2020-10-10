@@ -45,7 +45,7 @@ namespace BootGenTest
         public void GenerateAPITest()
         {
             BootGenApi api = CreateAPI();
-            new OASFunctions("testOutput").RenderApi("", "restapi.yml", "templates/oas3template.sbn", "Friends With Pets", api);
+            new OASGenerator("testOutput").RenderApi("", "restapi.yml", "templates/oas3template.sbn", "Friends With Pets", api);
             CompareWithSample("restapi.yml");
         }
 
@@ -54,7 +54,7 @@ namespace BootGenTest
         {
             BootGenApi api = CreateAPI();
             var model = api.Classes.First();
-            var tsGenerator = new TypeScriptFunctions("testOutput");
+            var tsGenerator = new TypeScriptGenerator("testOutput");
             tsGenerator.NameSpace = "UsersWithFriends";
             tsGenerator.RenderClasses("", model => $"TS{model.Name}.txt", "templates/client/ts_model.sbn", new List<ClassModel> { model });
             CompareWithSample($"TS{model.Name}.txt");
@@ -67,7 +67,7 @@ namespace BootGenTest
         {
             BootGenApi api = CreateAPI();
             var model = api.Classes.First();
-            var tsGenerator = new TypeScriptFunctions("testOutput");
+            var tsGenerator = new TypeScriptGenerator("testOutput");
             tsGenerator.NameSpace = "UsersWithFriends";
             tsGenerator.RenderApiClient($"", "vuex.txt", "templates/client/vuex.sbn", api);
             CompareWithSample("vuex.txt");
@@ -78,7 +78,7 @@ namespace BootGenTest
         {
             BootGenApi api = CreateAPI();
             var model = api.Classes.First();
-            var aspNetCoreFunctions = new AspNetCoreFunctions("testOutput");
+            var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
             aspNetCoreFunctions.RenderClasses("", model => $"CS{model.Name}.txt", "templates/server/csharp_model.sbn", new List<ClassModel> { model });
             CompareWithSample($"CS{model.Name}.txt");
@@ -91,7 +91,7 @@ namespace BootGenTest
         {
             BootGenApi api = CreateAPI();
             var resource = api.Resources.First();
-            var aspNetCoreFunctions = new AspNetCoreFunctions("testOutput");
+            var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
             aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceController.txt", "templates/server/resourceController.sbn", new List<Resource> { resource });
             CompareWithSample($"{resource.Name}ResourceController.txt");
@@ -102,7 +102,7 @@ namespace BootGenTest
         {
             BootGenApi api = CreateAPI();
             var resource = api.Resources.First();
-            var aspNetCoreFunctions = new AspNetCoreFunctions("testOutput");
+            var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
             aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceService.txt", "templates/server/resourceService.sbn", new List<Resource> { resource });
             CompareWithSample($"{resource.Name}ResourceService.txt");
@@ -115,7 +115,7 @@ namespace BootGenTest
         {
             BootGenApi api = CreateAPI();
             var resource = api.Resources.First().NestedResources.First();
-            var aspNetCoreFunctions = new AspNetCoreFunctions("testOutput");
+            var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
             aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceService.txt", "templates/server/resourceService.sbn", new List<Resource> { resource });
             CompareWithSample($"{resource.Name}ResourceService.txt");
@@ -128,7 +128,7 @@ namespace BootGenTest
         {
             var api = new BootGenApi();
             api.AddController<Authentication>();
-            var aspNetCoreFunctions = new AspNetCoreFunctions("testOutput");
+            var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
             aspNetCoreFunctions.RenderControllers("", c => $"{c.Name}Controller.txt", "templates/server/controller.sbn", api.Controllers);
             CompareWithSample($"{api.Controllers.First().Name}Controller.txt");

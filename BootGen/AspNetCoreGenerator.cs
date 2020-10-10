@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BootGen;
@@ -6,9 +6,9 @@ using BootGen;
 namespace BootGen
 {
 
-    public class AspNetCoreFunctions : LanguageBase
+    public class AspNetCoreGenerator : GeneratorBase
     {
-        public AspNetCoreFunctions(string folder) : base(folder)
+        public AspNetCoreGenerator(string folder) : base(folder)
         {
         }
 

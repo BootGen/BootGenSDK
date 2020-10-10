@@ -1,12 +1,12 @@
-using System.Linq;
+﻿using System.Linq;
 using BootGen;
 using Scriban.Runtime;
 
 namespace BootGen
 {
-    public class OASFunctions : LanguageBase
+    public class OASGenerator : GeneratorBase
     {
-        public OASFunctions(string folder) : base(folder)
+        public OASGenerator(string folder) : base(folder)
         {
         }
 

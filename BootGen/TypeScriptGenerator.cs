@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +9,9 @@ using Scriban.Runtime;
 
 namespace BootGen
 {
-    public class TypeScriptFunctions : LanguageBase
+    public class TypeScriptGenerator : GeneratorBase
     {
-        public TypeScriptFunctions(string folder) : base(folder)
+        public TypeScriptGenerator(string folder) : base(folder)
         {
         }
 

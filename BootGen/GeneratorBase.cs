@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using Scriban;
@@ -7,11 +7,11 @@ using Scriban.Syntax;
 
 namespace BootGen
 {
-    public class LanguageBase : ScriptObject
+    public class GeneratorBase : ScriptObject
     {
         public string Folder { get; }
         public string NameSpace { get; set; }
-        public LanguageBase(string folder)
+        public GeneratorBase(string folder)
         {
             Folder = folder;
         }
