@@ -68,7 +68,7 @@ components:
       scheme: bearer
       bearerFormat: JWT 
   schemas:
-  {{~ for class in api.common_classes ~}}
+  {{~ for class in api.data_model.common_classes ~}}
     {{ class.name }}:
       type: object
       {{~ if class.has_required_properties ~}}

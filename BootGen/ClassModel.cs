@@ -30,6 +30,19 @@ namespace BootGen
         /// <summary>Properties that are visible on the server side.</summary>
         public List<Property> ServerProperties => Properties.Where(p => p.Location != Location.ClientOnly).ToList();
 
+        internal void MakePersisted()
+        {
+            if (Properties.All(p => p.Name != "Id"))
+                    Properties.Insert(0, new Property
+                    {
+                        Name = "Id",
+                        BuiltInType = BuiltInType.Int32,
+                        IsRequired = true,
+                        IsClientReadonly = true
+                    });
+            Persisted = true;
+        }
+
         /// <summary>Properties that are visible on the client side.</summary>
         public List<Property> ClientProperties => Properties.Where(p => p.Location != Location.ServerOnly).ToList();
 

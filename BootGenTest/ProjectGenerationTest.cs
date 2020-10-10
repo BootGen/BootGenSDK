@@ -44,7 +44,7 @@ namespace BootGenTest
         [TestMethod]
         public void GenerateAPITest()
         {
-            BootGenApi api = CreateAPI();
+            Api api = CreateAPI();
             new OASGenerator("testOutput").RenderApi("", "restapi.yml", "templates/oas3template.sbn", "Friends With Pets", api);
             CompareWithSample("restapi.yml");
         }
@@ -52,21 +52,21 @@ namespace BootGenTest
         [TestMethod]
         public void GenerateTSClassTest()
         {
-            BootGenApi api = CreateAPI();
-            var model = api.Classes.First();
+            Api api = CreateAPI();
+            var model = api.DataModel.Classes.First();
             var tsGenerator = new TypeScriptGenerator("testOutput");
             tsGenerator.NameSpace = "UsersWithFriends";
             tsGenerator.RenderClasses("", model => $"TS{model.Name}.txt", "templates/client/ts_model.sbn", new List<ClassModel> { model });
             CompareWithSample($"TS{model.Name}.txt");
-            tsGenerator.RenderEnums("", e => $"TS{e.Name}.txt", "templates/client/ts_enum.sbn", api.Enums);
-            CompareWithSample($"TS{api.Enums.First().Name}.txt");
+            tsGenerator.RenderEnums("", e => $"TS{e.Name}.txt", "templates/client/ts_enum.sbn", api.DataModel.Enums);
+            CompareWithSample($"TS{api.DataModel.Enums.First().Name}.txt");
         }
 
         [TestMethod]
         public void GenerateVuexTest()
         {
-            BootGenApi api = CreateAPI();
-            var model = api.Classes.First();
+            Api api = CreateAPI();
+            var model = api.DataModel.Classes.First();
             var tsGenerator = new TypeScriptGenerator("testOutput");
             tsGenerator.NameSpace = "UsersWithFriends";
             tsGenerator.RenderApiClient($"", "vuex.txt", "templates/client/vuex.sbn", api);
@@ -76,20 +76,20 @@ namespace BootGenTest
         [TestMethod]
         public void GenerateCSClassTest()
         {
-            BootGenApi api = CreateAPI();
-            var model = api.Classes.First();
+            Api api = CreateAPI();
+            var model = api.DataModel.Classes.First();
             var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
             aspNetCoreFunctions.RenderClasses("", model => $"CS{model.Name}.txt", "templates/server/csharp_model.sbn", new List<ClassModel> { model });
             CompareWithSample($"CS{model.Name}.txt");
-            aspNetCoreFunctions.RenderEnums("", e => $"CS{e.Name}.txt", "templates/server/csharp_enum.sbn", api.Enums);
-            CompareWithSample($"CS{api.Enums.First().Name}.txt");
+            aspNetCoreFunctions.RenderEnums("", e => $"CS{e.Name}.txt", "templates/server/csharp_enum.sbn", api.DataModel.Enums);
+            CompareWithSample($"CS{api.DataModel.Enums.First().Name}.txt");
         }
 
         [TestMethod]
         public void GenerateResourceControllerTest()
         {
-            BootGenApi api = CreateAPI();
+            Api api = CreateAPI();
             var resource = api.Resources.First();
             var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
@@ -100,7 +100,7 @@ namespace BootGenTest
         [TestMethod]
         public void GenerateResourceServiceTest()
         {
-            BootGenApi api = CreateAPI();
+            Api api = CreateAPI();
             var resource = api.Resources.First();
             var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
@@ -113,7 +113,7 @@ namespace BootGenTest
         [TestMethod]
         public void GeneratePivotResourceServiceTest()
         {
-            BootGenApi api = CreateAPI();
+            Api api = CreateAPI();
             var resource = api.Resources.First(r => r.Name.Singular == "User").NestedResources.First(r => r.Name.Singular == "Friend");
             var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
@@ -126,7 +126,7 @@ namespace BootGenTest
         [TestMethod]
         public void GenerateNestedResourceServiceTest()
         {
-            BootGenApi api = CreateAPI();
+            Api api = CreateAPI();
             var resource = api.Resources.First(r => r.Name.Singular == "User").NestedResources.First(r => r.Name.Singular == "Pet");
             var generator = new AspNetCoreGenerator("testOutput");
             generator.NameSpace = "UsersWithFriends";
@@ -139,7 +139,7 @@ namespace BootGenTest
         [TestMethod]
         public void ControllerTest()
         {
-            var api = new BootGenApi(new ResourceStore());
+            var api = new Api(new ResourceCollection(new DataModel()));
             api.AddController<Authentication>();
             var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
@@ -152,17 +152,17 @@ namespace BootGenTest
             Assert.AreEqual(File.ReadAllText(System.IO.Path.Combine("SampleOutput", fileName)), File.ReadAllText(System.IO.Path.Combine("testOutput", fileName)));
         }
 
-        private static BootGenApi CreateAPI()
+        private static Api CreateAPI()
         {
-            var resourceStore = new ResourceStore();
+            var resourceStore = new ResourceCollection(new DataModel());
             var userResource = resourceStore.AddResource<User>();
             userResource.Authenticate = true;
-            var friendResource = resourceStore.AddResource<User>(parent: userResource, manyToMany: true);
+            var friendResource = userResource.AddResource<User>(manyToMany: true);
             friendResource.Name = "Friend";
             friendResource.Authenticate = true;
-            var petResource = resourceStore.AddResource<Pet>(parent: userResource);
+            var petResource = userResource.AddResource<Pet>();
             petResource.Authenticate = true;
-            var api = new BootGenApi(resourceStore);
+            var api = new Api(resourceStore);
             api.BaseUrl = "http://localhost/api";
             return api;
         }

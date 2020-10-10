@@ -5,7 +5,7 @@ namespace BootGen
 {
     internal static class RouteBuilder
     {
-        public static List<Route> GetRoutes(this Resource resource, ClassStore classStore)
+        public static List<Route> GetRoutes(this Resource resource)
         {
             Path basePath = resource.ParentResource?.ItemRoute?.PathModel ?? resource.ParentResource?.Route?.PathModel ?? new Path();
             var result = new List<Route>();

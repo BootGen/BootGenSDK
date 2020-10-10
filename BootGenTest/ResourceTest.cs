@@ -21,12 +21,12 @@ namespace BootGenTest
         [TestMethod]
         public void TestEntityResource()
         {
-            var resourceStore = new ResourceStore();
+            var resourceStore = new ResourceCollection(new DataModel());
             var entityResource = resourceStore.AddResource<Entity>();
-            var childResource = resourceStore.AddResource<Entity>(parent: entityResource, parentName: "Parent");
+            var childResource = entityResource.AddResource<Entity>(parentName: "Parent");
             childResource.Name = "Child";
             childResource.Name.Plural = "Children";
-            var api = new BootGenApi(resourceStore);
+            var api = new Api(resourceStore);
             Assert.AreEqual("Entity", entityResource.Name.Singular);
             Assert.AreEqual("Entities", entityResource.Name.Plural);
             Assert.AreEqual(childResource, entityResource.NestedResources.First());

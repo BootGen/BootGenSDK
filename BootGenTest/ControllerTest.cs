@@ -25,7 +25,7 @@ namespace BootGenTest
         [TestMethod]
         public void SimpleControllerTest()
         {
-            var api = new BootGenApi(new ResourceStore());
+            var api = new Api(new ResourceCollection(new DataModel()));
             var controller = api.AddController<TestController>();
             var primitiveTestFunction = controller.Methods.First();
 

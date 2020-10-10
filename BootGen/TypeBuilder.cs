@@ -7,10 +7,10 @@ namespace BootGen
 {
     internal class TypeBuilder
     {
-        private readonly ClassStore classStore;
-        private readonly EnumStore enumStore;
+        private readonly ClassCollection classStore;
+        private readonly EnumCollection enumStore;
 
-        internal TypeBuilder(ClassStore classStore, EnumStore enumStore)
+        internal TypeBuilder(ClassCollection classStore, EnumCollection enumStore)
         {
             this.classStore = classStore;
             this.enumStore = enumStore;

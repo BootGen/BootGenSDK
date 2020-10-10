@@ -45,7 +45,7 @@ namespace BootGen
             var rendered = template.Render(context);
             File.WriteAllText(System.IO.Path.Combine(dir, targetFileName), rendered);
         }
-        public void RenderApi(string folderName, string targetFileName, string templateFile, string projectTitle, BootGenApi api)
+        public void RenderApi(string folderName, string targetFileName, string templateFile, string projectTitle, Api api)
         {
             var dir = GetPath(folderName);
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);

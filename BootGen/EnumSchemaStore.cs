@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BootGen
 {
-    internal class EnumStore
+    internal class EnumCollection
     {
         private Dictionary<Type, EnumModel> enums = new Dictionary<Type, EnumModel>();
         public List<EnumModel> Enums => enums.Values.ToList();

@@ -7,8 +7,6 @@ namespace BootGen
 {
     public class SeedDataStore
     {
-        private readonly ClassStore classStore;
-        private readonly ResourceStore resourceStore;
 
         private class SeedData
         {
@@ -22,11 +20,11 @@ namespace BootGen
         }
         private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
         private Dictionary<int, int> NextClassIds = new Dictionary<int, int>();
+        private readonly ResourceCollection resourceCollection;
 
-        public SeedDataStore(BootGenApi api)
+        public SeedDataStore(ResourceCollection resourceCollection)
         {
-            this.classStore = api.ClassStore;
-            this.resourceStore = api.ResourceStore;
+            this.resourceCollection = resourceCollection;
         }
 
         private string GetNextId(ClassModel c)
@@ -137,7 +135,7 @@ namespace BootGen
                     if (SplitData(item, property))
                     {
                         PushSeedDataToProperties(property.Class);
-                        foreach (var resource in resourceStore.RootResources)
+                        foreach (var resource in resourceCollection.RootResources)
                         {
                             if (resource.Class == property.Class)
                                 PushSeedDataToNestedResources(resource);
@@ -223,7 +221,7 @@ namespace BootGen
                     if (SplitData(item, property, nestedResource))
                     {
                         PushSeedDataToProperties(nestedResource.Class);
-                        var rootResource = resourceStore.GetRootResource(nestedResource);
+                        var rootResource = resourceCollection.GetRootResource(nestedResource);
                         if (rootResource != null)
                             PushSeedDataToNestedResources(rootResource);
                     }

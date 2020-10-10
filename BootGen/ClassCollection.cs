@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BootGen
 {
-    internal class ClassStore
+    internal class ClassCollection
     {
         private Dictionary<Type, ClassModel> classesByType = new Dictionary<Type, ClassModel>();
         public List<ClassModel> Classes { get; } = new List<ClassModel>();

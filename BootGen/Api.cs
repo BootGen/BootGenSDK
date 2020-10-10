@@ -7,37 +7,28 @@ using Newtonsoft.Json.Linq;
 
 namespace BootGen
 {
-    public class BootGenApi
+    public class Api
     {
-        internal ClassStore ClassStore => ResourceStore.ClassStore;
-        internal EnumStore EnumStore => ResourceStore.EnumStore;
-        private TypeBuilder TypeBuilder { get; }
-        internal ResourceStore ResourceStore { get; }
-        public List<Resource> Resources => ResourceStore.Resources.ToList();
+        internal ResourceCollection ResourceCollection { get; }
+        public List<Resource> Resources => ResourceCollection.Resources.ToList();
         public List<Controller> Controllers { get; } = new List<Controller>();
-        public List<ClassModel> StoredClasses => ClassStore.Classes.Where(s => s.Persisted).ToList();
-        public List<ClassModel> Classes => ClassStore.Classes;
-        public List<ClassModel> ServerClasses => Classes.Where(p => p.Location != Location.ClientOnly).ToList();
-        public List<ClassModel> ClientClasses => Classes.Where(p => p.Location != Location.ServerOnly).ToList();
-        public List<ClassModel> CommonClasses => Classes.Where(p => p.Location == Location.Both).ToList();
-        public List<EnumModel> Enums => EnumStore.Enums;
+        public DataModel DataModel => ResourceCollection.DataModel;
         public List<Route> Routes { get; } = new List<Route>();
         public string BaseUrl { get; set; }
 
-        public BootGenApi(ResourceStore resourceStore)
+        public Api(ResourceCollection resourceStore)
         {
-            ResourceStore = resourceStore;
-            TypeBuilder = new TypeBuilder(ClassStore, EnumStore);
+            ResourceCollection = resourceStore;
             
             foreach (var resource in Resources)
             {
-                Routes.AddRange(resource.GetRoutes(ClassStore));
+                Routes.AddRange(resource.GetRoutes());
                 if (resource.Pivot == null)
                     AddEfRelations(resource);
                 else
-                    Classes.Add(resource.Pivot);
+                    DataModel.ClassCollection.Add(resource.Pivot);
             }
-            foreach (var c in Classes)
+            foreach (var c in DataModel.Classes)
             {
                 if (!c.RelationsAreSetUp)
                 {
@@ -78,12 +69,12 @@ namespace BootGen
                 controller.Methods.Add(controllerMethod);
                 foreach (var param in method.GetParameters())
                 {
-                    var property = TypeBuilder.GetProperty(param.ParameterType);
+                    var property = DataModel.TypeBuilder.GetProperty(param.ParameterType);
                     property.Name = param.Name;
                     controllerMethod.Parameters.Add(property);
                 }
 
-                TypeDescription responseType = TypeBuilder.GetProperty(method.ReturnType);
+                TypeDescription responseType = DataModel.TypeBuilder.GetProperty(method.ReturnType);
                 if (responseType.BuiltInType == BuiltInType.Object)
                 {
                     controllerMethod.ReturnType = responseType;
@@ -114,7 +105,7 @@ namespace BootGen
                         }
                     }
             };
-            ClassStore.Add(c);
+            DataModel.ClassCollection.Add(c);
             return new TypeDescription
             {
                 BuiltInType = BuiltInType.Object,
