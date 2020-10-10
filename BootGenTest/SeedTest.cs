@@ -19,9 +19,9 @@ namespace BootGenTest
         [TestMethod]
         public void TestSeed()
         {
-            var resourceStore = new ResourceCollection(new DataModel());
-            var Users = resourceStore.AddResource<User>();
-            var seedStore = new SeedDataStore(resourceStore);
+            var resourceCollection = new ResourceCollection(new DataModel());
+            var Users = resourceCollection.Add<User>();
+            var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Add(Users, new List<User> { new User {
                     Name = "Name",
                     Email = "Email"
@@ -44,9 +44,9 @@ namespace BootGenTest
         [TestMethod]
         public void TestSeedGuid()
         {
-            var resourceStore = new ResourceCollection(new DataModel());
-            var Users = resourceStore.AddResource<User2>();
-            var seedStore = new SeedDataStore(resourceStore);
+            var resourceCollection = new ResourceCollection(new DataModel());
+            var Users = resourceCollection.Add<User2>();
+            var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Add(Users, new List<User2> { new User2 {
                     Name = "Name",
                     Email = "Email"

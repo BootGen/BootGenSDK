@@ -16,7 +16,7 @@ namespace BootGen
             DataModel = dataModel;
         }
         
-        public Resource AddResource<T>()
+        public Resource Add<T>()
         {
             var classCount = DataModel.Classes.Count;
             Resource resource = DataModel.ResourceBuilder.FromClass<T>();
