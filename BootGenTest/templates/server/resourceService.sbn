@@ -20,14 +20,14 @@ namespace {{ name_space }}.Services
         public User CurrentUser { get; set; }
 
         {{~ end ~}}
-        public ServiceResponse<List<{{ resource.class.name }}>> Get{{ resource.plural_name }}({{ get_parameters_service resource }})
+        public ServiceResponse<List<{{ resource.class.name }}>> Get{{ resource.name.plural }}({{ get_parameters_service resource }})
         {
             using (var db = new DataContext())
             {
                 {{~
                 parent = resource.parent_resource
                 ~}}
-                var query = db.{{ resource.class.plural_name }}{{ for property in (get_properties_to_load resource.class) }}
+                var query = db.{{ resource.class.name.plural }}{{ for property in (get_properties_to_load resource.class) }}
                                 .Include("{{ property }}"){{ end }}{{ if parent }}
                                 .Where(item => item.{{ parent_id_name resource }} == {{ camel_case parent.class.name }}Id){{ end }};
                 return new ServiceResponse<List<{{ resource.class.name }}>>
@@ -42,7 +42,7 @@ namespace {{ name_space }}.Services
         {
             using (var db = new DataContext())
             {
-                var item = db.{{ resource.class.plural_name }}
+                var item = db.{{ resource.class.name.plural }}
                              {{~ for property in (get_properties_to_load resource.class) ~}}
                              .Include("{{ property }}")
                              {{~ end ~}}
@@ -76,7 +76,7 @@ namespace {{ name_space }}.Services
             EntityEntry<{{ resource.class.name }}> entityEntry;
             using (var db = new DataContext())
             {
-                entityEntry = db.{{ resource.class.plural_name }}.Add({{ camel_case resource.name }});
+                entityEntry = db.{{ resource.class.name.plural }}.Add({{ camel_case resource.name }});
                 db.SaveChanges();
             }
             return new ServiceResponse<{{ resource.class.name }}>
@@ -90,7 +90,7 @@ namespace {{ name_space }}.Services
         {
             using (var db = new DataContext())
             {
-                var original = db.{{ resource.class.plural_name }}
+                var original = db.{{ resource.class.name.plural }}
                             {{~ for property in (get_properties_to_load resource.class) ~}}
                             .Include("{{ property }}")
                             {{~ end ~}}
@@ -99,7 +99,7 @@ namespace {{ name_space }}.Services
                 {{ camel_case resource.name }}.Updated = DateTime.Now;
                 {{~ end ~}}
                 EntityEntry<{{ resource.class.name }}> entityEntry;
-                entityEntry = db.{{ resource.class.plural_name }}.Update(original);
+                entityEntry = db.{{ resource.class.name.plural }}.Update(original);
                 {{~ for property in resource.class.common_properties ~}}
                 {{~ if !property.is_client_readonly ~}}
                 original.{{property.name}} = {{ camel_case resource.name }}.{{property.name}};
@@ -118,8 +118,8 @@ namespace {{ name_space }}.Services
         {
             using (var db = new DataContext())
             {
-                var item = db.{{ resource.class.plural_name }}.Where(item => item.Id == {{ camel_case resource.name }}Id).First();
-                db.{{ resource.class.plural_name }}.Remove(item);
+                var item = db.{{ resource.class.name.plural }}.Where(item => item.Id == {{ camel_case resource.name }}Id).First();
+                db.{{ resource.class.name.plural }}.Remove(item);
                 db.SaveChanges();
             }
             return new ServiceResponse

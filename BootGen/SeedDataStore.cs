@@ -216,7 +216,7 @@ namespace BootGen
                 {
                     var property = new Property
                     {
-                        Name = nestedResource.PluralName,
+                        Name = nestedResource.Name.Plural,
                         BuiltInType = BuiltInType.Object,
                         Class = nestedResource.Class
                     };

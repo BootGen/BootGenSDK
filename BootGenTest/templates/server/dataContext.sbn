@@ -12,7 +12,7 @@ namespace {{ name_space }}
     public class DataContext : DbContext
     {
         {{~ for class in classes ~}}
-        public DbSet<{{ class.name }}> {{ class.plural_name }} { get; set; }
+        public DbSet<{{ class.name }}> {{ class.name.plural }} { get; set; }
         {{~ end ~}}
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite("Data Source={{ snake_case name_space }}.db");

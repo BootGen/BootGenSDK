@@ -29,7 +29,6 @@ namespace BootGen
             var classCount = ClassStore.Classes.Count;
             Resource resource = resourceBuilder.FromClass<T>(parentRel);
             resource.Name = resource.Class.Name;
-            resource.PluralName = resource.Class.PluralName;
             if (parent == null)
             {
                 if (RootResources.Any(r => r.Name == resource.Name))
@@ -69,7 +68,6 @@ namespace BootGen
             var pivotClass = new ClassModel
             {
                 Name = resource.Name + "Pivot",
-                PluralName = resource.Name + "Pivots",
                 Location = Location.ServerOnly,
                 Properties = new List<Property> {
                         new Property {

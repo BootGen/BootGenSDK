@@ -18,7 +18,7 @@ namespace {{ name_space }}.Services
         {{~ if resource.authenticate ~}}
         User CurrentUser { get; set; }
         {{~ end ~}}
-        ServiceResponse<List<{{ resource.class.name }}>> Get{{ resource.plural_name }}({{ get_parameters resource }});
+        ServiceResponse<List<{{ resource.class.name }}>> Get{{ resource.name.plural }}({{ get_parameters resource }});
         {{~ if !resource.is_readonly ~}}
         ServiceResponse<{{ resource.class.name }}> Add{{ resource.name }}({{ post_parameters resource }});
         ServiceResponse Remove{{ resource.name }}({{ item_delete_parameters resource }});

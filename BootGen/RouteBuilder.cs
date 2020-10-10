@@ -10,7 +10,7 @@ namespace BootGen
             Path basePath = resource.ParentResource?.ItemRoute?.PathModel ?? resource.ParentResource?.Route?.PathModel ?? new Path();
             var result = new List<Route>();
             var route = new Route();
-            string resourceName = resource.PluralName.ToCamelCase();
+            string resourceName = resource.Name.Plural.ToCamelCase();
             basePath = basePath.Adding(new PathComponent { Name = resourceName.ToKebabCase() });
             route.PathModel = basePath;
             result.Add(route);
@@ -27,7 +27,7 @@ namespace BootGen
         private static Route GetItemRoute(Resource resource, Path basePath)
         {
             var subRoute = new Route();
-            string itemIdName = resource.Name.ToCamelCase() + "Id";
+            string itemIdName = resource.Name.Singular.ToCamelCase() + "Id";
             Parameter idParameter = ConvertToParameter(resource.Class.Properties.First(p => p.Name == "Id"));
             idParameter.Name = itemIdName;
             idParameter.Kind = RestParamterKind.Path;
@@ -105,11 +105,11 @@ namespace BootGen
 
         private static void AddCollectionOperations(Resource resource, Route route, Path path)
         {
-            string resourceName = resource.PluralName.ToWords();
+            string resourceName = resource.Name.Plural.ToWords();
             route.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Get,
-                Name = "get" + resource.PluralName,
+                Name = "get" + resource.Name.Plural,
                 Summary = $"retrieve list of {resourceName}",
                 Response = resource.Class,
                 ResponseIsCollection = true,
@@ -122,7 +122,7 @@ namespace BootGen
                 route.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Post,
-                    Name = "add" + resource.PluralName,
+                    Name = "add" + resource.Name.Plural,
                     Summary = $"add a new element to the collection",
                     Body = resource.Class,
                     BodyIsCollection = false,
@@ -136,7 +136,7 @@ namespace BootGen
 
         private static void AddItemOperations(Resource resource, Route subRoute)
         {
-            string resourceName = resource.PluralName.ToWords();
+            string resourceName = resource.Name.Plural.ToWords();
             var path = subRoute.PathModel;
             subRoute.Operations.Add(new Operation
             {

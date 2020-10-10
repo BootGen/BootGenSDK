@@ -111,15 +111,28 @@ namespace BootGenTest
         }
 
         [TestMethod]
+        public void GeneratePivotResourceServiceTest()
+        {
+            BootGenApi api = CreateAPI();
+            var resource = api.Resources.First(r => r.Name.Singular == "User").NestedResources.First(r => r.Name.Singular == "Friend");
+            var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
+            aspNetCoreFunctions.NameSpace = "UsersWithFriends";
+            aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceService.txt", "templates/server/pivotService.sbn", new List<Resource> { resource });
+            CompareWithSample($"{resource.Name}ResourceService.txt");
+            aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceServiceInterface.txt", "templates/server/pivotServiceInterface.sbn", new List<Resource> { resource });
+            CompareWithSample($"{resource.Name}ResourceServiceInterface.txt");
+        }
+
+        [TestMethod]
         public void GenerateNestedResourceServiceTest()
         {
             BootGenApi api = CreateAPI();
-            var resource = api.Resources.First().NestedResources.First();
-            var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
-            aspNetCoreFunctions.NameSpace = "UsersWithFriends";
-            aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceService.txt", "templates/server/resourceService.sbn", new List<Resource> { resource });
+            var resource = api.Resources.First(r => r.Name.Singular == "User").NestedResources.First(r => r.Name.Singular == "Pet");
+            var generator = new AspNetCoreGenerator("testOutput");
+            generator.NameSpace = "UsersWithFriends";
+            generator.RenderResources("", c => $"{c.Name}ResourceService.txt", "templates/server/resourceService.sbn", new List<Resource> { resource });
             CompareWithSample($"{resource.Name}ResourceService.txt");
-            aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceServiceInterface.txt", "templates/server/resourceServiceInterface.sbn", new List<Resource> { resource });
+            generator.RenderResources("", c => $"{c.Name}ResourceServiceInterface.txt", "templates/server/resourceServiceInterface.sbn", new List<Resource> { resource });
             CompareWithSample($"{resource.Name}ResourceServiceInterface.txt");
         }
 

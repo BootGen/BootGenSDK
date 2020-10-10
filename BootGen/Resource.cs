@@ -7,8 +7,7 @@ namespace BootGen
 {
     public class Resource
     {
-        public string Name { get; set; }
-        public string PluralName { get; set; }
+        public Noun Name { get; set; }
         public ClassModel Class { get; set; }
         public Route Route { get; set; }
         public Route ItemRoute { get; set; }

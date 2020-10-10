@@ -25,13 +25,13 @@ namespace BootGenTest
             var entityResource = resourceStore.AddResource<Entity>();
             var childResource = resourceStore.AddResource<Entity>(parent: entityResource, parentName: "Parent");
             childResource.Name = "Child";
-            childResource.PluralName = "Children";
+            childResource.Name.Plural = "Children";
             var api = new BootGenApi(resourceStore);
-            Assert.AreEqual("Entity", entityResource.Name);
-            Assert.AreEqual("Entities", entityResource.PluralName);
+            Assert.AreEqual("Entity", entityResource.Name.Singular);
+            Assert.AreEqual("Entities", entityResource.Name.Plural);
             Assert.AreEqual(childResource, entityResource.NestedResources.First());
-            Assert.AreEqual("Child", childResource.Name);
-            Assert.AreEqual("Children", childResource.PluralName);
+            Assert.AreEqual("Child", childResource.Name.Singular);
+            Assert.AreEqual("Children", childResource.Name.Plural);
             Assert.AreEqual(6, entityResource.Class.Properties.Count);
             Assert.AreEqual("Id", entityResource.Class.Properties[0].Name);
             Assert.AreEqual("Name", entityResource.Class.Properties[1].Name);

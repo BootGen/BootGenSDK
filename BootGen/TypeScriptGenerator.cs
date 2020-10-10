@@ -49,7 +49,7 @@ namespace BootGen
 
         public static List<string> ReferredClasses(ClassModel c)
         {
-            return c.Properties.Where(p => p.Class != null && p.Location != Location.ServerOnly).Select(p => p.Class.Name).Distinct().Concat(c.Properties.Where(p => p.Enum != null).Select(p => p.Enum.Name).Distinct()).ToList();
+            return c.Properties.Where(p => p.Class != null && p.Location != Location.ServerOnly).Select(p => p.Class.Name.Singular).Distinct().Concat(c.Properties.Where(p => p.Enum != null).Select(p => p.Enum.Name).Distinct()).ToList();
         }
 
         public void RenderApiClient(string folderName, string targetFileName, string templateFile, BootGenApi api)
@@ -70,7 +70,7 @@ namespace BootGen
                 if (component.IsVariable)
                 {
                     builder.Append("${");
-                    builder.Append(resource.ParentResource.Class.Name.ToCamelCase());
+                    builder.Append(resource.ParentResource.Class.Name.Singular.ToCamelCase());
                     builder.Append(".id}");
                 }
                 else
@@ -96,9 +96,9 @@ namespace BootGen
                 {
                     builder.Append("${");
                     if (component == resource.ItemRoute.PathModel.Last())
-                        builder.Append(resource.Name.ToCamelCase());
+                        builder.Append(resource.Name.Singular.ToCamelCase());
                     else
-                        builder.Append(resource.ParentResource.Class.Name.ToCamelCase());
+                        builder.Append(resource.ParentResource.Class.Name.Singular.ToCamelCase());
                     builder.Append(".id}");
                 }
                 else
@@ -126,7 +126,7 @@ namespace BootGen
                         builder.Append("id");
                     else
                     {
-                        builder.Append(resource.ParentResource.Class.Name.ToCamelCase());
+                        builder.Append(resource.ParentResource.Class.Name.Singular.ToCamelCase());
                         builder.Append(".id");
                     }
                     builder.Append("}");
@@ -143,8 +143,8 @@ namespace BootGen
         public static string GetListFunctionName(Resource resource)
         {
             if (resource.ParentRelation != null)
-                return $"get{resource.PluralName}Of{resource.ParentResource.Name}";
-            return $"get{resource.PluralName}";
+                return $"get{resource.Name.Plural}Of{resource.ParentResource.Name}";
+            return $"get{resource.Name.Plural}";
         }
         public static string GetItemFunctionName(Resource resource)
         {
@@ -173,14 +173,14 @@ namespace BootGen
         public static string StateVariableName(Resource resource)
         {
             if (resource.ParentRelation != null)
-                return $"{resource.PluralName.ToCamelCase()}Of{resource.ParentResource.Name}";
-            return resource.PluralName.ToCamelCase();
+                return $"{resource.Name.Plural.ToCamelCase()}Of{resource.ParentResource.Name}";
+            return resource.Name.Plural.ToCamelCase();
         }
         public static string StateSetterName(Resource resource)
         {
             if (resource.ParentRelation != null)
-                return $"set{resource.PluralName}Of{resource.ParentResource.Name}";
-            return $"set{resource.PluralName}";
+                return $"set{resource.Name.Plural}Of{resource.ParentResource.Name}";
+            return $"set{resource.Name.Plural}";
         }
     }
 }

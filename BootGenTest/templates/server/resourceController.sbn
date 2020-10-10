@@ -29,12 +29,12 @@ namespace {{ name_space }}.Controllers
         }
         
         [HttpGet]
-        public IActionResult Get{{ resource.plural_name }}({{ get_parameters resource }})
+        public IActionResult Get{{ resource.name.plural }}({{ get_parameters resource }})
         {
             {{~ if resource.authenticate ~}}
             service.CurrentUser = CurrentUser;
             {{~ end ~}}
-            var response = service.Get{{ resource.plural_name }}({{ get_parameters_call resource }});
+            var response = service.Get{{ resource.name.plural }}({{ get_parameters_call resource }});
             return new ObjectResult(response.ResponseData) { StatusCode = response.StatusCode };
         }
 

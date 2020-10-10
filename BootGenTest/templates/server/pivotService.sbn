@@ -19,14 +19,14 @@ namespace {{ name_space }}.Services
         public User CurrentUser { get; set; }
         
         {{~ end ~}}
-        public ServiceResponse<List<{{ resource.class.name }}>> Get{{ resource.plural_name }}({{ get_parameters resource }})
+        public ServiceResponse<List<{{ resource.class.name }}>> Get{{ resource.name.plural }}({{ get_parameters resource }})
         {
             using (var db = new DataContext())
             {
                 {{~
                 parent = resource.parent_resource
                 ~}}
-                var parent = db.{{ parent.plural_name }}.Where(item => item.Id == {{ lower_case parent.name }}Id).First();
+                var parent = db.{{ parent.name.plural }}.Where(item => item.Id == {{ lower_case parent.name }}Id).First();
                 var result = db.{{ resource.pivot.name }}s
                                 {{~ for property in (get_properties_to_load resource.class) ~}}
                                 .Include("{{ property }}")
@@ -50,7 +50,7 @@ namespace {{ name_space }}.Services
                 {{~
                 parent = resource.parent_resource
                 ~}}
-                var parent = db.{{ parent.plural_name }}.Where(item => item.Id == {{ lower_case parent.name }}Id).First();
+                var parent = db.{{ parent.name.plural }}.Where(item => item.Id == {{ lower_case parent.name }}Id).First();
                 db.{{ resource.pivot.name }}s.Add(new {{ resource.pivot.name }}{ {{ parent.name }}Id = parent.Id, {{ resource.name }}Id = {{ lower_case resource.name }}.Id });
                 db.SaveChanges();
             }
@@ -68,7 +68,7 @@ namespace {{ name_space }}.Services
                 {{~
                 parent = resource.parent_resource
                 ~}}
-                var parent = db.{{ parent.plural_name }}.Where(item => item.Id == {{ lower_case parent.name }}Id).First();
+                var parent = db.{{ parent.name.plural }}.Where(item => item.Id == {{ lower_case parent.name }}Id).First();
                 var assigned = db.{{ resource.class.name }}s.Where(item => item.Id == {{ lower_case resource.name }}Id).First();
                 db.{{ resource.pivot.name }}s.RemoveRange(db.{{ resource.pivot.name }}s.Where(item => item.{{ parent.name }}Id == parent.Id && item.{{ resource.name }}Id == assigned.Id));
                 db.SaveChanges();

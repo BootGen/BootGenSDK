@@ -40,8 +40,8 @@ namespace BootGenTest
             var testFunctionWithBody = controller.Methods.Last();
             Assert.AreEqual("TestFunctionWithBody", testFunctionWithBody.Name);
             Assert.AreEqual("dummy", testFunctionWithBody.Parameters.First().Name);
-            Assert.AreEqual("Dummy", testFunctionWithBody.Parameters.First().Class.Name);
-            Assert.AreEqual("Dummy", testFunctionWithBody.ReturnType.Class.Name);
+            Assert.AreEqual("Dummy", testFunctionWithBody.Parameters.First().Class.Name.Singular);
+            Assert.AreEqual("Dummy", testFunctionWithBody.ReturnType.Class.Name.Singular);
         }
     }
 }

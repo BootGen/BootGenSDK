@@ -10,11 +10,8 @@ namespace BootGen
     {
         internal int Id { get; set; }
 
-        /// <summary>Singular name of the class</summary>
-        public string Name { get; internal set; }
-
-        /// <summary>Plural name of the class. Use PluralNameAttribute to speciy explicitly </summary>
-        public string PluralName { get; internal set; }
+        /// <summary>Name of the class, represented in both singular and plural forms.</summary>
+        public Noun Name { get; set; }
 
         /// <summary>All properties defined in class.</summary>
         public List<Property> Properties { get; internal set; }
@@ -23,8 +20,8 @@ namespace BootGen
         public Property IdProperty => PropertyWithName("Id");
 
         /// <summary>Returns property with the given name</summary>
-        /// <param>The parameter name to lool for.</param>
-        /// <returns>The parameter if foun, null otherwise</returns>
+        /// <param>The parameter name to look for.</param>
+        /// <returns>The parameter if found, null otherwise</returns>
         public Property PropertyWithName(string name)
         {
             return Properties.FirstOrDefault(p => p.Name == name);
@@ -45,7 +42,7 @@ namespace BootGen
         /// <summary>Determines if class is used on server, client or both</summary>
         public Location Location { get; set; }
 
-        /// <summary>True if class is used as resorce</summary>
+        /// <summary>True if class is used as resource</summary>
         public bool IsResource { get; set; }
 
         /// <summary>True if class is persisted to the database</summary>

@@ -112,8 +112,8 @@ namespace BootGen
         {
             var builder = new StringBuilder();
             if (resource.ParentResource != null)
-                builder.Append(resource.ParentResource.PluralName);
-            builder.Append(resource.PluralName);
+                builder.Append(resource.ParentResource.Name.Plural);
+            builder.Append(resource.Name.Plural);
             return builder.ToString();
         }
 
@@ -246,7 +246,7 @@ namespace BootGen
                             builder.Append(operation.Body.Name);
                             builder.Append("> ");
                         }
-                        builder.Append(resource.PluralName.ToCamelCase());
+                        builder.Append(resource.Name.Plural.ToCamelCase());
                     }
                     else
                     {
@@ -255,7 +255,7 @@ namespace BootGen
                             builder.Append(operation.Body.Name);
                             builder.Append(" ");
                         }
-                        builder.Append(resource.Name.ToCamelCase());
+                        builder.Append(resource.Name.Singular.ToCamelCase());
                     }
                 }
             }

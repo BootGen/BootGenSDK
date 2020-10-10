@@ -10,14 +10,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace UsersWithFriends.Services
 {
-    public interface IUsersFriendsService
+    public interface IUsersPetsService
     {
         User CurrentUser { get; set; }
-        ServiceResponse<List<User>> GetFriends([FromRoute] int userId);
-        ServiceResponse<User> AddFriend([FromRoute] int userId, [FromBody] User friend);
-        ServiceResponse RemoveFriend([FromRoute] int userId, [FromRoute] int friendId);
+        ServiceResponse<List<Pet>> GetPets(int userId);
+        ServiceResponse<Pet> GetPet(int userId, int petId);
+        ServiceResponse<Pet> AddPet(int userId, Pet pet);
+        ServiceResponse<Pet> UpdatePet(int userId, int petId, Pet pet);
+        ServiceResponse DeletePet(int userId, int petId);
     }
 }

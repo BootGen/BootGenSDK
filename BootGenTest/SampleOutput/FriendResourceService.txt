@@ -10,87 +10,52 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace UsersWithFriends.Services
 {
     public class UsersFriendsService : IUsersFriendsService
     {
         public User CurrentUser { get; set; }
-
-        public ServiceResponse<List<User>> GetFriends(int userId)
+        
+        public ServiceResponse<List<User>> GetFriends([FromRoute] int userId)
         {
             using (var db = new DataContext())
             {
-                var query = db.Users
-                                .Where(item => item. == userId);
+                var parent = db.Users.Where(item => item.Id == userId).First();
+                var result = db.UserPivots
+                                .Where(item => item.UserId == parent.Id)
+                                .Select(item => item.Friend)
+                                .ToList();
                 return new ServiceResponse<List<User>>
                 {
                     StatusCode = 200,
-                    ResponseData = query.ToList()
+                    ResponseData = result
                 };
             }
         }
 
-        public ServiceResponse<User> GetFriend(int userId, int friendId)
+        public ServiceResponse<User> AddFriend([FromRoute] int userId, [FromBody] User friend)
         {
             using (var db = new DataContext())
             {
-                var item = db.Users
-                             .Where(item => item.Id == friendId).FirstOrDefault();
-                if (item == null)
-                    return new ServiceResponse<User>
-                    {
-                        StatusCode = 404
-                    };
-                return new ServiceResponse<User>
-                {
-                    StatusCode = 200,
-                    ResponseData = item
-                };
-            }
-        }
-
-        public ServiceResponse<User> AddFriend(int userId, User friend)
-        {
-            friend. = userId;
-            EntityEntry<User> entityEntry;
-            using (var db = new DataContext())
-            {
-                entityEntry = db.Users.Add(friend);
+                var parent = db.Users.Where(item => item.Id == userId).First();
+                db.UserPivots.Add(new UserPivot{ UserId = parent.Id, FriendId = friend.Id });
                 db.SaveChanges();
             }
             return new ServiceResponse<User>
             {
                 StatusCode = 200,
-                ResponseData = entityEntry.Entity
+                ResponseData = null
             };
         }
 
-        public ServiceResponse<User> UpdateFriend(int userId, int friendId, User friend)
+        public ServiceResponse RemoveFriend([FromRoute] int userId, [FromRoute] int friendId)
         {
             using (var db = new DataContext())
             {
-                var original = db.Users
-                            .Where(item => item.Id == friendId).FirstOrDefault();
-                EntityEntry<User> entityEntry;
-                entityEntry = db.Users.Update(original);
-                original.Name = friend.Name;
-                db.SaveChanges();
-                return new ServiceResponse<User>
-                {
-                    StatusCode = 200,
-                    ResponseData = entityEntry.Entity
-                };
-            }
-        }
-
-        public ServiceResponse DeleteFriend(int userId, int friendId)
-        {
-            using (var db = new DataContext())
-            {
-                var item = db.Users.Where(item => item.Id == friendId).First();
-                db.Users.Remove(item);
+                var parent = db.Users.Where(item => item.Id == userId).First();
+                var assigned = db.Users.Where(item => item.Id == friendId).First();
+                db.UserPivots.RemoveRange(db.UserPivots.Where(item => item.UserId == parent.Id && item.FriendId == assigned.Id));
                 db.SaveChanges();
             }
             return new ServiceResponse

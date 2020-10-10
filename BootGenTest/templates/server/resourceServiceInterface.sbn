@@ -19,7 +19,7 @@ namespace {{ name_space }}.Services
         {{~ if resource.authenticate ~}}
         User CurrentUser { get; set; }
         {{~ end ~}}
-        ServiceResponse<List<{{ resource.class.name }}>> Get{{ resource.plural_name }}({{ get_parameters_service resource }});
+        ServiceResponse<List<{{ resource.class.name }}>> Get{{ resource.name.plural }}({{ get_parameters_service resource }});
         ServiceResponse<{{ resource.class.name }}> Get{{ resource.name }}({{ item_get_parameters_service resource }});
         {{~ if !resource.is_readonly ~}}
         ServiceResponse<{{ resource.class.name }}> Add{{ resource.name }}({{ post_parameters_service resource }});
