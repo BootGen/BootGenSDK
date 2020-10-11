@@ -22,54 +22,26 @@ namespace BootGen
         internal DataModel DataModel { get; set; }
 
         
-        public Resource AddResource<T>(string parentName = null, bool manyToMany = false)
+        public Resource OneToMany<T>(string parentName = null)
         {
             if (ParentResource != null)
                 throw new Exception("Only a single layer of resource nesting is supported.");
-            var parentRel = new ParentRelation(this, parentName);
-            var classCount = DataModel.Classes.Count;
-            Resource resource = FromClass<T>(parentRel);
-            resource.Name = resource.Class.Name;
+            Resource resource = DataModel.ResourceBuilder.FromClass<T>();
             resource.DataModel = DataModel;
+            resource.ParentRelation = new ParentRelation(this, parentName);
             if (NestedResources.Any(r => r.Name == resource.Name))
                 throw new Exception($"A nested resource with name \"{resource.Name}\" already exists under \"{Name}\".");
             NestedResources.Add(resource);
-            if (manyToMany)
-            {
-                ClassModel pivotClass = CreatePivot(this, resource);
-                resource.Pivot = pivotClass;
-            }
-
-            var newClasses = DataModel.Classes.Skip(classCount).ToList();
-            foreach (var c in newClasses)
-            {
-                c.MakePersisted();
-            }
             return resource;
         }
         
-        internal Resource FromClass<T>(ParentRelation parentRelation = null)
+        public Resource ManyToMany<T>(string parentName = null)
         {
-            Resource resource = FromType(typeof(T), parentRelation);
-            resource.Class.MakePersisted();
+            Resource resource = OneToMany<T>(parentName);
+            resource.Pivot = CreatePivot(this, resource);
             return resource;
         }
-
-
-        private Resource FromType(Type type, ParentRelation parentRelation = null)
-        {
-            var result = new Resource();
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-            {
-                type = type.GetGenericArguments()[0];
-            }
-
-            result.Class = DataModel.TypeBuilder.FromType(type);
-            result.Class.IsResource = true;
-            result.NestedResources = new List<Resource>();
-            result.ParentRelation = parentRelation;
-            return result;
-        }
+        
         private static ClassModel CreatePivot(Resource parent, Resource resource)
         {
             var pivotClass = new ClassModel

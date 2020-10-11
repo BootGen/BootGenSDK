@@ -14,14 +14,16 @@ namespace BootGen
         internal ClassCollection ClassCollection { get; }
         internal EnumCollection EnumCollection { get; }
         internal ResourceBuilder ResourceBuilder  { get; }
-        internal TypeBuilder TypeBuilder  { get; }
+        internal TypeBuilder NonPersistedTypeBuilder  { get; }
+        internal TypeBuilder PersistedTypeBuilder  { get; }
 
         public DataModel()
         {
             ClassCollection = new ClassCollection();
             EnumCollection = new EnumCollection();
-            TypeBuilder = new TypeBuilder(ClassCollection, EnumCollection);
-            ResourceBuilder = new ResourceBuilder(TypeBuilder);
+            PersistedTypeBuilder = new TypeBuilder(ClassCollection, EnumCollection, true);
+            NonPersistedTypeBuilder = new TypeBuilder(ClassCollection, EnumCollection, false);
+            ResourceBuilder = new ResourceBuilder(PersistedTypeBuilder);
         }
     }
 }

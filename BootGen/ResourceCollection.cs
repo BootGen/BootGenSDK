@@ -18,19 +18,11 @@ namespace BootGen
         
         public Resource Add<T>()
         {
-            var classCount = DataModel.Classes.Count;
             Resource resource = DataModel.ResourceBuilder.FromClass<T>();
-            resource.Name = resource.Class.Name;
             resource.DataModel = DataModel;
             if (RootResources.Any(r => r.Name == resource.Name))
                 throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
             RootResources.Add(resource);
-
-            var newClasses = DataModel.Classes.Skip(classCount).ToList();
-            foreach (var c in newClasses)
-            {
-                c.MakePersisted();
-            }
             return resource;
         }
 

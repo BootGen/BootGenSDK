@@ -43,14 +43,15 @@ namespace BootGen
                     Verb = verb
                 };
                 controller.Methods.Add(controllerMethod);
+                var typeBuilder = DataModel.NonPersistedTypeBuilder;
                 foreach (var param in method.GetParameters())
                 {
-                    var property = DataModel.TypeBuilder.GetProperty(param.ParameterType);
+                    var property = typeBuilder.GetProperty(param.ParameterType);
                     property.Name = param.Name;
                     controllerMethod.Parameters.Add(property);
                 }
 
-                TypeDescription responseType = DataModel.TypeBuilder.GetProperty(method.ReturnType);
+                TypeDescription responseType = typeBuilder.GetProperty(method.ReturnType);
                 if (responseType.BuiltInType == BuiltInType.Object)
                 {
                     controllerMethod.ReturnType = responseType;

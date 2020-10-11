@@ -9,17 +9,21 @@ namespace BootGen
     {
         private readonly ClassCollection classStore;
         private readonly EnumCollection enumStore;
+        private readonly bool persist;
 
-        internal TypeBuilder(ClassCollection classStore, EnumCollection enumStore)
+        internal TypeBuilder(ClassCollection classStore, EnumCollection enumStore, bool persist)
         {
             this.classStore = classStore;
             this.enumStore = enumStore;
+            this.persist = persist;
         }
         internal ClassModel FromType(Type type)
         {
             ClassModel c;
             if (classStore.TryGetValue(type, out c))
             {
+                if (persist)
+                    c.MakePersisted();
                 return c;
             }
             return CreateClassForType(type);
@@ -73,10 +77,12 @@ namespace BootGen
                 });
             }
 
+            if (persist)
+                c.MakePersisted();
             return c;
         }
 
-        public Property GetProperty(Type propertyType)
+        internal Property GetProperty(Type propertyType)
         {
             var property = new Property();
             property.IsRequired = true;

@@ -12,15 +12,13 @@ namespace BootGen
         {
             this.typeBuilder = typeBuilder;
         }
-        public Resource FromClass<T>(ParentRelation parentRelation = null)
+        public Resource FromClass<T>()
         {
-            Resource resource = FromType(typeof(T), parentRelation);
-            resource.Class.MakePersisted();
-            return resource;
+            return FromType(typeof(T));
         }
 
 
-        private Resource FromType(Type type, ParentRelation parentRelation = null)
+        private Resource FromType(Type type)
         {
             var result = new Resource();
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
@@ -31,7 +29,7 @@ namespace BootGen
             result.Class = typeBuilder.FromType(type);
             result.Class.IsResource = true;
             result.NestedResources = new List<Resource>();
-            result.ParentRelation = parentRelation;
+            result.Name = result.Class.Name;
             return result;
         }
     }

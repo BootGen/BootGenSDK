@@ -159,10 +159,10 @@ namespace BootGenTest
             var resourceCollection = new ResourceCollection(new DataModel());
             var userResource = resourceCollection.Add<User>();
             userResource.Authenticate = true;
-            var friendResource = userResource.AddResource<User>(manyToMany: true);
+            var friendResource = userResource.ManyToMany<User>();
             friendResource.Name = "Friend";
             friendResource.Authenticate = true;
-            var petResource = userResource.AddResource<Pet>();
+            var petResource = userResource.OneToMany<Pet>();
             petResource.Authenticate = true;
             var api = new Api(resourceCollection);
             api.BaseUrl = "http://localhost/api";
