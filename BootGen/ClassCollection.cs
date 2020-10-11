@@ -19,6 +19,8 @@ namespace BootGen
         }
         internal void Add(ClassModel c)
         {
+            if (Classes.Contains(c))
+                return;
             c.Id = Classes.Count;
             Classes.Add(c);
         }

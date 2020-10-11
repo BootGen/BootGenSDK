@@ -13,6 +13,6 @@ namespace BootGen
         public List<Method> Methods { get; set; }
 
         /// <summary>Indicates if the controller needs to authenticate or not</summary>
-        public bool Authenticate { get; internal set; }
+        public bool Authenticate { get; set; }
     }
 }

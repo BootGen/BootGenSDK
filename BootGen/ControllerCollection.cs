@@ -14,14 +14,13 @@ namespace BootGen
             DataModel = dataModel;
         }
 
-        public Controller Add<T>(bool authenticate = false)
+        public Controller Add<T>()
         {
             var type = typeof(T);
             var controller = new Controller
             {
                 Name = type.Name.Split('.').Last(),
-                Methods = new List<Method>(),
-                Authenticate = authenticate
+                Methods = new List<Method>()
             };
             foreach (var method in type.GetMethods())
             {
