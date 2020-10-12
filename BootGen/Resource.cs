@@ -48,7 +48,6 @@ namespace BootGen
             {
                 Name = resource.Name + "Pivot",
                 Location = Location.ServerOnly,
-                Persisted = true,
                 Properties = new List<Property> {
                         new Property {
                             Name = parent.Name + "Id",
@@ -74,6 +73,7 @@ namespace BootGen
                         }
                     }
             };
+            pivotClass.MakePersisted();
             return pivotClass;
         }
 
