@@ -1,9 +1,5 @@
 using System;
 
-public class ResourceAttribute : Attribute
-{
-}
-
 public class ClientOnlyAttribute : Attribute
 {
 }

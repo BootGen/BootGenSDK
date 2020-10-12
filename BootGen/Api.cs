@@ -94,7 +94,7 @@ namespace BootGen
             c.RelationsAreSetUp = true;
             foreach (var property in c.Properties)
             {
-                if (property.Class == null || !property.IsCollection || property.MirrorProperty != null)
+                if (property.Class == null || !property.IsCollection || property.MirrorProperty != null || property.Location == Location.ClientOnly)
                     continue;
 
                 Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Name == c.Name);

@@ -1,5 +1,9 @@
+import { User } from './User';
+import { Pet } from './Pet';
 
 export interface User {
     id: number;
     name: string;
+    friends: User[];
+    pets: Pet[];
 }

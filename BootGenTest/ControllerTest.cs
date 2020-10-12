@@ -16,7 +16,7 @@ namespace BootGenTest
         interface TestController
         {
             [Get]
-            bool PrimitiveTestFunction(string param1, int param2);
+            bool PrimitiveTestFunction();
 
             [Post]
             Dummy TestFunctionWithBody(Dummy dummy);
@@ -32,17 +32,13 @@ namespace BootGenTest
             var primitiveTestFunction = controller.Methods.First();
 
             Assert.AreEqual("PrimitiveTestFunction", primitiveTestFunction.Name);
-            Assert.AreEqual("param1", primitiveTestFunction.Parameters.First().Name);
-            Assert.AreEqual(BuiltInType.String, primitiveTestFunction.Parameters.First().BuiltInType);
-            Assert.AreEqual("param2", primitiveTestFunction.Parameters.Last().Name);
-            Assert.AreEqual(BuiltInType.Int32, primitiveTestFunction.Parameters.Last().BuiltInType);
             Assert.AreEqual(HttpVerb.Get, primitiveTestFunction.Verb);
             Assert.AreEqual(BuiltInType.Bool, primitiveTestFunction.ReturnType.Class.Properties.First().BuiltInType);
 
             var testFunctionWithBody = controller.Methods.Last();
             Assert.AreEqual("TestFunctionWithBody", testFunctionWithBody.Name);
-            Assert.AreEqual("dummy", testFunctionWithBody.Parameters.First().Name);
-            Assert.AreEqual("Dummy", testFunctionWithBody.Parameters.First().Class.Name.Singular);
+            Assert.AreEqual("dummy", testFunctionWithBody.Parameter.Name);
+            Assert.AreEqual("Dummy", testFunctionWithBody.Parameter.Class.Name.Singular);
             Assert.AreEqual("Dummy", testFunctionWithBody.ReturnType.Class.Name.Singular);
         }
     }

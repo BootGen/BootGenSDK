@@ -51,7 +51,7 @@ namespace BootGen
             var result = new List<string>();
             foreach (var property in c.Properties)
             {
-                if (property.BuiltInType == BuiltInType.Object && !property.ParentReference && property.IsCollection)
+                if (property.BuiltInType == BuiltInType.Object && !property.ParentReference && property.IsCollection && property.Location != Location.ClientOnly)
                 {
                     string newPrefix;
                     if (prefix == null)
@@ -197,17 +197,16 @@ namespace BootGen
 
         public static string Parameters(Method method)
         {
+            if (method.Parameter == null)
+                return string.Empty;
             StringBuilder builder = new StringBuilder();
-            foreach (var param in method.Parameters)
-            {
-                if (builder.Length != 0)
-                    builder.Append(", ");
-                builder.Append(param.BuiltInType == BuiltInType.Object ? "[FromBody]" : "[FromQuery]");
-                builder.Append(" ");
-                builder.Append(GetType(param));
-                builder.Append(" ");
-                builder.Append(param.Name);
-            }
+            if (builder.Length != 0)
+                builder.Append(", ");
+            builder.Append(method.Parameter.BuiltInType == BuiltInType.Object ? "[FromBody]" : "[FromQuery]");
+            builder.Append(" ");
+            builder.Append(GetType(method.Parameter));
+            builder.Append(" ");
+            builder.Append(method.Parameter.Name);
             return builder.ToString();
         }
 

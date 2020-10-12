@@ -14,7 +14,7 @@ namespace BootGenTest
         class Entity
         {
             public string Name { get; set; }
-            [Resource]
+            [ClientOnly]
             public List<Entity> Children { get; set; }
         }
 
@@ -32,13 +32,14 @@ namespace BootGenTest
             Assert.AreEqual(childResource, entityResource.NestedResources.First());
             Assert.AreEqual("Child", childResource.Name.Singular);
             Assert.AreEqual("Children", childResource.Name.Plural);
-            Assert.AreEqual(6, entityResource.Class.Properties.Count);
+            Assert.AreEqual(7, entityResource.Class.Properties.Count);
             Assert.AreEqual("Id", entityResource.Class.Properties[0].Name);
             Assert.AreEqual("Name", entityResource.Class.Properties[1].Name);
-            Assert.AreEqual("Created", entityResource.Class.Properties[2].Name);
-            Assert.AreEqual("Updated", entityResource.Class.Properties[3].Name);
-            Assert.AreEqual("Parent", entityResource.Class.Properties[4].Name);
-            Assert.AreEqual("ParentId", entityResource.Class.Properties[5].Name);
+            Assert.AreEqual("Children", entityResource.Class.Properties[2].Name);
+            Assert.AreEqual("Created", entityResource.Class.Properties[3].Name);
+            Assert.AreEqual("Updated", entityResource.Class.Properties[4].Name);
+            Assert.AreEqual("Parent", entityResource.Class.Properties[5].Name);
+            Assert.AreEqual("ParentId", entityResource.Class.Properties[6].Name);
         }
     }
 }

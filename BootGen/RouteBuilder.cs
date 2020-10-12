@@ -51,9 +51,9 @@ namespace BootGen
                             {
                                 Verb = method.Verb,
                                 Name = method.Name.ToCamelCase(),
-                                Parameters = method.Parameters.Where(p => p.Class == null).Select(ToParam).ToList(),
-                                Body = method.Parameters.FirstOrDefault( p => p.Class != null)?.Class,
-                                BodyIsCollection = method.Parameters.FirstOrDefault( p => p.Class != null)?.IsCollection == true,
+                                Parameters = new List<Parameter>{ ToParam(method.Parameter) },
+                                Body = method.Parameter?.Class,
+                                BodyIsCollection = method.Parameter?.IsCollection == true,
                                 Response = method.ReturnType.Class,
                                 ResponseIsCollection = method.ReturnType.IsCollection,
                                 SuccessCode = 200,
@@ -68,12 +68,16 @@ namespace BootGen
 
         private static Parameter ToParam(Property p)
         {
+            if (p == null)
+                return null;
             Parameter parameter = ConvertToParameter(p);
             parameter.Kind = p.BuiltInType == BuiltInType.Object ? RestParamterKind.Body : RestParamterKind.Query;
             return parameter;
         }
         public static Parameter ConvertToParameter(Property property)
         {
+            if (property == null)
+                return null;
             var oasProp = new Parameter { Name = property.Name.ToCamelCase() };
             switch (property.BuiltInType)
             {

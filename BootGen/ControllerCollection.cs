@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -38,17 +39,22 @@ namespace BootGen
                 var controllerMethod = new Method
                 {
                     Name = method.Name,
-                    Parameters = new List<Property>(),
                     Verb = verb
                 };
                 controller.Methods.Add(controllerMethod);
                 var typeBuilder = DataModel.NonPersistedTypeBuilder;
-                foreach (var param in method.GetParameters())
+                ParameterInfo[] parameters = method.GetParameters();
+                if (verb == HttpVerb.Get && parameters.Length > 0)
+                    throw new Exception("Get controller methods might not have parameters.");
+                if (parameters.Length > 1)
+                    throw new Exception("Get controller methods might have maximal one parameter.");
+                if (parameters.Length == 1)
                 {
+                    var param = parameters.First();
                     var property = typeBuilder.GetProperty(param.ParameterType);
                     property.Name = param.Name;
-                    controllerMethod.Parameters.Add(property);
-                }
+                    controllerMethod.Parameter = property;
+                }      
 
                 TypeDescription responseType = typeBuilder.GetProperty(method.ReturnType);
                 if (responseType.BuiltInType == BuiltInType.Object)

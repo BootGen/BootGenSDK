@@ -6,7 +6,7 @@ namespace BootGen
     {
         public string Name { get; set; }
         public HttpVerb Verb { get; set; }
-        public List<Property> Parameters { get; set; }
+        public Property Parameter { get; set; }
         public TypeDescription ReturnType { get; set; }
     }
 }

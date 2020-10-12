@@ -43,10 +43,6 @@ namespace BootGen
             classStore.Add(type, c);
             foreach (var p in type.GetProperties())
             {
-                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ResourceAttribute)))
-                {
-                    continue;
-                }
                 var propertyType = p.PropertyType;
                 var property = GetProperty(propertyType);
                 property.Name = p.Name;

@@ -19,9 +19,9 @@ namespace BootGenTest
         class User
         {
             public string Name { get; set; }
-            [Resource]
+            [ClientOnly]
             public List<User> Friends { get; set; }
-            [Resource]
+            [ClientOnly]
             public List<Pet> Pets { get; set; } 
         }
             class AuthenticationData

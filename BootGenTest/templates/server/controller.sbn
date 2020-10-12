@@ -33,7 +33,7 @@ namespace {{ name_space }}.Controllers
             {{~ if controller.authenticate ~}}
             service.CurrentUser = CurrentUser;
             {{~ end ~}}
-            var response = service.{{ method.name}}({{for param in method.parameters}}{{ param.name }}{{if !for.last}}, {{ end }}{{ end }});
+            var response = service.{{ method.name}}({{if method.parameter}}{{method.parameter.name }}{{ end }});
             return new ObjectResult(response.ResponseData) { StatusCode = response.StatusCode };
         }
         {{~ end ~}}
