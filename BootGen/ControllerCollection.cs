@@ -47,16 +47,17 @@ namespace BootGen
                 if (verb == HttpVerb.Get && parameters.Length > 0)
                     throw new Exception("Get controller methods might not have parameters.");
                 if (parameters.Length > 1)
-                    throw new Exception("Get controller methods might have maximal one parameter.");
+                    throw new Exception("Controller methods might have maximal one parameter.");
                 if (parameters.Length == 1)
                 {
                     var param = parameters.First();
-                    var property = typeBuilder.GetProperty(param.ParameterType);
-                    property.Name = param.Name;
-                    controllerMethod.Parameter = property;
+                    controllerMethod.Parameter = typeBuilder.GetProperty<Parameter>(param.ParameterType);
+                    if (controllerMethod.Parameter.BuiltInType != BuiltInType.Object)
+                        throw new Exception("Controller method parameter must be a custom object.");
+                    controllerMethod.Parameter.Name = param.Name;
                 }      
 
-                TypeDescription responseType = typeBuilder.GetProperty(method.ReturnType);
+                var responseType = typeBuilder.GetProperty<TypeDescription>(method.ReturnType);
                 if (responseType.BuiltInType == BuiltInType.Object)
                 {
                     controllerMethod.ReturnType = responseType;

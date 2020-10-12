@@ -51,7 +51,7 @@ namespace BootGen
                             {
                                 Verb = method.Verb,
                                 Name = method.Name.ToCamelCase(),
-                                Parameters = new List<Parameter>{ ToParam(method.Parameter) },
+                                Parameters = new List<Parameter>{ method.Parameter },
                                 Body = method.Parameter?.Class,
                                 BodyIsCollection = method.Parameter?.IsCollection == true,
                                 Response = method.ReturnType.Class,
@@ -66,14 +66,6 @@ namespace BootGen
             }
         }
 
-        private static Parameter ToParam(Property p)
-        {
-            if (p == null)
-                return null;
-            Parameter parameter = ConvertToParameter(p);
-            parameter.Kind = p.BuiltInType == BuiltInType.Object ? RestParamterKind.Body : RestParamterKind.Query;
-            return parameter;
-        }
         public static Parameter ConvertToParameter(Property property)
         {
             if (property == null)

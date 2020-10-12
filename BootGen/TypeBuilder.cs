@@ -44,7 +44,7 @@ namespace BootGen
             foreach (var p in type.GetProperties())
             {
                 var propertyType = p.PropertyType;
-                var property = GetProperty(propertyType);
+                var property = GetProperty<Property>(propertyType);
                 property.Name = p.Name;
                 c.Properties.Add(property);
                 if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ClientOnlyAttribute)))
@@ -78,9 +78,9 @@ namespace BootGen
             return c;
         }
 
-        internal Property GetProperty(Type propertyType)
+        internal T GetProperty<T>(Type propertyType) where T : TypeDescription, new()
         {
-            var property = new Property();
+            var property = new T();
             property.IsRequired = true;
             if (propertyType.IsGenericType)
             {
