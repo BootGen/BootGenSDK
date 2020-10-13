@@ -170,17 +170,5 @@ namespace BootGen
                 return $"delete{resource.Name}Of{resource.ParentResource.Name}";
             return $"delete{resource.Name}";
         }
-        public static string StateVariableName(Resource resource)
-        {
-            if (resource.ParentRelation != null)
-                return $"{resource.Name.Plural.ToCamelCase()}Of{resource.ParentResource.Name}";
-            return resource.Name.Plural.ToCamelCase();
-        }
-        public static string StateSetterName(Resource resource)
-        {
-            if (resource.ParentRelation != null)
-                return $"set{resource.Name.Plural}Of{resource.ParentResource.Name}";
-            return $"set{resource.Name.Plural}";
-        }
     }
 }

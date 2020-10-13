@@ -172,6 +172,8 @@ namespace BootGen
                     {
                         dataList.Add(new SeedData(jObj, record));
                     }
+                    if (nestedResource == null)
+                        continue;
                     if (nestedResource.Pivot != null)
                     {
                         var pivotDataList = GetDataList(nestedResource.Pivot);

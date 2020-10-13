@@ -51,7 +51,7 @@ namespace BootGen
                             {
                                 Verb = method.Verb,
                                 Name = method.Name.ToCamelCase(),
-                                Parameters = new List<Parameter>{ method.Parameter },
+                                Parameters = new List<Parameter>(),
                                 Body = method.Parameter?.Class,
                                 BodyIsCollection = method.Parameter?.IsCollection == true,
                                 Response = method.ReturnType.Class,
@@ -61,7 +61,7 @@ namespace BootGen
                                 Summary = method.Name,
                                 Authenticate = controller.Authenticate
                             }
-                        }
+                    }
                 };
             }
         }

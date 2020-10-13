@@ -55,6 +55,7 @@ namespace BootGen
                     if (controllerMethod.Parameter.BuiltInType != BuiltInType.Object)
                         throw new Exception("Controller method parameter must be a custom object.");
                     controllerMethod.Parameter.Name = param.Name;
+                    controllerMethod.Parameter.Kind = RestParamterKind.Body;
                 }      
 
                 var responseType = typeBuilder.GetProperty<TypeDescription>(method.ReturnType);
