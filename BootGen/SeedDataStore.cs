@@ -29,8 +29,6 @@ namespace BootGen
 
         private string GetNextId(ClassModel c)
         {
-            if (c.IdProperty.BuiltInType == BuiltInType.Guid)
-                return $"Guid.Parse(\"{Guid.NewGuid().ToString()}\")";
             if (!NextClassIds.Keys.Contains(c.Id))
             {
                 NextClassIds[c.Id] = 2;
@@ -128,7 +126,7 @@ namespace BootGen
         {
             foreach (var property in c.Properties)
             {
-                if (property.Class == null)
+                if (property.Class == null || property.Location == Location.ClientOnly)
                     continue;
                 foreach (var item in Data[c.Id])
                 {
@@ -223,9 +221,8 @@ namespace BootGen
                     if (SplitData(item, property, nestedResource))
                     {
                         PushSeedDataToProperties(nestedResource.Class);
-                        var rootResource = resourceCollection.GetRootResource(nestedResource);
-                        if (rootResource != null)
-                            PushSeedDataToNestedResources(rootResource);
+                        if (nestedResource.RootResource != null)
+                            PushSeedDataToNestedResources(nestedResource.RootResource);
                     }
                 }
             }

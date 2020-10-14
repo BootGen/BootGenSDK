@@ -43,6 +43,8 @@ namespace BootGen
             classStore.Add(type, c);
             foreach (var p in type.GetProperties())
             {
+                if (p.Name == "Id")
+                    throw new Exception("Do not define an \"Id\" property explicitly!");
                 var propertyType = p.PropertyType;
                 var property = GetProperty<Property>(propertyType);
                 property.Name = p.Name;
