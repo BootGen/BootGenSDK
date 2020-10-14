@@ -70,7 +70,7 @@ namespace BootGen
                 if (component.IsVariable)
                 {
                     builder.Append("${");
-                    builder.Append(resource.ParentResource.Class.Name.Singular.ToCamelCase());
+                    builder.Append(resource.ParentResource.Name.Singular.ToCamelCase());
                     builder.Append(".id}");
                 }
                 else
@@ -98,7 +98,7 @@ namespace BootGen
                     if (component == resource.ItemRoute.PathModel.Last())
                         builder.Append(resource.Name.Singular.ToCamelCase());
                     else
-                        builder.Append(resource.ParentResource.Class.Name.Singular.ToCamelCase());
+                        builder.Append(resource.ParentResource.Name.Singular.ToCamelCase());
                     builder.Append(".id}");
                 }
                 else

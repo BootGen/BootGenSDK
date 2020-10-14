@@ -20,6 +20,7 @@ namespace BootGen
         {
             Resource resource = DataModel.ResourceBuilder.FromClass<T>();
             resource.DataModel = DataModel;
+            resource.RootResource = resource;
             if (RootResources.Any(r => r.Name == resource.Name))
                 throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
             RootResources.Add(resource);

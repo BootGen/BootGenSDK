@@ -7,7 +7,7 @@ import { {{class.name}} } from '@/models/{{class.name}}'
 
 Vue.use(Vuex)
 
-const baseUrl = "{{ base_url }}"
+axios.defaults.baseURL = "{{ base_url }}"
 
 const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 
@@ -25,151 +25,203 @@ function transformResponse(response: string) {
   return null;
 }
 
-function headers(context: any) {
+function config(context: any) {
   return {headers: {'Authorization': 'Bearer ' + context.state.jwt}, transformResponse: transformResponse };
 }
 
-interface ApiError {
-  status: number;
-  statusText: string;
-  message: string;
+interface EntityWithId {
+  id: number;
+}
+
+function setItem<T extends EntityWithId>(array: Array<T>, item: T): T {
+  const oldItem = array.find(i => i.id == item.id);
+  if (oldItem) {
+    Object.assign(oldItem, item);
+    return oldItem;
+  } else {
+    array.push(item);
+    return item;
+  }
+}
+
+function setArray<T extends EntityWithId>(target: Array<T>, source: Array<T>): Array<T> {
+  const result = Array<T>();
+  source.forEach(item =>{
+    const oldItem = target.find(i => i.id == item.id);
+    if (oldItem) {
+      Object.assign(oldItem, item);
+      result.push(oldItem);
+    } else {
+      result.push(item);
+    }
+  });
+  return result;
+}
+
+function patchArray<T extends EntityWithId>(target: Array<T>, source: Array<T>) {
+  source.forEach(item =>{
+    setItem(target, item);
+  });
+}
+
+function findById<T extends EntityWithId>(array: Array<T>, id: number): T | undefined {
+  return array.find(i => i.id === id);
 }
 
 export default new Vuex.Store({
   state: {
     {{~ for resource in resources ~}}
-    {{~ if resource.parent_resource ~}}
-    {{ state_variable_name resource}}: new Map<number, Array<{{resource.class.name}}>>(),
-    {{~ else ~}}
-    {{ state_variable_name resource}}: Array<{{resource.class.name}}>(),
+    {{~ if !resource.parent_resource ~}}
+    {{ camel_case resource.name.plural }}: Array<{{resource.class.name}}>(),
     {{~ end ~}}
     {{~ end ~}}
     jwt: ""
   },
   mutations: {
     {{~ for resource in resources ~}}
-    {{~ if resource.parent_resource ~}}
-    {{ state_setter_name resource}}: function(state, data) {
-      state.{{ state_variable_name resource}}.set(data.parent.id, data.list)
+    {{~ if !resource.parent_resource ~}}
+    set{{ resource.name.plural }}: function(state, {{ camel_case resource.name.plural }}) {
+      state.{{ camel_case resource.name.plural }} = setArray(state.{{ camel_case resource.name.plural }},{{ camel_case resource.name.plural }});
     },
-    {{~ else ~}}
-    {{ state_setter_name resource}}: function(state, {{ state_variable_name resource}}) {
-      state.{{ state_variable_name resource}} = {{ state_variable_name resource}}
+    patch{{ resource.name.plural }}: function(state, {{ camel_case resource.name.plural }}) {
+      patchArray(state.{{ camel_case resource.name.plural }},{{ camel_case resource.name.plural }});
+    },
+    set{{ resource.name }}: function(state, {{ camel_case resource.name }}) {
+      setItem(state.{{ camel_case resource.name.plural }}, {{ camel_case resource.name }});
     },
     {{~ end ~}}
     {{~ end ~}}
     init: function(state) {
-      const jwt = localStorage.getItem('jwt')
+      const jwt = localStorage.getItem("jwt")
       if (jwt) {
         state.jwt = jwt;
       }
     },
     setJwt: function(state, jwt) {
       state.jwt = jwt
-      localStorage.setItem('jwt', jwt);
+      localStorage.setItem("jwt", jwt);
     }
   },
   actions: {
     {{~ for resource in resources ~}}
     {{~
     parent = resource.parent_resource
+    root = resource.root_resource
     ~}}
-    {{ get_list_function_name resource }}: function(context{{if parent}}, {{ camel_case parent.class.name}}{{end}}): Promise<Array<{{resource.class.name}}>> {
+    {{ get_list_function_name resource }}: function(context{{if parent}}, {{ camel_case parent.name}}{{end}}): Promise<Array<{{resource.class.name}}>> {
       return new Promise((resolve, reject) => {
-        axios.get(baseUrl + {{path_template resource}}, headers(context)).then(response => {
+        axios.get({{path_template resource}}, config(context)).then(response => {
           {{~ if parent ~}}
-          context.commit("{{ state_setter_name resource}}", { parent: {{ camel_case parent.class.name}}, list: response.data });
+          {{~ if root ~}}
+          context.commit("patch{{ root.name.plural }}", response.data);
+          const storedArray = Array<{{resource.class.name}}>();
+          response.data.forEach((item: {{resource.class.name}}) => {
+            const stored{{ root.name }} = findById(context.state.{{ camel_case resource.name.plural }}, item.id);
+            if (stored{{ root.name }}) {
+              storedArray.push(stored{{ root.name }});
+            }
+          });
+          Vue.set({{ camel_case parent.name}}, "{{ camel_case resource.name.plural }}", storedArray);
+          context.commit("set{{parent.name}}",{{ camel_case parent.name}});
+          resolve(storedArray);
           {{~ else ~}}
-          context.commit("{{ state_setter_name resource}}", response.data);
+          Vue.set({{ camel_case parent.name}}, "{{ camel_case resource.name.plural }}", response.data);
+          context.commit("set{{parent.name}}",{{ camel_case parent.name}});
+          resolve(response.data);
           {{~ end ~}}
-          resolve(response.data)
+          {{~ else ~}}
+          context.commit("set{{ resource.name.plural }}", response.data);
+          resolve(context.state.{{ camel_case resource.name.plural }});
+          {{~ end ~}}
         }).catch(reason => {
           reject(reason);
         })
       })
     },
+    {{~ if !resource.pivot ~}}
     {{ get_item_function_name resource }}: function(context, {{ if parent }}data{{else}}id{{end}}): Promise<{{resource.class.name}}> {
       {{~ if parent ~}}
       const id = data.id;
-      const {{ camel_case parent.name}} = data.{{ camel_case parent.name}};
+      const {{ camel_case parent.name}}: {{ parent.class.name }} = data.{{ camel_case parent.name}};
       
       {{~ end ~}}
       return new Promise((resolve, reject) => {
-        axios.get(baseUrl + {{get_item_path_template resource}}, headers(context)).then(response => {
-          resolve(response.data);
+        axios.get({{get_item_path_template resource}}, config(context)).then(response => {
+          {{~ if root ~}}
+          context.commit("set{{root.name}}", response.data);
+          resolve(findById(context.state.{{camel_case root.name.plural}}, response.data.id));
+          {{~ else ~}}
+          resolve(setItem({{camel_case parent.name}}.{{camel_case resource.name.plural}}, response.data));
+          {{~ end ~}}
         }).catch(reason => {
           reject(reason);
         })
       })
     },
+    {{~ end ~}}
     {{~ if !resource.is_readonly ~}}
     {{ add_function_name resource }}: function(context, {{ if parent }}data{{else}}{{ camel_case resource.name}}{{end}}): Promise<{{resource.class.name}}> {
       {{~ if parent ~}}
-      const {{ camel_case resource.name}} = data.{{ camel_case resource.name}};
-      const {{ camel_case parent.name}} = data.{{ camel_case parent.name}};
+      const {{ camel_case resource.name}}: {{ resource.class.name}} = data.{{ camel_case resource.name}};
+      const {{ camel_case parent.name}}: {{ parent.class.name}} = data.{{ camel_case parent.name}};
       {{~ end ~}}
 
       return new Promise((resolve, reject) => {
-        axios.post(baseUrl + {{path_template resource}}, {{ camel_case resource.name}}, headers(context)).then(response => {
+        axios.post({{path_template resource}}, {{ camel_case resource.name}}, config(context)).then(response => {
+          {{~ if root ~}}
+          context.commit("set{{ root.name }}", response.data);
+          const savedItem = findById(context.state.{{ camel_case root.name.plural }}, response.data.id);
           {{~ if parent ~}}
-          const list = context.state.{{ state_variable_name resource}}.get({{ camel_case parent.name}}.id) ?? [];
-          {{~ else ~}}
-          const list = context.state.{{ state_variable_name resource}};
+          if (savedItem) {
+            {{ camel_case parent.name}}.{{ camel_case resource.name.plural}}.push(savedItem);
+            context.commit("set{{ parent.name }}", {{ camel_case parent.name}});
+          }
           {{~ end ~}}
-          list.push(response.data);
-          {{~ if parent ~}}
-          context.commit("{{ state_setter_name resource}}", { parent: {{ camel_case parent.class.name}}, list: list })
+          resolve(savedItem);
           {{~ else ~}}
-          context.commit("{{ state_setter_name resource}}", list)
-          {{~ end ~}}
+          {{ camel_case parent.name}}.{{ camel_case resource.name.plural}}.push(response.data);
+          context.commit("set{{ parent.name }}", {{ camel_case parent.name}});
           resolve(response.data);
+          {{~ end ~}}
         }).catch(reason => {
           reject(reason);
         })
       })
     },
+    {{~ if !resource.pivot ~}}
     {{ update_function_name resource }}: function(context, {{ if parent }}data{{else}}{{ camel_case resource.name}}{{end}}): Promise<{{resource.class.name}}> {
       {{~ if parent ~}}
-      const {{ camel_case resource.name}} = data.{{ camel_case resource.name}};
-      const {{ camel_case parent.name}} = data.{{ camel_case parent.name}};
+      const {{ camel_case resource.name}}: {{ resource.class.name}} = data.{{ camel_case resource.name}};
+      const {{ camel_case parent.name}}: {{ parent.class.name}} = data.{{ camel_case parent.name}};
       {{~ end ~}}
 
       return new Promise((resolve, reject) => {
-        axios.put(baseUrl + {{item_path_template resource}}, {{ camel_case resource.name}}, headers(context)).then(response => {
-          {{~ if parent ~}}
-          const list = context.state.{{ state_variable_name resource}}.get({{ camel_case parent.name}}.id) ?? [];
+        axios.put({{item_path_template resource}}, {{ camel_case resource.name}}, config(context)).then(response => {
+          {{~ if root ~}}
+          context.commit("set{{root.name}}", response.data);
+          resolve(findById(context.state.{{camel_case root.name.plural}}, response.data.id));
           {{~ else ~}}
-          const list = context.state.{{ state_variable_name resource}};
+          resolve(setItem({{camel_case parent.name}}.{{camel_case resource.name.plural}}, response.data));
           {{~ end ~}}
-          Object.assign({{ camel_case resource.name}}, response.data)
-          {{~ if parent ~}}
-          context.commit("{{ state_setter_name resource}}", { parent: {{ camel_case parent.class.name}}, list: list })
-          {{~ else ~}}
-          context.commit("{{ state_setter_name resource}}", list)
-          {{~ end ~}}
-          resolve({{ camel_case resource.name}});
         }).catch(reason => {
           reject(reason);
         })
       })
     },
+    {{~ end ~}}
     {{ delete_function_name resource }}: function(context, {{ if parent }}data{{else}}{{ camel_case resource.name}}{{end}}): Promise<void> {
       {{~ if parent ~}}
-      const {{ camel_case resource.name}} = data.{{ camel_case resource.name}};
-      const {{ camel_case parent.name}} = data.{{ camel_case parent.name}};
-      let list = context.state.{{ state_variable_name resource}}.get({{ camel_case parent.name}}.id) ?? [];
-      {{~ else ~}}
-      let list = context.state.{{ state_variable_name resource}};
+      const {{ camel_case resource.name}}: {{ resource.class.name}} = data.{{ camel_case resource.name}};
+      const {{ camel_case parent.name}}: {{ parent.class.name}} = data.{{ camel_case parent.name}};
+      {{ camel_case parent.name}}.{{ camel_case resource.name.plural}} = {{ camel_case parent.name}}.{{ camel_case resource.name.plural}}.filter(i => i !== {{ camel_case resource.name}});
+      context.commit("set{{ parent.name }}", {{ camel_case parent.name}});
       {{~ end ~}}
-      list = list.filter(i => i !== {{ camel_case resource.name}});
-      {{~ if parent ~}}
-      context.commit("{{ state_setter_name resource}}", { parent: {{ camel_case parent.class.name}}, list: list })
-      {{~ else ~}}
-      context.commit("{{ state_setter_name resource}}", list)
+      {{~ if root ~}}
+      context.commit("set{{ root.name.plural }}", context.state.{{ camel_case root.name.plural }}.filter(i => i !== {{ camel_case resource.name}}));
       {{~ end ~}}
 
       return new Promise((resolve, reject) => {
-        axios.delete(baseUrl + {{item_path_template resource}}, headers(context)).then(() => {
+        axios.delete({{item_path_template resource}}, config(context)).then(() => {
           resolve()
         }).catch(reason => {
           reject(reason);
@@ -180,9 +232,9 @@ export default new Vuex.Store({
     {{~ end ~}}
     {{~ for controller in controllers ~}}
     {{~ for method in controller.methods~}}
-    {{ camel_case method.name}}: function(context, data): Promise<{{method.return_type.class.name}}> {
+    {{ camel_case method.name}}: function(context{{ if method.parameter }}, {{ method.parameter.name }}{{ end }}): Promise<{{method.return_type.class.name}}> {
       return new Promise((resolve, reject) => {
-        axios.post(baseUrl + "{{ kebab_case controller.name }}/{{ kebab_case method.name }}", data).then(response => {
+        axios.{{ lower_case method.verb }}("{{ kebab_case controller.name }}/{{ kebab_case method.name }}"{{ if method.parameter }}, {{ method.parameter.name }}{{else if (lower_case method.verb) != "get" }}, null{{ end }}{{ if controller.authenticate }}, config(context){{ end }}).then(response => {
           resolve(response.data);
         }).catch(reason => {
           reject({
