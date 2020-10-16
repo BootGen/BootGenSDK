@@ -22,6 +22,12 @@ namespace BootGen
             ControllerCollection = controllerCollection;
             foreach (var resource in Resources)
             {
+                if (resource.Pivot != null && resource.RootResource == null) {
+                    throw new Exception($"{resource.Name} is declared as a Many-To-Many nested resource on {resource.ParentResource.Name}, but is does not have an associated root resource.");
+                }
+                if (resource.RootResource != null && resource.RootResource.Class != resource.Class) {
+                    throw new Exception($"Type mismatch: ${resource.Name} has type ${resource.Class.Name}, but its associated root resource has type {resource.RootResource.Class.Name}");
+                }
                 Routes.AddRange(resource.GetRoutes());
                 if (resource.Pivot == null)
                     AddEfRelations(resource);

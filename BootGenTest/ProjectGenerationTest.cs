@@ -162,6 +162,7 @@ namespace BootGenTest
             var friendResource = userResource.ManyToMany<User>();
             friendResource.Name = "Friend";
             friendResource.Authenticate = true;
+            friendResource.RootResource = userResource;
             var petResource = userResource.OneToMany<Pet>();
             petResource.Authenticate = true;
             var api = new Api(resourceCollection);
