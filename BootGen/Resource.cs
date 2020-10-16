@@ -12,6 +12,19 @@ namespace BootGen
         public Route Route { get; set; }
         public Route ItemRoute { get; set; }
         public Resource ParentResource => ParentRelation?.Resource;
+        public string ParentName
+        {
+            get
+            {
+                return ParentRelation?.Name;
+            }
+
+            set
+            {
+                if (ParentRelation != null)
+                    ParentRelation.Name = value;
+            }
+        }
         public Resource RootResource { get; set; }
         internal ParentRelation ParentRelation { get; set; }
         public List<Resource> NestedResources { get; set; }
