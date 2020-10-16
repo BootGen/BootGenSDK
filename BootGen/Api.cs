@@ -23,10 +23,17 @@ namespace BootGen
             foreach (var resource in Resources)
             {
                 if (resource.Pivot != null && resource.RootResource == null) {
-                    throw new Exception($"{resource.Name} is declared as a Many-To-Many nested resource on {resource.ParentResource.Name}, but is does not have an associated root resource.");
+                    throw new Exception($"{resource.Name.Plural} is declared as a Many-To-Many nested resource on {resource.ParentResource.Name.Plural}, but is does not have an associated root resource.");
                 }
                 if (resource.RootResource != null && resource.RootResource.Class != resource.Class) {
-                    throw new Exception($"Type mismatch: ${resource.Name} has type ${resource.Class.Name}, but its associated root resource has type {resource.RootResource.Class.Name}");
+                    throw new Exception($"Type mismatch: ${resource.Name.Plural} has type ${resource.Class.Name}, but its associated root resource has type {resource.RootResource.Class.Name}");
+                }
+                if (resource.ParentResource != null) {
+                    var property = resource.ParentResource.Class.Properties.FirstOrDefault(p => p.Name == resource.Name.Plural);
+                    if (property == null || !property.IsCollection || property.Class != resource.Class || !property.IsClientOnly) {
+                        throw new Exception($"{resource.Name.Plural} is declared as a nested resource on {resource.ParentResource.Name.Plural}, but the {resource.ParentResource.Class.Name} class does not " +
+                        $"have a client-only property with the following signature: public List<{resource.Class.Name}> {resource.Name.Plural} {{ get; set; }}");
+                    }
                 }
                 Routes.AddRange(resource.GetRoutes());
                 if (resource.Pivot == null)
