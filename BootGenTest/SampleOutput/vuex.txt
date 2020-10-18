@@ -161,9 +161,17 @@ export default new Vuex.Store({
     getPetsOfUser: function(context, user): Promise<Array<Pet>> {
       return new Promise((resolve, reject) => {
         axios.get(`users/${user.id}/pets`, config(context)).then(response => {
-          Vue.set(user, "pets", response.data);
+          context.commit("patchPets", response.data);
+          const storedArray = Array<Pet>();
+          response.data.forEach((item: Pet) => {
+            const storedPet = findById(context.state.pets, item.id);
+            if (storedPet) {
+              storedArray.push(storedPet);
+            }
+          });
+          Vue.set(user, "pets", storedArray);
           context.commit("setUser",user);
-          resolve(response.data);
+          resolve(storedArray);
         }).catch(reason => {
           reject(reason);
         })
@@ -175,7 +183,8 @@ export default new Vuex.Store({
       
       return new Promise((resolve, reject) => {
         axios.get(`users/${user.id}/pets/${id}`, config(context)).then(response => {
-          resolve(setItem(user.pets, response.data));
+          context.commit("setPet", response.data);
+          resolve(findById(context.state.pets, response.data.id));
         }).catch(reason => {
           reject(reason);
         })
@@ -187,9 +196,13 @@ export default new Vuex.Store({
 
       return new Promise((resolve, reject) => {
         axios.post(`users/${user.id}/pets`, pet, config(context)).then(response => {
-          user.pets.push(response.data);
-          context.commit("setUser", user);
-          resolve(response.data);
+          context.commit("setPet", response.data);
+          const savedItem = findById(context.state.pets, response.data.id);
+          if (savedItem) {
+            user.pets.push(savedItem);
+            context.commit("setUser", user);
+          }
+          resolve(savedItem);
         }).catch(reason => {
           reject(reason);
         })
@@ -201,7 +214,8 @@ export default new Vuex.Store({
 
       return new Promise((resolve, reject) => {
         axios.put(`users/${user.id}/pets/${pet.id}`, pet, config(context)).then(response => {
-          resolve(setItem(user.pets, response.data));
+          context.commit("setPet", response.data);
+          resolve(findById(context.state.pets, response.data.id));
         }).catch(reason => {
           reject(reason);
         })
@@ -212,6 +226,7 @@ export default new Vuex.Store({
       const user: User = data.user;
       user.pets = user.pets.filter(i => i !== pet);
       context.commit("setUser", user);
+      context.commit("setPets", context.state.pets.filter(i => i !== pet));
 
       return new Promise((resolve, reject) => {
         axios.delete(`users/${user.id}/pets/${pet.id}`, config(context)).then(() => {

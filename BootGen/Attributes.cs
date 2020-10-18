@@ -60,6 +60,13 @@ public class OneToManyAttribute : Attribute
     }
 }
 
+public class ManyToManyAttribute : Attribute
+{
+    public ManyToManyAttribute(string pivotName)
+    {
+    }
+}
+
 public class GetAttribute : Attribute
 {
 }

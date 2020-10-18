@@ -49,17 +49,17 @@ namespace BootGen
                 var property = GetProperty<Property>(propertyType);
                 property.Name = p.Name;
                 c.Properties.Add(property);
-                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ClientOnlyAttribute) || d.AttributeType == typeof(OneToManyAttribute)))
+                if (p.Has<ClientOnlyAttribute>() || p.Has<OneToManyAttribute>() || p.Has<ManyToManyAttribute>())
                 {
                     property.Location = Location.ClientOnly;
                 }
-                if (p.CustomAttributes.Any(d => d.AttributeType == typeof(ServerOnlyAttribute)))
+                if (p.Has<ServerOnlyAttribute>())
                 {
                     property.Location = Location.ServerOnly;
                 }
             }
 
-            if (type.CustomAttributes.Any( d => d.AttributeType == typeof(HasTimestampsAttribute))) {
+            if (type.Has<HasTimestampsAttribute>()) {
                 c.HasTimestamps = true;
                 c.Properties.Add(new Property {
                     Name = "Created",

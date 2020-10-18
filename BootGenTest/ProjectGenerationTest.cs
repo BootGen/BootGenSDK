@@ -17,13 +17,14 @@ namespace BootGenTest
             public string Name { get; set; }
             public PetKind Kind { get; set; }
         }
+        [Authenticate]
         class User
         {
             public string Name { get; set; }
-            [ClientOnly]
-            public List<User> Friends { get; set; }
             [OneToMany]
             public List<Pet> Pets { get; set; } 
+            [ManyToMany("UserPivot")]
+            public List<User> Friends { get; set; }
         }
             class AuthenticationData
     {
@@ -160,10 +161,6 @@ namespace BootGenTest
             var resourceCollection = new ResourceCollection(new DataModel());
             var userResource = resourceCollection.Add<User>();
             userResource.Authenticate = true;
-            var friendResource = userResource.ManyToMany<User>();
-            friendResource.Name = "Friend";
-            friendResource.Authenticate = true;
-            friendResource.RootResource = userResource;
             var api = new Api(resourceCollection);
             api.BaseUrl = "http://localhost/api";
             return api;

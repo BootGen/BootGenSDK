@@ -49,18 +49,21 @@ namespace BootGen
             return resource;
         }
         
-        public Resource ManyToMany<T>(string parentName = null)
+        public Resource ManyToMany(Type type, string pivotName)
         {
-            Resource resource = OneToMany(typeof(T), parentName);
-            resource.Pivot = CreatePivot(this, resource);
+            Resource resource = OneToMany(type);
+            resource.Pivot = CreatePivot(this, resource, pivotName);
             return resource;
         }
         
-        private static ClassModel CreatePivot(Resource parent, Resource resource)
+        private ClassModel CreatePivot(Resource parent, Resource resource, string name)
         {
-            var pivotClass = new ClassModel
+            var pivotClass = DataModel.Classes.FirstOrDefault(c => c.Name == name);
+            if (pivotClass != null)
+                return pivotClass;
+            pivotClass = new ClassModel
             {
-                Name = resource.Name + "Pivot",
+                Name = name,
                 Location = Location.ServerOnly,
                 Properties = new List<Property> {
                         new Property {
@@ -88,6 +91,7 @@ namespace BootGen
                     }
             };
             pivotClass.MakePersisted();
+            DataModel.Classes.Add(pivotClass);
             return pivotClass;
         }
 
