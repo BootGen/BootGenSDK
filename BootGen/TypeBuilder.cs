@@ -37,7 +37,7 @@ namespace BootGen
             if (!cs.IsValidIdentifier(c.Name) || !cs.IsValidIdentifier(c.Name.Singular.ToCamelCase()) || !cs.IsValidIdentifier(c.Name.Singular.ToLower())) {
                 throw new Exception($"\"{c.Name}\" can not be used as class name, because it is a reserved word.");
             }
-            var pluralNameAttribute = type.CustomAttributes.FirstOrDefault(d => d.AttributeType == typeof(PluralName));
+            var pluralNameAttribute = type.CustomAttributes.FirstOrDefault(d => d.AttributeType == typeof(PluralNameAttribute));
             c.Name.Plural = pluralNameAttribute?.ConstructorArguments?.FirstOrDefault().Value as string ?? c.Name + "s";
             c.Properties = new List<Property>{};
             classStore.Add(type, c);

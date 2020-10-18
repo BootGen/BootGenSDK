@@ -41,5 +41,29 @@ namespace BootGenTest
             Assert.AreEqual("Parent", entityResource.Class.Properties[5].Name);
             Assert.AreEqual("ParentId", entityResource.Class.Properties[6].Name);
         }
+
+        [Readonly]
+        [Authenticate]
+        [Generate(controller: true, serviceInterface: true, service: false)]
+        [ControllerName("MyDummyController")]
+        [ServiceName("MyDummyService")]
+        class Dummy
+        {
+            public string Name { get; set; }
+        }
+
+        [TestMethod]
+        public void TestResourceAttributes()
+        {
+            var resourceCollection = new ResourceCollection(new DataModel());
+            var resource = resourceCollection.Add<Dummy>();
+            Assert.IsTrue(resource.IsReadonly);
+            Assert.IsTrue(resource.Authenticate);
+            Assert.IsTrue(resource.GenerationSettings.GenerateController);
+            Assert.IsTrue(resource.GenerationSettings.GenerateServiceInterface);
+            Assert.IsFalse(resource.GenerationSettings.GenerateService);
+            Assert.AreEqual("MyDummyController", resource.GenerationSettings.ControllerName);
+            Assert.AreEqual("MyDummyService", resource.GenerationSettings.ServiceName);
+        }
     }
 }

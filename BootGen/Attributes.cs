@@ -12,12 +12,38 @@ public class HasTimestampsAttribute : Attribute
 {
 }
 
-public class PluralName : Attribute
+public class AuthenticateAttribute : Attribute
 {
-    public string Value { get; }
-    public PluralName(string value)
+}
+
+public class ReadonlyAttribute : Attribute
+{
+}
+
+public class GenerateAttribute : Attribute
+{
+    public GenerateAttribute(bool controller, bool serviceInterface, bool service)
     {
-        Value = value;
+    }
+}
+public class ControllerNameAttribute : Attribute
+{
+    public ControllerNameAttribute(string value)
+    {
+    }
+}
+
+public class ServiceNameAttribute : Attribute
+{
+    public ServiceNameAttribute(string value)
+    {
+    }
+}
+
+public class PluralNameAttribute : Attribute
+{
+    public PluralNameAttribute(string value)
+    {
     }
 }
 
