@@ -36,11 +36,11 @@ namespace BootGen
         internal DataModel DataModel { get; set; }
 
         
-        public Resource OneToMany<T>(string parentName = null)
+        public Resource OneToMany(Type type, string parentName = null)
         {
             if (ParentResource != null)
                 throw new Exception("Only a single layer of resource nesting is supported.");
-            Resource resource = DataModel.ResourceBuilder.FromClass<T>();
+            Resource resource = DataModel.ResourceBuilder.FromType(type);
             resource.DataModel = DataModel;
             resource.ParentRelation = new ParentRelation(this, parentName);
             if (NestedResources.Any(r => r.Name == resource.Name))
@@ -51,7 +51,7 @@ namespace BootGen
         
         public Resource ManyToMany<T>(string parentName = null)
         {
-            Resource resource = OneToMany<T>(parentName);
+            Resource resource = OneToMany(typeof(T), parentName);
             resource.Pivot = CreatePivot(this, resource);
             return resource;
         }

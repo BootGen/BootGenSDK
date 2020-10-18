@@ -14,7 +14,8 @@ namespace BootGenTest
         class Entity
         {
             public string Name { get; set; }
-            [ClientOnly]
+            [OneToMany("Parent")]
+            [SingularName("Child")]
             public List<Entity> Children { get; set; }
         }
 
@@ -23,9 +24,7 @@ namespace BootGenTest
         {
             var resourceCollection = new ResourceCollection(new DataModel());
             var entityResource = resourceCollection.Add<Entity>();
-            var childResource = entityResource.OneToMany<Entity>("Parent");
-            childResource.Name = "Child";
-            childResource.Name.Plural = "Children";
+            var childResource = entityResource.NestedResources.First();
             var api = new Api(resourceCollection);
             Assert.AreEqual("Entity", entityResource.Name.Singular);
             Assert.AreEqual("Entities", entityResource.Name.Plural);

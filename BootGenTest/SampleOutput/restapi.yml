@@ -92,96 +92,6 @@ paths:
       responses:
         '200':
           description: successful deletion
-  /users/{userId}/friends:
-    get:
-      security:
-      - bearerAuth: []
-      summary: retrieve list of friends
-      operationId: getFriends
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: successful query
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-    post:
-      security:
-      - bearerAuth: []
-      summary: add a new element to the collection
-      operationId: addFriends
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-                $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: successful insertion
-  /users/{userId}/friends/{friendId}:
-    get:
-      security:
-      - bearerAuth: []
-      summary: retrieve friends resource
-      operationId: getFriendById
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-        - name: friendId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: successful query
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-    delete:
-      security:
-      - bearerAuth: []
-      summary: delete friends resource
-      operationId: deleteFriendById
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-        - name: friendId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: successful deletion
   /users/{userId}/pets:
     get:
       security:
@@ -290,6 +200,181 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful deletion
+  /users/{userId}/friends:
+    get:
+      security:
+      - bearerAuth: []
+      summary: retrieve list of friends
+      operationId: getFriends
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      security:
+      - bearerAuth: []
+      summary: add a new element to the collection
+      operationId: addFriends
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful insertion
+  /users/{userId}/friends/{friendId}:
+    get:
+      security:
+      - bearerAuth: []
+      summary: retrieve friends resource
+      operationId: getFriendById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: friendId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      security:
+      - bearerAuth: []
+      summary: delete friends resource
+      operationId: deleteFriendById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: friendId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful deletion
+  /pets:
+    get:
+      security:
+      - bearerAuth: []
+      summary: retrieve list of pets
+      operationId: getPets
+      responses:
+        '200':
+          description: successful query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+    post:
+      security:
+      - bearerAuth: []
+      summary: add a new element to the collection
+      operationId: addPets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: successful insertion
+  /pets/{petId}:
+    get:
+      security:
+      - bearerAuth: []
+      summary: retrieve pets resource
+      operationId: getPetById
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+    put:
+      security:
+      - bearerAuth: []
+      summary: update pets resource
+      operationId: updatePetById
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: successful update
+    delete:
+      security:
+      - bearerAuth: []
+      summary: delete pets resource
+      operationId: deletePetById
+      parameters:
         - name: petId
           in: path
           required: true

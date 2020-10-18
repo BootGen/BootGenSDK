@@ -18,7 +18,7 @@ namespace BootGen
         }
 
 
-        private Resource FromType(Type type)
+        public Resource FromType(Type type)
         {
             var result = new Resource();
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))

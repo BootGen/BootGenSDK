@@ -46,6 +46,19 @@ public class PluralNameAttribute : Attribute
     {
     }
 }
+public class SingularNameAttribute : Attribute
+{
+    public SingularNameAttribute(string value)
+    {
+    }
+}
+
+public class OneToManyAttribute : Attribute
+{
+    public OneToManyAttribute(string parentName = null)
+    {
+    }
+}
 
 public class GetAttribute : Attribute
 {

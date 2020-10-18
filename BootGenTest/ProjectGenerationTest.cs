@@ -11,6 +11,7 @@ namespace BootGenTest
     public class ProjectGenerationTest
     {
         enum PetKind { Dog, Cat, Bird, Fish }
+        [Authenticate]
         class Pet
         {
             public string Name { get; set; }
@@ -21,7 +22,7 @@ namespace BootGenTest
             public string Name { get; set; }
             [ClientOnly]
             public List<User> Friends { get; set; }
-            [ClientOnly]
+            [OneToMany]
             public List<Pet> Pets { get; set; } 
         }
             class AuthenticationData
@@ -163,8 +164,6 @@ namespace BootGenTest
             friendResource.Name = "Friend";
             friendResource.Authenticate = true;
             friendResource.RootResource = userResource;
-            var petResource = userResource.OneToMany<Pet>();
-            petResource.Authenticate = true;
             var api = new Api(resourceCollection);
             api.BaseUrl = "http://localhost/api";
             return api;

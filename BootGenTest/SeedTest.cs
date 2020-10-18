@@ -16,7 +16,7 @@ namespace BootGenTest
             public string Name { get; set; }
             public Address Address { get; set; }
 
-            [ClientOnly]
+            [OneToMany]
             public List<Pet> Pets { get; set; }
         }
 
@@ -42,7 +42,7 @@ namespace BootGenTest
             var dataModel = new DataModel();
             var resourceCollection = new ResourceCollection(dataModel);
             var Users = resourceCollection.Add<User>();
-            var Pets = Users.OneToMany<Pet>();
+            var Pets = Users.NestedResources.First();
             var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Add(Users, new List<User> { new User {
                     Name = "Name",
