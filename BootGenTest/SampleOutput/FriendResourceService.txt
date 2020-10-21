@@ -21,7 +21,12 @@ namespace UsersWithFriends.Services
         {
             using (var db = new DataContext())
             {
-                var parent = db.Users.Where(item => item.Id == userId).First();
+                var parent = db.Users.Where(item => item.Id == userId).FirstOrDefault();
+                if (parent == null)
+                    return new ServiceResponse<List<User>>
+                    {
+                        StatusCode = 400
+                    };
                 var result = db.UserPivots
                                 .Where(item => item.UserId == parent.Id)
                                 .Select(item => item.Friend)
@@ -36,27 +41,50 @@ namespace UsersWithFriends.Services
 
         public ServiceResponse<User> AddFriend([FromRoute] int userId, [FromBody] User friend)
         {
-            using (var db = new DataContext())
+            try
             {
-                var parent = db.Users.Where(item => item.Id == userId).First();
-                db.UserPivots.Add(new UserPivot{ UserId = parent.Id, FriendId = friend.Id });
-                db.SaveChanges();
+                using (var db = new DataContext())
+                {
+                    var parent = db.Users.Where(item => item.Id == userId).First();
+                    db.UserPivots.Add(new UserPivot{ UserId = parent.Id, FriendId = friend.Id });
+                    db.SaveChanges();
+                    return new ServiceResponse<User>
+                    {
+                        StatusCode = 200,
+                        ResponseData = db.Friends.FirstOrDefault(item => item.Id == friend.Id)
+                    };
+                }
+            } catch (DbUpdateException)
+            {
+                return new ServiceResponse<User>
+                {
+                    StatusCode = 400
+                };
             }
-            return new ServiceResponse<User>
-            {
-                StatusCode = 200,
-                ResponseData = null
-            };
         }
 
         public ServiceResponse RemoveFriend([FromRoute] int userId, [FromRoute] int friendId)
         {
-            using (var db = new DataContext())
+            try
             {
-                var parent = db.Users.Where(item => item.Id == userId).First();
-                var assigned = db.Users.Where(item => item.Id == friendId).First();
-                db.UserPivots.RemoveRange(db.UserPivots.Where(item => item.UserId == parent.Id && item.FriendId == assigned.Id));
-                db.SaveChanges();
+                using (var db = new DataContext())
+                {
+                    var parent = db.Users.Where(item => item.Id == userId).FirstOrDefault();
+                    var assigned = db.Users.Where(item => item.Id == friendId).FirstOrDefault();
+                    if (parent == null || assigned == null)
+                        return new ServiceResponse
+                        {
+                            StatusCode = 400
+                        };
+                    db.UserPivots.RemoveRange(db.UserPivots.Where(item => item.UserId == parent.Id && item.FriendId == assigned.Id));
+                    db.SaveChanges();
+                }
+            } catch (DbUpdateException)
+            {
+                return new ServiceResponse
+                {
+                    StatusCode = 400
+                };
             }
             return new ServiceResponse
             {

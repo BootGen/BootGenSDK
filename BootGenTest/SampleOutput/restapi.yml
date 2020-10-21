@@ -36,6 +36,10 @@ paths:
       responses:
         '200':
           description: successful insertion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /users/{userId}:
     get:
       security:
@@ -114,27 +118,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Pet'
-    post:
-      security:
-      - bearerAuth: []
-      summary: add a new element to the collection
-      operationId: addPets
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-                $ref: '#/components/schemas/Pet'
-      responses:
-        '200':
-          description: successful insertion
   /users/{userId}/pets/{petId}:
     get:
       security:
@@ -161,54 +144,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Pet'
-    put:
-      security:
-      - bearerAuth: []
-      summary: update pets resource
-      operationId: updatePetById
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-        - name: petId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-                $ref: '#/components/schemas/Pet'
-      responses:
-        '200':
-          description: successful update
-    delete:
-      security:
-      - bearerAuth: []
-      summary: delete pets resource
-      operationId: deletePetById
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-        - name: petId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: successful deletion
   /users/{userId}/friends:
     get:
       security:
@@ -252,6 +187,10 @@ paths:
       responses:
         '200':
           description: successful insertion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /users/{userId}/friends/{friendId}:
     get:
       security:
@@ -328,6 +267,10 @@ paths:
       responses:
         '200':
           description: successful insertion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
   /pets/{petId}:
     get:
       security:

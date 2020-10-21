@@ -70,6 +70,7 @@ namespace BootGen
                 rootResource = Add(propertyType);
             var parentName = oneToManyAttribute.GetFirstParameter<string>();
             var nestedResource = resource.OneToMany(propertyType, parentName);
+            nestedResource.IsReadonly = true;
             var singularNameAttribute = property.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(SingularNameAttribute));
             var singularName = singularNameAttribute?.GetFirstParameter<string>();
             nestedResource.Name = singularName ?? property.Name.Substring(0, property.Name.Length - 1);

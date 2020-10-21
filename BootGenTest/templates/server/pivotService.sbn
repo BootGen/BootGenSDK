@@ -26,7 +26,12 @@ namespace {{ name_space }}.Services
                 {{~
                 parent = resource.parent_resource
                 ~}}
-                var parent = db.{{ parent.name.plural }}.Where(item => item.Id == {{ lower_case parent.name }}Id).First();
+                var parent = db.{{ parent.name.plural }}.Where(item => item.Id == {{ lower_case parent.name }}Id).FirstOrDefault();
+                if (parent == null)
+                    return new ServiceResponse<List<{{ resource.class.name }}>>
+                    {
+                        StatusCode = 400
+                    };
                 var result = db.{{ resource.pivot.name }}s
                                 {{~ for property in (get_properties_to_load resource.class) ~}}
                                 .Include("{{ property }}")
@@ -45,33 +50,56 @@ namespace {{ name_space }}.Services
 
         public ServiceResponse<{{ resource.class.name }}> Add{{ resource.name }}({{ post_parameters resource }})
         {
-            using (var db = new DataContext())
+            try
             {
-                {{~
-                parent = resource.parent_resource
-                ~}}
-                var parent = db.{{ parent.name.plural }}.Where(item => item.Id == {{ lower_case parent.name }}Id).First();
-                db.{{ resource.pivot.name }}s.Add(new {{ resource.pivot.name }}{ {{ parent.name }}Id = parent.Id, {{ resource.name }}Id = {{ lower_case resource.name }}.Id });
-                db.SaveChanges();
+                using (var db = new DataContext())
+                {
+                    {{~
+                    parent = resource.parent_resource
+                    ~}}
+                    var parent = db.{{ parent.name.plural }}.Where(item => item.Id == {{ lower_case parent.name }}Id).First();
+                    db.{{ resource.pivot.name }}s.Add(new {{ resource.pivot.name }}{ {{ parent.name }}Id = parent.Id, {{ resource.name }}Id = {{ lower_case resource.name }}.Id });
+                    db.SaveChanges();
+                    return new ServiceResponse<{{ resource.class.name }}>
+                    {
+                        StatusCode = 200,
+                        ResponseData = db.{{ resource.name.plural }}.FirstOrDefault(item => item.Id == {{ lower_case resource.name }}.Id)
+                    };
+                }
+            } catch (DbUpdateException)
+            {
+                return new ServiceResponse<{{ resource.class.name }}>
+                {
+                    StatusCode = 400
+                };
             }
-            return new ServiceResponse<{{ resource.class.name }}>
-            {
-                StatusCode = 200,
-                ResponseData = null
-            };
         }
 
         public ServiceResponse Remove{{ resource.name }}({{ item_delete_parameters resource }})
         {
-            using (var db = new DataContext())
+            try
             {
-                {{~
-                parent = resource.parent_resource
-                ~}}
-                var parent = db.{{ parent.name.plural }}.Where(item => item.Id == {{ lower_case parent.name }}Id).First();
-                var assigned = db.{{ resource.class.name }}s.Where(item => item.Id == {{ lower_case resource.name }}Id).First();
-                db.{{ resource.pivot.name }}s.RemoveRange(db.{{ resource.pivot.name }}s.Where(item => item.{{ parent.name }}Id == parent.Id && item.{{ resource.name }}Id == assigned.Id));
-                db.SaveChanges();
+                using (var db = new DataContext())
+                {
+                    {{~
+                    parent = resource.parent_resource
+                    ~}}
+                    var parent = db.{{ parent.name.plural }}.Where(item => item.Id == {{ lower_case parent.name }}Id).FirstOrDefault();
+                    var assigned = db.{{ resource.class.name }}s.Where(item => item.Id == {{ lower_case resource.name }}Id).FirstOrDefault();
+                    if (parent == null || assigned == null)
+                        return new ServiceResponse
+                        {
+                            StatusCode = 400
+                        };
+                    db.{{ resource.pivot.name }}s.RemoveRange(db.{{ resource.pivot.name }}s.Where(item => item.{{ parent.name }}Id == parent.Id && item.{{ resource.name }}Id == assigned.Id));
+                    db.SaveChanges();
+                }
+            } catch (DbUpdateException)
+            {
+                return new ServiceResponse
+                {
+                    StatusCode = 400
+                };
             }
             return new ServiceResponse
             {

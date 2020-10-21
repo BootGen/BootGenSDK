@@ -50,55 +50,5 @@ namespace UsersWithFriends.Services
                 };
             }
         }
-
-        public ServiceResponse<Pet> AddPet(int userId, Pet pet)
-        {
-            pet.UserId = userId;
-            EntityEntry<Pet> entityEntry;
-            using (var db = new DataContext())
-            {
-                entityEntry = db.Pets.Add(pet);
-                db.SaveChanges();
-            }
-            return new ServiceResponse<Pet>
-            {
-                StatusCode = 200,
-                ResponseData = entityEntry.Entity
-            };
-        }
-
-        public ServiceResponse<Pet> UpdatePet(int userId, int petId, Pet pet)
-        {
-            using (var db = new DataContext())
-            {
-                var original = db.Pets
-                            .Where(item => item.Id == petId).FirstOrDefault();
-                EntityEntry<Pet> entityEntry;
-                entityEntry = db.Pets.Update(original);
-                original.Name = pet.Name;
-                original.Kind = pet.Kind;
-                original.UserId = pet.UserId;
-                db.SaveChanges();
-                return new ServiceResponse<Pet>
-                {
-                    StatusCode = 200,
-                    ResponseData = entityEntry.Entity
-                };
-            }
-        }
-
-        public ServiceResponse DeletePet(int userId, int petId)
-        {
-            using (var db = new DataContext())
-            {
-                var item = db.Pets.Where(item => item.Id == petId).First();
-                db.Pets.Remove(item);
-                db.SaveChanges();
-            }
-            return new ServiceResponse
-            {
-                StatusCode = 200
-            };
-        }
     }
 }

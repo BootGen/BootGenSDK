@@ -19,8 +19,5 @@ namespace UsersWithFriends.Services
         User CurrentUser { get; set; }
         ServiceResponse<List<Pet>> GetPets(int userId);
         ServiceResponse<Pet> GetPet(int userId, int petId);
-        ServiceResponse<Pet> AddPet(int userId, Pet pet);
-        ServiceResponse<Pet> UpdatePet(int userId, int petId, Pet pet);
-        ServiceResponse DeletePet(int userId, int petId);
     }
 }

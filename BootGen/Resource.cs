@@ -91,7 +91,7 @@ namespace BootGen
                     }
             };
             pivotClass.MakePersisted();
-            DataModel.Classes.Add(pivotClass);
+            DataModel.ClassCollection.Add(pivotClass);
             return pivotClass;
         }
 

@@ -125,7 +125,8 @@ namespace BootGen
                     SuccessCode = 200,
                     SuccessDescription = $"successful insertion",
                     Parameters = path.Parameters,
-                    Authenticate = resource.Authenticate
+                    Authenticate = resource.Authenticate,
+                    Response = resource.Class
                 });
         }
 

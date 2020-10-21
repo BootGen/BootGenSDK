@@ -99,7 +99,11 @@ export default new Vuex.Store({
     },
     setJwt: function(state, jwt) {
       state.jwt = jwt
-      localStorage.setItem("jwt", jwt);
+      if (jwt) {
+        localStorage.setItem("jwt", jwt);
+      } else {
+        localStorage.removeItem("jwt");
+      }
     }
   },
   actions: {
@@ -173,7 +177,11 @@ export default new Vuex.Store({
           const savedItem = findById(context.state.{{ camel_case root.name.plural }}, response.data.id);
           {{~ if parent ~}}
           if (savedItem) {
-            {{ camel_case parent.name}}.{{ camel_case resource.name.plural}}.push(savedItem);
+            if ({{ camel_case parent.name}}.{{ camel_case resource.name.plural}}) {
+              {{ camel_case parent.name}}.{{ camel_case resource.name.plural}}.push(savedItem);
+            } else {
+              Vue.set({{ camel_case parent.name}}, "{{ camel_case resource.name.plural}}", [ savedItem ]);
+            }
             context.commit("set{{ parent.name }}", {{ camel_case parent.name}});
           }
           {{~ end ~}}

@@ -23,6 +23,7 @@ namespace BootGen
                 Name = type.Name.Split('.').Last(),
                 Methods = new List<Method>()
             };
+            controller.Authenticate = type.Has<AuthenticateAttribute>();
             foreach (var method in type.GetMethods())
             {
                 var verb = HttpVerb.Post;

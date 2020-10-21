@@ -100,7 +100,11 @@ export default new Vuex.Store({
     },
     setJwt: function(state, jwt) {
       state.jwt = jwt
-      localStorage.setItem("jwt", jwt);
+      if (jwt) {
+        localStorage.setItem("jwt", jwt);
+      } else {
+        localStorage.removeItem("jwt");
+      }
     }
   },
   actions: {
@@ -190,52 +194,6 @@ export default new Vuex.Store({
         })
       })
     },
-    addPetToUser: function(context, data): Promise<Pet> {
-      const pet: Pet = data.pet;
-      const user: User = data.user;
-
-      return new Promise((resolve, reject) => {
-        axios.post(`users/${user.id}/pets`, pet, config(context)).then(response => {
-          context.commit("setPet", response.data);
-          const savedItem = findById(context.state.pets, response.data.id);
-          if (savedItem) {
-            user.pets.push(savedItem);
-            context.commit("setUser", user);
-          }
-          resolve(savedItem);
-        }).catch(reason => {
-          reject(reason);
-        })
-      })
-    },
-    updatePetOfUser: function(context, data): Promise<Pet> {
-      const pet: Pet = data.pet;
-      const user: User = data.user;
-
-      return new Promise((resolve, reject) => {
-        axios.put(`users/${user.id}/pets/${pet.id}`, pet, config(context)).then(response => {
-          context.commit("setPet", response.data);
-          resolve(findById(context.state.pets, response.data.id));
-        }).catch(reason => {
-          reject(reason);
-        })
-      })
-    },
-    deletePetOfUser: function(context, data): Promise<void> {
-      const pet: Pet = data.pet;
-      const user: User = data.user;
-      user.pets = user.pets.filter(i => i !== pet);
-      context.commit("setUser", user);
-      context.commit("setPets", context.state.pets.filter(i => i !== pet));
-
-      return new Promise((resolve, reject) => {
-        axios.delete(`users/${user.id}/pets/${pet.id}`, config(context)).then(() => {
-          resolve()
-        }).catch(reason => {
-          reject(reason);
-        })
-      })
-    },
     getFriendsOfUser: function(context, user): Promise<Array<User>> {
       return new Promise((resolve, reject) => {
         axios.get(`users/${user.id}/friends`, config(context)).then(response => {
@@ -264,7 +222,11 @@ export default new Vuex.Store({
           context.commit("setUser", response.data);
           const savedItem = findById(context.state.users, response.data.id);
           if (savedItem) {
-            user.friends.push(savedItem);
+            if (user.friends) {
+              user.friends.push(savedItem);
+            } else {
+              Vue.set(user, "friends", [ savedItem ]);
+            }
             context.commit("setUser", user);
           }
           resolve(savedItem);
