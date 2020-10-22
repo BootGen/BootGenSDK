@@ -26,7 +26,7 @@ paths:
       security:
       - bearerAuth: []
       summary: add a new element to the collection
-      operationId: addUsers
+      operationId: addUser
       requestBody:
         required: true
         content:
@@ -45,7 +45,7 @@ paths:
       security:
       - bearerAuth: []
       summary: retrieve users resource
-      operationId: getUserById
+      operationId: getUser
       parameters:
         - name: userId
           in: path
@@ -64,7 +64,7 @@ paths:
       security:
       - bearerAuth: []
       summary: update users resource
-      operationId: updateUserById
+      operationId: updateUser
       parameters:
         - name: userId
           in: path
@@ -85,7 +85,7 @@ paths:
       security:
       - bearerAuth: []
       summary: delete users resource
-      operationId: deleteUserById
+      operationId: deleteUser
       parameters:
         - name: userId
           in: path
@@ -101,7 +101,7 @@ paths:
       security:
       - bearerAuth: []
       summary: retrieve list of pets
-      operationId: getPets
+      operationId: getPetsOfUser
       parameters:
         - name: userId
           in: path
@@ -123,7 +123,7 @@ paths:
       security:
       - bearerAuth: []
       summary: retrieve pets resource
-      operationId: getPetById
+      operationId: getPetOfUser
       parameters:
         - name: userId
           in: path
@@ -149,7 +149,7 @@ paths:
       security:
       - bearerAuth: []
       summary: retrieve list of friends
-      operationId: getFriends
+      operationId: getFriendsOfUser
       parameters:
         - name: userId
           in: path
@@ -170,7 +170,7 @@ paths:
       security:
       - bearerAuth: []
       summary: add a new element to the collection
-      operationId: addFriends
+      operationId: addFriendToUser
       parameters:
         - name: userId
           in: path
@@ -196,7 +196,7 @@ paths:
       security:
       - bearerAuth: []
       summary: retrieve friends resource
-      operationId: getFriendById
+      operationId: getFriendOfUser
       parameters:
         - name: userId
           in: path
@@ -221,7 +221,7 @@ paths:
       security:
       - bearerAuth: []
       summary: delete friends resource
-      operationId: deleteFriendById
+      operationId: deleteFriendOfUser
       parameters:
         - name: userId
           in: path
@@ -257,7 +257,7 @@ paths:
       security:
       - bearerAuth: []
       summary: add a new element to the collection
-      operationId: addPets
+      operationId: addPet
       requestBody:
         required: true
         content:
@@ -276,7 +276,7 @@ paths:
       security:
       - bearerAuth: []
       summary: retrieve pets resource
-      operationId: getPetById
+      operationId: getPet
       parameters:
         - name: petId
           in: path
@@ -295,7 +295,7 @@ paths:
       security:
       - bearerAuth: []
       summary: update pets resource
-      operationId: updatePetById
+      operationId: updatePet
       parameters:
         - name: petId
           in: path
@@ -316,7 +316,7 @@ paths:
       security:
       - bearerAuth: []
       summary: delete pets resource
-      operationId: deletePetById
+      operationId: deletePet
       parameters:
         - name: petId
           in: path

@@ -105,7 +105,7 @@ namespace BootGen
             route.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Get,
-                Name = "get" + resource.Name.Plural,
+                Name = TypeScriptGenerator.GetListFunctionName(resource),
                 Summary = $"retrieve list of {resourceName}",
                 Response = resource.Class,
                 ResponseIsCollection = true,
@@ -118,7 +118,7 @@ namespace BootGen
                 route.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Post,
-                    Name = "add" + resource.Name.Plural,
+                    Name = TypeScriptGenerator.AddFunctionName(resource),
                     Summary = $"add a new element to the collection",
                     Body = resource.Class,
                     BodyIsCollection = false,
@@ -138,7 +138,7 @@ namespace BootGen
             subRoute.Operations.Add(new Operation
             {
                 Verb = HttpVerb.Get,
-                Name = "get" + resource.Name + "ById",
+                Name = TypeScriptGenerator.GetItemFunctionName(resource),
                 Summary = $"retrieve {resourceName} resource",
                 SuccessCode = 200,
                 SuccessDescription = $"successful query",
@@ -152,7 +152,7 @@ namespace BootGen
                     subRoute.Operations.Add(new Operation
                     {
                         Verb = HttpVerb.Put,
-                        Name = "update" + resource.Name + "ById",
+                        Name = TypeScriptGenerator.UpdateFunctionName(resource),
                         Summary = $"update {resourceName} resource",
                         SuccessCode = 200,
                         SuccessDescription = $"successful update",
@@ -163,7 +163,7 @@ namespace BootGen
                 subRoute.Operations.Add(new Operation
                 {
                     Verb = HttpVerb.Delete,
-                    Name = "delete" + resource.Name + "ById",
+                    Name = TypeScriptGenerator.DeleteFunctionName(resource),
                     Summary = $"delete {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion",
