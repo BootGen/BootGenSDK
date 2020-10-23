@@ -21,7 +21,7 @@ namespace {{ name_space }}.Services
     ~}}
     public class {{ class.name.plural }}Service : I{{ class.name.plural }}Service
     {
-        public ServiceResponse<List<{{ class_a.name }}>> Get{{ class_a.name.plural }}Of{{ name_b }}(int {{ camel_case name_b }}Id)
+        public ServiceResponse<List<{{ class_a.name }}>> Get{{ name_a }}sOf{{ name_b }}(int {{ camel_case name_b }}Id)
         {
             using (var db = new DataContext())
             {
@@ -32,7 +32,7 @@ namespace {{ name_space }}.Services
                         StatusCode = 400
                     };
                 var result = db.{{ class.name.plural }}
-                                .Include("{{ class_a.name }}")
+                                .Include("{{ name_a }}")
                                 .Where(item => item.{{ class_b.name }}Id == parent.Id)
                                 .Select(item => item.{{ class_a.name }})
                                 .ToList();
@@ -44,7 +44,7 @@ namespace {{ name_space }}.Services
             }
         }
 
-        public ServiceResponse<List<{{ class_b.name }}>> Get{{ class_b.name.plural }}Of{{ name_a }}(int {{ camel_case name_a }}Id)
+        public ServiceResponse<List<{{ class_b.name }}>> Get{{ name_b }}sOf{{ name_a }}(int {{ camel_case name_a }}Id)
         {
             using (var db = new DataContext())
             {
@@ -55,9 +55,9 @@ namespace {{ name_space }}.Services
                         StatusCode = 400
                     };
                 var result = db.{{ class.name.plural }}
-                                .Include("{{ class_a.name }}")
-                                .Where(item => item.{{ class_a.name }}Id == parent.Id)
-                                .Select(item => item.{{ class_b.name }})
+                                .Include("{{ name_b }}")
+                                .Where(item => item.{{ name_a }}Id == parent.Id)
+                                .Select(item => item.{{ name_b }})
                                 .ToList();
                 return new ServiceResponse<List<{{ class_b.name }}>>
                 {
@@ -73,7 +73,7 @@ namespace {{ name_space }}.Services
             {
                 using (var db = new DataContext())
                 {
-                    db.{{ class.name.plural }}.Add(new {{ class.name }}{ {{ class_a.name }}Id = {{ camel_case name_a }}Id, {{ class_b.name }}Id = {{ camel_case name_b }}Id });
+                    db.{{ class.name.plural }}.Add(new {{ class.name }}{ {{ name_a }}Id = {{ camel_case name_a }}Id, {{ name_b }}Id = {{ camel_case name_b }}Id });
                     db.SaveChanges();
                     return new ServiceResponse
                     {
@@ -95,7 +95,7 @@ namespace {{ name_space }}.Services
             {
                 using (var db = new DataContext())
                 {
-                    db.{{ class.name.plural }}.RemoveRange(db.{{ class.name.plural }}.Where(item => item.{{ class_a.name }}Id == {{ camel_case name_a }}Id && item.{{ class_b.name }}Id == {{ camel_case name_b }}Id));
+                    db.{{ class.name.plural }}.RemoveRange(db.{{ class.name.plural }}.Where(item => item.{{ name_a }}Id == {{ camel_case name_a }}Id && item.{{ name_b }}Id == {{ camel_case name_b }}Id));
                     db.SaveChanges();
                 }
             } catch (DbUpdateException)

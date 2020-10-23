@@ -15,11 +15,11 @@ namespace UsersWithFriends.Services
 {
     public class UserPivotsService : IUserPivotsService
     {
-        public ServiceResponse<List<User>> GetUsersOfUser(int userId)
+        public ServiceResponse<List<User>> GetUsersOfFriend(int friendId)
         {
             using (var db = new DataContext())
             {
-                var parent = db.Users.Where(item => item.Id == userId).FirstOrDefault();
+                var parent = db.Users.Where(item => item.Id == friendId).FirstOrDefault();
                 if (parent == null)
                     return new ServiceResponse<List<User>>
                     {
@@ -38,7 +38,7 @@ namespace UsersWithFriends.Services
             }
         }
 
-        public ServiceResponse<List<User>> GetUsersOfUser(int userId)
+        public ServiceResponse<List<User>> GetFriendsOfUser(int userId)
         {
             using (var db = new DataContext())
             {
@@ -49,9 +49,9 @@ namespace UsersWithFriends.Services
                         StatusCode = 400
                     };
                 var result = db.UserPivots
-                                .Include("User")
+                                .Include("Friend")
                                 .Where(item => item.UserId == parent.Id)
-                                .Select(item => item.User)
+                                .Select(item => item.Friend)
                                 .ToList();
                 return new ServiceResponse<List<User>>
                 {
@@ -61,13 +61,13 @@ namespace UsersWithFriends.Services
             }
         }
 
-        public ServiceResponse Assign(int userId, int userId)
+        public ServiceResponse Assign(int userId, int friendId)
         {
             try
             {
                 using (var db = new DataContext())
                 {
-                    db.UserPivots.Add(new UserPivot{ UserId = userId, UserId = userId });
+                    db.UserPivots.Add(new UserPivot{ UserId = userId, FriendId = friendId });
                     db.SaveChanges();
                     return new ServiceResponse
                     {
@@ -83,13 +83,13 @@ namespace UsersWithFriends.Services
             }
         }
 
-        public ServiceResponse Remove(int userId, int userId)
+        public ServiceResponse Remove(int userId, int friendId)
         {
             try
             {
                 using (var db = new DataContext())
                 {
-                    db.UserPivots.RemoveRange(db.UserPivots.Where(item => item.UserId == userId && item.UserId == userId));
+                    db.UserPivots.RemoveRange(db.UserPivots.Where(item => item.UserId == userId && item.FriendId == friendId));
                     db.SaveChanges();
                 }
             } catch (DbUpdateException)

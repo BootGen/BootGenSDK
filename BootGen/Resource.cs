@@ -36,11 +36,13 @@ namespace BootGen
         public ResourceGenerationSettings GenerationSettings { get; } = new ResourceGenerationSettings();
         internal DataModel DataModel { get; set; }
 
-        public Resource OneToMany(Type type, string parentName = null)
+        public Resource OneToMany(Type type, Noun resourceName, string parentName = null)
         {
             if (ParentResource != null)
                 throw new Exception("Only a single layer of resource nesting is supported.");
             Resource resource = DataModel.ResourceBuilder.FromType(type);
+            if (resourceName != null)
+                resource.Name = resourceName;
             resource.DataModel = DataModel;
             resource.ParentRelation = new ParentRelation(this, parentName);
             if (NestedResources.Any(r => r.Name == resource.Name))
@@ -49,9 +51,9 @@ namespace BootGen
             return resource;
         }
         
-        public Resource ManyToMany(Type type, string pivotName)
+        public Resource ManyToMany(Type type, Noun resourceName, string pivotName)
         {
-            Resource resource = OneToMany(type);
+            Resource resource = OneToMany(type, resourceName);
             resource.Pivot = CreatePivot(this, resource, pivotName);
             return resource;
         }
@@ -61,29 +63,35 @@ namespace BootGen
             var pivotClass = DataModel.Classes.FirstOrDefault(c => c.Name == name);
             if (pivotClass != null)
                 return pivotClass;
+            string name1 = parent.Name;
+            string name2 = resource.Name;
+            if (name1 == name2) {
+                name1 += "1";
+                name2 += "2";
+            }
             pivotClass = new ClassModel
             {
                 Name = name,
                 Location = Location.ServerOnly,
                 Properties = new List<Property> {
                         new Property {
-                            Name = parent.Name + "Id",
+                            Name = name1 + "Id",
                             BuiltInType = BuiltInType.Int32,
                             IsRequired = true
                         },
                         new Property {
-                            Name = parent.Name,
+                            Name = name1,
                             BuiltInType = BuiltInType.Object,
                             Class = parent.Class,
                             IsRequired = true
                         },
                         new Property {
-                            Name = resource.Name + "Id",
+                            Name = name2 + "Id",
                             BuiltInType = BuiltInType.Int32,
                             IsRequired = true
                         },
                         new Property {
-                            Name = resource.Name,
+                            Name = name2,
                             BuiltInType = BuiltInType.Object,
                             Class = resource.Class,
                             IsRequired = true

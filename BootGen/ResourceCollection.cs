@@ -69,13 +69,21 @@ namespace BootGen
             if (rootResource == null)
                 rootResource = Add(propertyType);
             var parentName = oneToManyAttribute.GetFirstParameter<string>();
-            var nestedResource = resource.OneToMany(propertyType, parentName);
+            var nestedResource = resource.OneToMany(propertyType, GetResourceName(property), parentName);
             nestedResource.IsReadonly = true;
             var singularNameAttribute = property.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(SingularNameAttribute));
             var singularName = singularNameAttribute?.GetFirstParameter<string>();
             nestedResource.Name = singularName ?? property.Name.Substring(0, property.Name.Length - 1);
             nestedResource.Name.Plural = property.Name;
             nestedResource.RootResource = rootResource;
+        }
+
+        private static Noun GetResourceName(PropertyInfo property)
+        {
+            var singularNameAttr = property.Get<SingularNameAttribute>();
+            Noun resourceName = singularNameAttr?.GetFirstParameter<string>() ?? property.Name.Substring(0, property.Name.Length - 1);
+            resourceName.Plural = property.Name;
+            return resourceName;
         }
 
         private void CreateManyToManyRelation(Resource resource, PropertyInfo property, CustomAttributeData manyToManyAttribute)
@@ -99,7 +107,7 @@ namespace BootGen
             if (rootResource == null)
                 rootResource = Add(propertyType);
             var pivotName = manyToManyAttribute.GetFirstParameter<string>();
-            var nestedResource = resource.ManyToMany(propertyType, pivotName);
+            var nestedResource = resource.ManyToMany(propertyType, GetResourceName(property), pivotName);
             var singularNameAttribute = property.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(SingularNameAttribute));
             var singularName = singularNameAttribute?.GetFirstParameter<string>();
             nestedResource.Name = singularName ?? property.Name.Substring(0, property.Name.Length - 1);
