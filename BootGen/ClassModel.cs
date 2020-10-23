@@ -8,7 +8,7 @@ namespace BootGen
     /// <summary>Represents a class used in the REST API</summary>
     public class ClassModel
     {
-        internal int Id { get; set; }
+        public int Id { get; set; }
         public Noun Name { get; set; }
         public List<Property> Properties { get; internal set; }
         public Property IdProperty => PropertyWithName("Id");

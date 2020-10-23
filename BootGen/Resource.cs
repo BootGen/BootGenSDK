@@ -63,12 +63,8 @@ namespace BootGen
             var pivotClass = DataModel.Classes.FirstOrDefault(c => c.Name == name);
             if (pivotClass != null)
                 return pivotClass;
-            string name1 = parent.Name;
-            string name2 = resource.Name;
-            if (name1 == name2) {
-                name1 += "1";
-                name2 += "2";
-            }
+            var name1 = parent.Name;
+            var name2 = resource.Name;
             pivotClass = new ClassModel
             {
                 Name = name,
@@ -81,6 +77,7 @@ namespace BootGen
                         },
                         new Property {
                             Name = name1,
+                            Noun = name1,
                             BuiltInType = BuiltInType.Object,
                             Class = parent.Class,
                             IsRequired = true
@@ -92,6 +89,7 @@ namespace BootGen
                         },
                         new Property {
                             Name = name2,
+                            Noun = name2,
                             BuiltInType = BuiltInType.Object,
                             Class = resource.Class,
                             IsRequired = true

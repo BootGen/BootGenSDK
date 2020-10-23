@@ -48,6 +48,14 @@ namespace BootGen
                 var propertyType = p.PropertyType;
                 var property = GetProperty<Property>(propertyType);
                 property.Name = p.Name;
+                var singularName = p.Get<SingularNameAttribute>()?.GetFirstParameter<string>();
+                if (property.IsCollection)
+                {
+                    property.Noun = singularName ?? p.Name.Substring(0, p.Name.Length-1);
+                    property.Noun.Plural = p.Name;
+                } else {
+                    property.Noun = singularName ?? p.Name;
+                }
                 c.Properties.Add(property);
                 if (p.Has<ClientOnlyAttribute>() || p.Has<OneToManyAttribute>() || p.Has<ManyToManyAttribute>())
                 {

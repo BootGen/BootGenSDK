@@ -181,7 +181,7 @@ namespace BootGen
                             Values = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("Id", (pivotDataList.Count + 1).ToString()) }
                         };
                         pivotRecord.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.GetId()));
-                        pivotRecord.Values.Add(new KeyValuePair<string, string>(record.Name + "Id", record.GetId()));
+                        pivotRecord.Values.Add(new KeyValuePair<string, string>(property.Noun.Singular + "Id", record.GetId()));
                         pivotDataList.Add(new SeedData(null, pivotRecord));
                     }
                     else
@@ -210,11 +210,12 @@ namespace BootGen
         {
             foreach (var nestedResource in resource.NestedResources)
             {
-                foreach (var item in Data[resource.Class.Id])
+                foreach (var item in Data[resource.Class.Id].ToList())
                 {
                     var property = new Property
                     {
                         Name = nestedResource.Name.Plural,
+                        Noun =nestedResource.Name,
                         BuiltInType = BuiltInType.Object,
                         Class = nestedResource.Class
                     };

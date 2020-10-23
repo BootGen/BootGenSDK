@@ -80,8 +80,8 @@ namespace BootGen
 
         private static Noun GetResourceName(PropertyInfo property)
         {
-            var singularNameAttr = property.Get<SingularNameAttribute>();
-            Noun resourceName = singularNameAttr?.GetFirstParameter<string>() ?? property.Name.Substring(0, property.Name.Length - 1);
+            var singularName = property.Get<SingularNameAttribute>()?.GetFirstParameter<string>();
+            Noun resourceName = singularName ?? property.Name.Substring(0, property.Name.Length - 1);
             resourceName.Plural = property.Name;
             return resourceName;
         }
