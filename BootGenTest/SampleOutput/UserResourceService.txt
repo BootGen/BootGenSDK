@@ -16,7 +16,6 @@ namespace UsersWithFriends.Services
 {
     public class UsersService : IUsersService
     {
-        public User CurrentUser { get; set; }
 
         public ServiceResponse<List<User>> GetUsers()
         {
@@ -53,10 +52,19 @@ namespace UsersWithFriends.Services
         public ServiceResponse<User> AddUser(User user)
         {
             EntityEntry<User> entityEntry;
-            using (var db = new DataContext())
+            try
             {
-                entityEntry = db.Users.Add(user);
-                db.SaveChanges();
+                using (var db = new DataContext())
+                {
+                    entityEntry = db.Users.Add(user);
+                    db.SaveChanges();
+                }
+            } catch (DbUpdateException)
+            {
+                return new ServiceResponse<User>
+                {
+                    StatusCode = 400
+                };
             }
             return new ServiceResponse<User>
             {
@@ -67,29 +75,52 @@ namespace UsersWithFriends.Services
 
         public ServiceResponse<User> UpdateUser(int userId, User user)
         {
-            using (var db = new DataContext())
+            try
             {
-                var original = db.Users
-                            .Where(item => item.Id == userId).FirstOrDefault();
-                EntityEntry<User> entityEntry;
-                entityEntry = db.Users.Update(original);
-                original.Name = user.Name;
-                db.SaveChanges();
+                using (var db = new DataContext())
+                {
+                    var original = db.Users
+                                .Where(item => item.Id == userId).FirstOrDefault();
+                    EntityEntry<User> entityEntry;
+                    entityEntry = db.Users.Update(original);
+                    original.Name = user.Name;
+                    db.SaveChanges();
+                    return new ServiceResponse<User>
+                    {
+                        StatusCode = 200,
+                        ResponseData = entityEntry.Entity
+                    };
+                }
+            } catch (DbUpdateException)
+            {
                 return new ServiceResponse<User>
                 {
-                    StatusCode = 200,
-                    ResponseData = entityEntry.Entity
+                    StatusCode = 400
                 };
             }
         }
 
         public ServiceResponse DeleteUser(int userId)
         {
-            using (var db = new DataContext())
+            try
             {
-                var item = db.Users.Where(item => item.Id == userId).First();
-                db.Users.Remove(item);
-                db.SaveChanges();
+                using (var db = new DataContext())
+                {
+                    var item = db.Users.Where(item => item.Id == userId).FirstOrDefault();
+                    if (item == null)
+                        return new ServiceResponse
+                        {
+                            StatusCode = 400
+                        };
+                    db.Users.Remove(item);
+                    db.SaveChanges();
+                }
+            } catch (DbUpdateException)
+            {
+                return new ServiceResponse
+                {
+                    StatusCode = 400
+                };
             }
             return new ServiceResponse
             {

@@ -14,16 +14,14 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace UsersWithFriends.Services
 {
-    public class UsersPetsService : IUsersPetsService
+    public class PetsService : IPetsService
     {
-        public User CurrentUser { get; set; }
 
-        public ServiceResponse<List<Pet>> GetPets(int userId)
+        public ServiceResponse<List<Pet>> GetPets()
         {
             using (var db = new DataContext())
             {
-                var query = db.Pets
-                                .Where(item => item.UserId == userId);
+                var query = db.Pets;
                 return new ServiceResponse<List<Pet>>
                 {
                     StatusCode = 200,
@@ -32,7 +30,21 @@ namespace UsersWithFriends.Services
             }
         }
 
-        public ServiceResponse<Pet> GetPet(int userId, int petId)
+        public ServiceResponse<List<Pet>> GetPetsOfUser(int userId)
+        {
+            using (var db = new DataContext())
+            {
+                var query = db.Pets
+                                .Where(item => item.User == userId);
+                return new ServiceResponse<List<Pet>>
+                {
+                    StatusCode = 200,
+                    ResponseData = query.ToList()
+                };
+            }
+        }
+
+        public ServiceResponse<Pet> GetPet(int petId)
         {
             using (var db = new DataContext())
             {

@@ -181,19 +181,6 @@ export default new Vuex.Store({
         })
       })
     },
-    getPetOfUser: function(context, data): Promise<Pet> {
-      const id = data.id;
-      const user: User = data.user;
-      
-      return new Promise((resolve, reject) => {
-        axios.get(`users/${user.id}/pets/${id}`, config(context)).then(response => {
-          context.commit("setPet", response.data);
-          resolve(findById(context.state.pets, response.data.id));
-        }).catch(reason => {
-          reject(reason);
-        })
-      })
-    },
     getFriendsOfUser: function(context, user): Promise<Array<User>> {
       return new Promise((resolve, reject) => {
         axios.get(`users/${user.id}/friends`, config(context)).then(response => {

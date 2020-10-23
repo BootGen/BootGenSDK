@@ -64,14 +64,14 @@ namespace BootGen
                     IsCollection = false,
                     IsRequired = true,
                     Location = Location.ServerOnly,
-                    ParentReference = true
+                    IsParentReference = true
                 };
                 resource.Class.Properties.Add(referenceProperty);
             }
             else
             {
                 var referenceProperty = resource.Class.Properties.First(p => p.Name == parent.Name);
-                referenceProperty.ParentReference = true;
+                referenceProperty.IsParentReference = true;
             }
 
             if (!resource.Class.Properties.Any(p => p.Name == parent.Name + "Id"))
@@ -114,7 +114,7 @@ namespace BootGen
                         IsCollection = false,
                         IsRequired = true,
                         Location = Location.ServerOnly,
-                        ParentReference = true
+                        IsParentReference = true
                     };
                     property.Class.Properties.Add(referenceProperty);
                 }

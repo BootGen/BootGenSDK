@@ -29,7 +29,6 @@ namespace UsersWithFriends.Controllers
         [HttpGet]
         public IActionResult GetUsers()
         {
-            service.CurrentUser = CurrentUser;
             var response = service.GetUsers();
             return new ObjectResult(response.ResponseData) { StatusCode = response.StatusCode };
         }
@@ -38,7 +37,6 @@ namespace UsersWithFriends.Controllers
         [Route("{userId}")]
         public IActionResult GetUser([FromRoute] int userId)
         {
-            service.CurrentUser = CurrentUser;
             var response = service.GetUser(userId);
             return new ObjectResult(response.ResponseData) { StatusCode = response.StatusCode };
         }
@@ -46,7 +44,6 @@ namespace UsersWithFriends.Controllers
         [HttpPost]
         public IActionResult AddUser([FromBody] User user)
         {
-            service.CurrentUser = CurrentUser;
             var response = service.AddUser(user);
             return new ObjectResult(response.ResponseData) { StatusCode = response.StatusCode };
         }
@@ -64,7 +61,6 @@ namespace UsersWithFriends.Controllers
         [Route("{userId}")]
         public IActionResult DeleteUser([FromRoute] int userId)
         {
-            service.CurrentUser = CurrentUser;
             var response = service.DeleteUser(userId);
             return new ObjectResult(null) { StatusCode = response.StatusCode };
         }

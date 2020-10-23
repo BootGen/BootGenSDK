@@ -142,7 +142,7 @@ export default new Vuex.Store({
         })
       })
     },
-    {{~ if !resource.pivot ~}}
+    {{~ if resource.is_root_resource ~}}
     {{ get_item_function_name resource }}: function(context, {{ if parent }}data{{else}}id{{end}}): Promise<{{resource.class.name}}> {
       {{~ if parent ~}}
       const id = data.id;
@@ -196,7 +196,7 @@ export default new Vuex.Store({
         })
       })
     },
-    {{~ if !resource.pivot ~}}
+    {{~ if resource.is_root_resource ~}}
     {{ update_function_name resource }}: function(context, {{ if parent }}data{{else}}{{ camel_case resource.name}}{{end}}): Promise<{{resource.class.name}}> {
       {{~ if parent ~}}
       const {{ camel_case resource.name}}: {{ resource.class.name}} = data.{{ camel_case resource.name}};
@@ -217,6 +217,7 @@ export default new Vuex.Store({
       })
     },
     {{~ end ~}}
+    {{~ if resource.is_root_resource || resource.pivot ~}}
     {{ delete_function_name resource }}: function(context, {{ if parent }}data{{else}}{{ camel_case resource.name}}{{end}}): Promise<void> {
       {{~ if parent ~}}
       const {{ camel_case resource.name}}: {{ resource.class.name}} = data.{{ camel_case resource.name}};
@@ -236,6 +237,7 @@ export default new Vuex.Store({
         })
       })
     },
+    {{~ end ~}}
     {{~ end ~}}
     {{~ end ~}}
     {{~ for controller in controllers ~}}

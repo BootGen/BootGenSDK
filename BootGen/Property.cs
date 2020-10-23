@@ -23,7 +23,7 @@ namespace BootGen
         public bool IsServerOnly => Location == Location.ServerOnly;
         public bool IsClientOnly => Location == Location.ClientOnly;
         public Property MirrorProperty { get; set; }
-        internal bool ParentReference { get; set; }
+        public bool IsParentReference { get; set; }
         public bool IsClientReadonly { get; set; }
         internal Resource IdReferenceToParent { get; set; }
     }

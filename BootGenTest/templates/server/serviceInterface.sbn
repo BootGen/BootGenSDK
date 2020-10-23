@@ -10,7 +10,7 @@ namespace {{ name_space }}.Services
         User CurrentUser { get; set; }
         {{~ end ~}}
         {{~ for method in controller.methods~}}
-        ServiceResponse<{{ get_type method.return_type }}> {{ method.name}}({{for param in method.parameters}}{{ get_type param }} {{ param.name }}{{if !for.last}}, {{ end }}{{ end }});
+        ServiceResponse<{{ get_type method.return_type }}> {{ method.name}}({{ if method.parameter }}{{ get_type method.parameter }} {{ method.parameter.name }}{{ end }});
         {{~ end ~}}
     }
 }

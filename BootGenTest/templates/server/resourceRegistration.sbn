@@ -12,5 +12,8 @@ public static class ServiceRegistrator
             {{~ for resource in resources ~}}
             services.AddScoped<I{{ service_name resource }}, {{ service_name resource }}>();
             {{~ end ~}}
+            {{~ for pivot in pivots ~}}
+            services.AddScoped<I{{ pivot.name.plural }}Service, {{ pivot.name.plural }}Service>();
+            {{~ end ~}}
         }
 }

@@ -16,7 +16,6 @@ namespace UsersWithFriends.Services
 {
     public interface IUsersService
     {
-        User CurrentUser { get; set; }
         ServiceResponse<List<User>> GetUsers();
         ServiceResponse<User> GetUser(int userId);
         ServiceResponse<User> AddUser(User user);

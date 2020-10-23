@@ -17,10 +17,13 @@ namespace BootGen
             resource.Route = route;
             route.Operations = new List<Operation>();
             AddCollectionOperations(resource, route, basePath);
-            Route subRoute = GetItemRoute(resource, basePath);
-            result.Add(subRoute);
-            resource.ItemRoute = subRoute;
-            AddItemOperations(resource, subRoute);
+            if (resource.IsRootResource || resource.Pivot != null)
+            {
+                Route subRoute = GetItemRoute(resource, basePath);
+                result.Add(subRoute);
+                resource.ItemRoute = subRoute;
+                AddItemOperations(resource, subRoute);
+            }
             return result;
         }
 

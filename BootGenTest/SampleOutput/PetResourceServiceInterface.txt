@@ -14,10 +14,10 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace UsersWithFriends.Services
 {
-    public interface IUsersPetsService
+    public interface IPetsService
     {
-        User CurrentUser { get; set; }
-        ServiceResponse<List<Pet>> GetPets(int userId);
-        ServiceResponse<Pet> GetPet(int userId, int petId);
+        ServiceResponse<List<Pet>> GetPets();
+        ServiceResponse<Pet> GetPet(int petId);
+        ServiceResponse<List<Pet>> GetPetsOfUser(int userId);
     }
 }

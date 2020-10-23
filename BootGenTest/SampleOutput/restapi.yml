@@ -118,32 +118,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Pet'
-  /users/{userId}/pets/{petId}:
-    get:
-      security:
-      - bearerAuth: []
-      summary: retrieve pets resource
-      operationId: getPetOfUser
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-        - name: petId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: successful query
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Pet'
   /users/{userId}/friends:
     get:
       security:

@@ -13,11 +13,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace UsersWithFriends.Services
 {
-    public class UsersFriendsService : IUsersFriendsService
+    public class UserPivotsService : IUserPivotsService
     {
-        public User CurrentUser { get; set; }
-        
-        public ServiceResponse<List<User>> GetFriends([FromRoute] int userId)
+        public ServiceResponse<List<User>> GetUsersOfUser(int userId)
         {
             using (var db = new DataContext())
             {
@@ -28,8 +26,9 @@ namespace UsersWithFriends.Services
                         StatusCode = 400
                     };
                 var result = db.UserPivots
+                                .Include("User")
                                 .Where(item => item.UserId == parent.Id)
-                                .Select(item => item.Friend)
+                                .Select(item => item.User)
                                 .ToList();
                 return new ServiceResponse<List<User>>
                 {
@@ -39,44 +38,58 @@ namespace UsersWithFriends.Services
             }
         }
 
-        public ServiceResponse<User> AddFriend([FromRoute] int userId, [FromBody] User friend)
+        public ServiceResponse<List<User>> GetUsersOfUser(int userId)
+        {
+            using (var db = new DataContext())
+            {
+                var parent = db.Users.Where(item => item.Id == userId).FirstOrDefault();
+                if (parent == null)
+                    return new ServiceResponse<List<User>>
+                    {
+                        StatusCode = 400
+                    };
+                var result = db.UserPivots
+                                .Include("User")
+                                .Where(item => item.UserId == parent.Id)
+                                .Select(item => item.User)
+                                .ToList();
+                return new ServiceResponse<List<User>>
+                {
+                    StatusCode = 200,
+                    ResponseData = result
+                };
+            }
+        }
+
+        public ServiceResponse Assign(int userId, int userId)
         {
             try
             {
                 using (var db = new DataContext())
                 {
-                    var parent = db.Users.Where(item => item.Id == userId).First();
-                    db.UserPivots.Add(new UserPivot{ UserId = parent.Id, FriendId = friend.Id });
+                    db.UserPivots.Add(new UserPivot{ UserId = userId, UserId = userId });
                     db.SaveChanges();
-                    return new ServiceResponse<User>
+                    return new ServiceResponse
                     {
                         StatusCode = 200,
-                        ResponseData = db.Friends.FirstOrDefault(item => item.Id == friend.Id)
                     };
                 }
             } catch (DbUpdateException)
             {
-                return new ServiceResponse<User>
+                return new ServiceResponse
                 {
                     StatusCode = 400
                 };
             }
         }
 
-        public ServiceResponse RemoveFriend([FromRoute] int userId, [FromRoute] int friendId)
+        public ServiceResponse Remove(int userId, int userId)
         {
             try
             {
                 using (var db = new DataContext())
                 {
-                    var parent = db.Users.Where(item => item.Id == userId).FirstOrDefault();
-                    var assigned = db.Users.Where(item => item.Id == friendId).FirstOrDefault();
-                    if (parent == null || assigned == null)
-                        return new ServiceResponse
-                        {
-                            StatusCode = 400
-                        };
-                    db.UserPivots.RemoveRange(db.UserPivots.Where(item => item.UserId == parent.Id && item.FriendId == assigned.Id));
+                    db.UserPivots.RemoveRange(db.UserPivots.Where(item => item.UserId == userId && item.UserId == userId));
                     db.SaveChanges();
                 }
             } catch (DbUpdateException)

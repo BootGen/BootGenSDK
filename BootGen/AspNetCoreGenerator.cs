@@ -21,19 +21,6 @@ namespace BootGen
                 return $"{baseType}?";
             return baseType;
         }
-        public static string GetKind(Parameter param)
-        {
-            switch (param.Kind)
-            {
-                case RestParamterKind.Path:
-                    return "[FromRoute]";
-                case RestParamterKind.Query:
-                    return "[FromQuery]";
-                case RestParamterKind.Body:
-                    return "[FromBody]";
-            }
-            return string.Empty;
-        }
 
         public static List<string> GetPropertiesToLoad(ClassModel c)
         {
@@ -41,17 +28,12 @@ namespace BootGen
 
         }
 
-        public static string ParentIdName(Resource resource)
-        {
-            return resource?.ParentRelation?.ParentIdProperty?.Name;
-        }
-
         private static List<string> GetPropertiesToLoadR(ClassModel c, List<ClassModel> parents = null, string prefix = null)
         {
             var result = new List<string>();
             foreach (var property in c.Properties)
             {
-                if (property.BuiltInType == BuiltInType.Object && !property.ParentReference && property.IsCollection && property.Location != Location.ClientOnly)
+                if (property.BuiltInType == BuiltInType.Object && !property.IsParentReference && property.IsCollection && property.Location != Location.ClientOnly)
                 {
                     string newPrefix;
                     if (prefix == null)
@@ -106,8 +88,18 @@ namespace BootGen
         
         public static string ServiceName(Resource resource)
         {
-            return resource.GenerationSettings.ServiceName ?? $"{FullName(resource)}Service";
+            return resource.GenerationSettings.ServiceName ?? $"{resource.Class.Name.Plural}Service";
         }
+
+        public static Property FirstReference(ClassModel pivot)
+        {
+            return pivot.Properties.First(p => p.Class != null);
+        }
+        public static Property SecondReference(ClassModel pivot)
+        {
+            return pivot.Properties.Last(p => p.Class != null);
+        }
+
         private static string FullName(Resource resource)
         {
             var builder = new StringBuilder();
@@ -115,84 +107,6 @@ namespace BootGen
                 builder.Append(resource.ParentResource.Name.Plural);
             builder.Append(resource.Name.Plural);
             return builder.ToString();
-        }
-
-        public static string GetParameters(Resource resource)
-        {
-            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation, resource);
-        }
-        public static string ItemGetParameters(Resource resource)
-        {
-            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation, resource);
-        }
-        public static string PostParameters(Resource resource)
-        {
-            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Post);
-            return Parameters(operation, resource);
-        }
-        public static string ItemDeleteParameters(Resource resource)
-        {
-            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
-            return Parameters(operation, resource);
-        }
-        public static string ItemPutParameters(Resource resource)
-        {
-            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Put);
-            return Parameters(operation, resource);
-        }
-
-        public static string GetParametersService(Resource resource)
-        {
-            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation, resource, false);
-        }
-        public static string ItemGetParametersService(Resource resource)
-        {
-            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation, resource, false);
-        }
-        public static string PostParametersService(Resource resource)
-        {
-            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Post);
-            return Parameters(operation, resource, false);
-        }
-        public static string ItemDeleteParametersService(Resource resource)
-        {
-            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
-            return Parameters(operation, resource, false);
-        }
-        public static string ItemPutParametersService(Resource resource)
-        {
-            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Put);
-            return Parameters(operation, resource, false);
-        }
-
-        public static string GetParametersCall(Resource resource)
-        {
-            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation, resource, false, false);
-        }
-        public static string ItemGetParametersCall(Resource resource)
-        {
-            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Get);
-            return Parameters(operation, resource, false, false);
-        }
-        public static string PostParametersCall(Resource resource)
-        {
-            var operation = resource.Route.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Post);
-            return Parameters(operation, resource, false, false);
-        }
-        public static string ItemDeleteParametersCall(Resource resource)
-        {
-            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Delete);
-            return Parameters(operation, resource, false, false);
-        }
-        public static string ItemPutParametersCall(Resource resource)
-        {
-            var operation = resource.ItemRoute.Operations.FirstOrDefault(o => o.Verb == HttpVerb.Put);
-            return Parameters(operation, resource, false, false);
         }
 
         public static string Parameters(Method method)
@@ -210,64 +124,7 @@ namespace BootGen
             return builder.ToString();
         }
 
-        private static string Parameters(Operation operation, Resource resource, bool withAttributes = true, bool withTypes = true)
-        {
-            StringBuilder builder = new StringBuilder();
-            if (operation != null)
-            {
-                foreach (var param in operation.Parameters)
-                {
-                    if (builder.Length != 0)
-                        builder.Append(", ");
-                    if (withAttributes)
-                    {
-                        builder.Append(GetKind(param));
-                        builder.Append(" ");
-                    }
-                    if (withTypes)
-                    {
-                        builder.Append(GetType(param));
-                        builder.Append(" ");
-                    }
-                    builder.Append(param.Name);
-                }
-                if (operation.Body != null)
-                {
-                    if (builder.Length != 0)
-                        builder.Append(", ");
-                    if (withAttributes) 
-                        builder.Append("[FromBody] ");
-                    if (operation.BodyIsCollection)
-                    {
-                        if (withTypes)
-                        {
-                            builder.Append("List<");
-                            builder.Append(operation.Body.Name);
-                            builder.Append("> ");
-                        }
-                        builder.Append(resource.Name.Plural.ToCamelCase());
-                    }
-                    else
-                    {
-                        if (withTypes)
-                        {
-                            builder.Append(operation.Body.Name);
-                            builder.Append(" ");
-                        }
-                        builder.Append(resource.Name.Singular.ToCamelCase());
-                    }
-                }
-            }
-            return builder.ToString();
-        }
 
-        public static string ItemRelativePath(Resource resource)
-        {
-            int count = resource.ItemRoute.PathModel.Count - resource.Route.PathModel.Count;
-            var path = new BootGen.Path();
-            path.AddRange(resource.ItemRoute.PathModel.TakeLast(count));
-            return path.ToString().Substring(1);
-        }
 
         public static bool IsLazyLoaded(Property property)
         {

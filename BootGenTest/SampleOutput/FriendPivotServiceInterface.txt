@@ -13,11 +13,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace UsersWithFriends.Services
 {
-    public interface IUsersFriendsService
+    public interface IUserPivotsService
     {
-        User CurrentUser { get; set; }
-        ServiceResponse<List<User>> GetFriends([FromRoute] int userId);
-        ServiceResponse<User> AddFriend([FromRoute] int userId, [FromBody] User friend);
-        ServiceResponse RemoveFriend([FromRoute] int userId, [FromRoute] int friendId);
+        ServiceResponse<List<User>> GetUsersOfUser(int userId);
+        ServiceResponse<List<User>> GetUsersOfUser(int userId);
+        ServiceResponse Assign(int userId, int userId);
+        ServiceResponse Remove(int userId, int userId);
     }
 }

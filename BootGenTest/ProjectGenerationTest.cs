@@ -119,10 +119,10 @@ namespace BootGenTest
             var resource = api.Resources.First(r => r.Name.Singular == "User").NestedResources.First(r => r.Name.Singular == "Friend");
             var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
-            aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceService.txt", "templates/server/pivotService.sbn", new List<Resource> { resource });
-            CompareWithSample($"{resource.Name}ResourceService.txt");
-            aspNetCoreFunctions.RenderResources("", c => $"{c.Name}ResourceServiceInterface.txt", "templates/server/pivotServiceInterface.sbn", new List<Resource> { resource });
-            CompareWithSample($"{resource.Name}ResourceServiceInterface.txt");
+            aspNetCoreFunctions.RenderClasses("", c => $"FriendPivotService.txt", "templates/server/pivotService.sbn", new List<ClassModel> { resource.Pivot });
+            CompareWithSample($"FriendPivotService.txt");
+            aspNetCoreFunctions.RenderClasses("", c => $"FriendPivotServiceInterface.txt", "templates/server/pivotServiceInterface.sbn", new List<ClassModel> { resource.Pivot });
+            CompareWithSample($"FriendPivotServiceInterface.txt");
         }
 
         [TestMethod]

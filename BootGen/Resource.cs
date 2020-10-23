@@ -26,6 +26,7 @@ namespace BootGen
             }
         }
         public Resource RootResource { get; set; }
+        public bool IsRootResource => RootResource == this;
         internal ParentRelation ParentRelation { get; set; }
         public List<Resource> NestedResources { get; set; }
         public ClassModel Pivot { get; set; }
@@ -35,7 +36,6 @@ namespace BootGen
         public ResourceGenerationSettings GenerationSettings { get; } = new ResourceGenerationSettings();
         internal DataModel DataModel { get; set; }
 
-        
         public Resource OneToMany(Type type, string parentName = null)
         {
             if (ParentResource != null)

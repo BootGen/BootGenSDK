@@ -14,17 +14,20 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace {{ name_space }}.Services
 {
+    {{~ class = resource.class ~}}
     public interface I{{ service_name resource }}
     {
-        {{~ if resource.authenticate ~}}
-        User CurrentUser { get; set; }
+        ServiceResponse<List<{{ class.name }}>> Get{{ class.name.plural }}();
+        ServiceResponse<{{ class.name }}> Get{{ class.name }}(int {{ camel_case class.name }}Id);
+        {{~ for property in class.properties ~}}
+        {{~ if property.is_parent_reference ~}}
+        ServiceResponse<List<{{ class.name }}>> Get{{ class.name.plural }}Of{{ property.name }}(int {{ camel_case property.class.name }}Id);
         {{~ end ~}}
-        ServiceResponse<List<{{ resource.class.name }}>> Get{{ resource.name.plural }}({{ get_parameters_service resource }});
-        ServiceResponse<{{ resource.class.name }}> Get{{ resource.name }}({{ item_get_parameters_service resource }});
+        {{~ end ~}}
         {{~ if !resource.is_readonly ~}}
-        ServiceResponse<{{ resource.class.name }}> Add{{ resource.name }}({{ post_parameters_service resource }});
-        ServiceResponse<{{ resource.class.name }}> Update{{ resource.name }}({{ item_put_parameters_service resource }});
-        ServiceResponse Delete{{ resource.name }}({{ item_delete_parameters_service resource }});
+        ServiceResponse<{{ class.name }}> Add{{ class.name }}({{ class.name }} {{ camel_case class.name }});
+        ServiceResponse<{{ class.name }}> Update{{ class.name }}(int {{ camel_case class.name }}Id, {{ class.name }} {{ camel_case class.name }});
+        ServiceResponse Delete{{ class.name }}(int {{ camel_case class.name }}Id);
         {{~ end ~}}
     }
 }

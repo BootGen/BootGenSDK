@@ -13,15 +13,17 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace {{ name_space }}.Services
 {
-    public interface I{{ service_name resource }}
+    {{~
+    class_a = (first_reference class).class
+    name_a = (first_reference class).name
+    class_b = (second_reference class).class
+    name_b = (second_reference class).name
+    ~}}
+    public interface I{{ class.name.plural }}Service
     {
-        {{~ if resource.authenticate ~}}
-        User CurrentUser { get; set; }
-        {{~ end ~}}
-        ServiceResponse<List<{{ resource.class.name }}>> Get{{ resource.name.plural }}({{ get_parameters resource }});
-        {{~ if !resource.is_readonly ~}}
-        ServiceResponse<{{ resource.class.name }}> Add{{ resource.name }}({{ post_parameters resource }});
-        ServiceResponse Remove{{ resource.name }}({{ item_delete_parameters resource }});
-        {{~ end ~}}
+        ServiceResponse<List<{{ class_a.name }}>> Get{{ class_a.name.plural }}Of{{ class_b.name }}(int {{ camel_case name_b }}Id);
+        ServiceResponse<List<{{ class_b.name }}>> Get{{ class_b.name.plural }}Of{{ class_a.name }}(int {{ camel_case name_a }}Id);
+        ServiceResponse Assign(int {{ camel_case name_a }}Id, int {{ camel_case name_b }}Id);
+        ServiceResponse Remove(int {{ camel_case name_a }}Id, int {{ camel_case name_b }}Id);
     }
 }
