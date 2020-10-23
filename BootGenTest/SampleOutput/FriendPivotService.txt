@@ -15,28 +15,6 @@ namespace UsersWithFriends.Services
 {
     public class UserPivotsService : IUserPivotsService
     {
-        public ServiceResponse<List<User>> GetUsersOfFriend(int friendId)
-        {
-            using (var db = new DataContext())
-            {
-                var parent = db.Users.Where(item => item.Id == friendId).FirstOrDefault();
-                if (parent == null)
-                    return new ServiceResponse<List<User>>
-                    {
-                        StatusCode = 400
-                    };
-                var result = db.UserPivots
-                                .Include("User")
-                                .Where(item => item.UserId == parent.Id)
-                                .Select(item => item.User)
-                                .ToList();
-                return new ServiceResponse<List<User>>
-                {
-                    StatusCode = 200,
-                    ResponseData = result
-                };
-            }
-        }
 
         public ServiceResponse<List<User>> GetFriendsOfUser(int userId)
         {
@@ -49,10 +27,14 @@ namespace UsersWithFriends.Services
                         StatusCode = 400
                     };
                 var result = db.UserPivots
-                                .Include("Friend")
-                                .Where(item => item.UserId == parent.Id)
-                                .Select(item => item.Friend)
-                                .ToList();
+                               .Include("Friend")
+                               .Where(item => item.UserId == parent.Id)
+                               .Select(item => item.Friend)
+                               .ToList();
+                result.AddRange(db.UserPivots
+                                  .Include("User")
+                                  .Where(item => item.FriendId == parent.Id)
+                                  .Select(item => item.User));
                 return new ServiceResponse<List<User>>
                 {
                     StatusCode = 200,
@@ -89,7 +71,9 @@ namespace UsersWithFriends.Services
             {
                 using (var db = new DataContext())
                 {
-                    db.UserPivots.RemoveRange(db.UserPivots.Where(item => item.UserId == userId && item.FriendId == friendId));
+                    var toRemove = db.UserPivots
+                                    .Where(item => item.UserId == userId && item.FriendId == friendId || item.UserId == friendId && item.FriendId == userId)
+                    db.UserPivots.RemoveRange(toRemove);
                     db.SaveChanges();
                 }
             } catch (DbUpdateException)

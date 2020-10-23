@@ -21,6 +21,7 @@ namespace {{ name_space }}.Services
     ~}}
     public class {{ class.name.plural }}Service : I{{ class.name.plural }}Service
     {
+        {{~ if class_a.id != class_b.id ~}}
         public ServiceResponse<List<{{ class_a.name }}>> Get{{ name_a }}sOf{{ name_b }}(int {{ camel_case name_b }}Id)
         {
             using (var db = new DataContext())
@@ -43,6 +44,7 @@ namespace {{ name_space }}.Services
                 };
             }
         }
+        {{~ end ~}}
 
         public ServiceResponse<List<{{ class_b.name }}>> Get{{ name_b }}sOf{{ name_a }}(int {{ camel_case name_a }}Id)
         {
@@ -55,10 +57,16 @@ namespace {{ name_space }}.Services
                         StatusCode = 400
                     };
                 var result = db.{{ class.name.plural }}
-                                .Include("{{ name_b }}")
-                                .Where(item => item.{{ name_a }}Id == parent.Id)
-                                .Select(item => item.{{ name_b }})
-                                .ToList();
+                               .Include("{{ name_b }}")
+                               .Where(item => item.{{ name_a }}Id == parent.Id)
+                               .Select(item => item.{{ name_b }})
+                               .ToList();
+                {{~ if class_a.id == class_b.id ~}}
+                result.AddRange(db.{{ class.name.plural }}
+                                  .Include("{{ name_a }}")
+                                  .Where(item => item.{{ name_b }}Id == parent.Id)
+                                  .Select(item => item.{{ name_a }}));
+                {{~ end ~}}
                 return new ServiceResponse<List<{{ class_b.name }}>>
                 {
                     StatusCode = 200,
@@ -95,7 +103,13 @@ namespace {{ name_space }}.Services
             {
                 using (var db = new DataContext())
                 {
-                    db.{{ class.name.plural }}.RemoveRange(db.{{ class.name.plural }}.Where(item => item.{{ name_a }}Id == {{ camel_case name_a }}Id && item.{{ name_b }}Id == {{ camel_case name_b }}Id));
+                    var toRemove = db.{{ class.name.plural }}
+                                    {{~ if class_a.id == class_b.id ~}}
+                                    .Where(item => item.{{ name_a }}Id == {{ camel_case name_a }}Id && item.{{ name_b }}Id == {{ camel_case name_b }}Id || item.{{ name_a }}Id == {{ camel_case name_b }}Id && item.{{ name_b }}Id == {{ camel_case name_a }}Id)
+                                    {{~ else ~}}
+                                    .Where(item => item.{{ name_a }}Id == {{ camel_case name_a }}Id && item.{{ name_b }}Id == {{ camel_case name_b }}Id)
+                                    {{~ end ~}}
+                    db.{{ class.name.plural }}.RemoveRange(toRemove);
                     db.SaveChanges();
                 }
             } catch (DbUpdateException)

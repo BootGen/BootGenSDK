@@ -21,7 +21,9 @@ namespace {{ name_space }}.Services
     ~}}
     public interface I{{ class.name.plural }}Service
     {
+        {{~ if class_a.id != class_b.id ~}}
         ServiceResponse<List<{{ class_a.name }}>> Get{{ name_a }}sOf{{ name_b}}(int {{ camel_case name_b }}Id);
+        {{~ end ~}}
         ServiceResponse<List<{{ class_b.name }}>> Get{{ name_b }}sOf{{ name_a }}(int {{ camel_case name_a }}Id);
         ServiceResponse Assign(int {{ camel_case name_a }}Id, int {{ camel_case name_b }}Id);
         ServiceResponse Remove(int {{ camel_case name_a }}Id, int {{ camel_case name_b }}Id);

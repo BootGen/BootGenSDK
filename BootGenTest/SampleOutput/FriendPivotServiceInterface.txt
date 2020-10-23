@@ -15,7 +15,6 @@ namespace UsersWithFriends.Services
 {
     public interface IUserPivotsService
     {
-        ServiceResponse<List<User>> GetUsersOfFriend(int friendId);
         ServiceResponse<List<User>> GetFriendsOfUser(int userId);
         ServiceResponse Assign(int userId, int friendId);
         ServiceResponse Remove(int userId, int friendId);
