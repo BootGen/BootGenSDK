@@ -61,6 +61,7 @@ namespace BootGen
                 {
                     property.Location = Location.ClientOnly;
                 }
+                property.IsManyToMany = p.Has<ManyToManyAttribute>();
                 if (p.Has<ServerOnlyAttribute>())
                 {
                     property.Location = Location.ServerOnly;
