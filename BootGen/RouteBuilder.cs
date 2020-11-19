@@ -85,6 +85,12 @@ namespace BootGen
                 case BuiltInType.Int64:
                     oasProp.IsRequired = true;
                     break;
+                case BuiltInType.Float:
+                    oasProp.IsRequired = true;
+                    break;
+                case BuiltInType.Double:
+                    oasProp.IsRequired = true;
+                    break;
                 case BuiltInType.String:
                     oasProp.IsRequired = false;
                     break;

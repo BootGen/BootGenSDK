@@ -151,6 +151,10 @@ namespace BootGen
                     return BuiltInType.Int32;
                 case "int64":
                     return BuiltInType.Int64;
+                case "single":
+                    return BuiltInType.Float;
+                case "double":
+                    return BuiltInType.Double;
                 case "boolean":
                     return BuiltInType.Bool;
                 case "datetime":

@@ -10,7 +10,7 @@ namespace BootGen
     {
         public int Id { get; set; }
         public Noun Name { get; set; }
-        public List<Property> Properties { get; internal set; }
+        public List<Property> Properties { get; set; }
         public Property IdProperty => PropertyWithName("Id");
 
         public Property PropertyWithName(string name)

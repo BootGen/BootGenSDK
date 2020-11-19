@@ -31,5 +31,5 @@ namespace BootGen
     }
     
 
-    public enum BuiltInType { String, Int32, Int64, Bool, DateTime, Guid, Object, Enum }
+    public enum BuiltInType { String, Int32, Int64, Float, Double, Bool, DateTime, Guid, Object, Enum }
 }

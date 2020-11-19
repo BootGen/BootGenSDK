@@ -25,5 +25,14 @@ namespace BootGen
             NonPersistedTypeBuilder = new TypeBuilder(ClassCollection, EnumCollection, false);
             ResourceBuilder = new ResourceBuilder(PersistedTypeBuilder);
         }
+
+        public void AddClass(ClassModel c)
+        {
+            ClassCollection.Add(c);
+        }
+        public void AddEnum(EnumModel e)
+        {
+            EnumCollection.Add(e);
+        }
     }
 }

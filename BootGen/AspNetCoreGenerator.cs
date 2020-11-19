@@ -33,7 +33,7 @@ namespace BootGen
             var result = new List<string>();
             foreach (var property in c.Properties)
             {
-                if (property.BuiltInType == BuiltInType.Object && !property.IsParentReference && property.IsCollection && property.Location != Location.ClientOnly)
+                if (property.BuiltInType == BuiltInType.Object && !property.IsParentReference && property.Location != Location.ClientOnly)
                 {
                     string newPrefix;
                     if (prefix == null)
@@ -67,6 +67,10 @@ namespace BootGen
                     return "int";
                 case BuiltInType.Int64:
                     return "long";
+                case BuiltInType.Float:
+                    return "float";
+                case BuiltInType.Double:
+                    return "double";
                 case BuiltInType.String:
                     return "string";
                 case BuiltInType.Guid:

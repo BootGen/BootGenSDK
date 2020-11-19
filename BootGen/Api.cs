@@ -149,9 +149,11 @@ namespace BootGen
                         {
                             Name = property.Name + "Id",
                             BuiltInType = property.Class.IdProperty.BuiltInType,
-                            IsRequired = true
+                            IsRequired = property.Class.IsResource,
+                            Location = property.Class.IsResource ? Location.Both : Location.ServerOnly
                         });
-                        property.Location = Location.ServerOnly;
+                        if (property.Class.IsResource)
+                            property.Location = Location.ServerOnly;
                         propertyIdx += 1;
                         AddEfRelationsChildToParent(property.Class);
                     }

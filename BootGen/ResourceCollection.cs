@@ -22,14 +22,24 @@ namespace BootGen
             return Add(typeof(T));
         }
 
+        public Resource Add(ClassModel c)
+        {
+            var resource = new Resource();
+            resource.Class = c;
+            resource.Class.MakePersisted();
+            resource.Class.IsResource = true;
+            resource.DataModel = DataModel;
+            resource.RootResource = resource;
+            AddRootResource(resource);
+            return resource;
+        }
+
         private Resource Add(Type type)
         {
             Resource resource = DataModel.ResourceBuilder.FromType(type);
             resource.DataModel = DataModel;
             resource.RootResource = resource;
-            if (RootResources.Any(r => r.Name == resource.Name))
-                throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
-            RootResources.Add(resource);
+            AddRootResource(resource);
 
             foreach (var property in type.GetProperties())
             {
@@ -46,6 +56,13 @@ namespace BootGen
             }
 
             return resource;
+        }
+
+        private void AddRootResource(Resource resource)
+        {
+            if (RootResources.Any(r => r.Name == resource.Name))
+                throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
+            RootResources.Add(resource);
         }
 
         private void CreateOneToManyRelation(Resource resource, System.Reflection.PropertyInfo property, System.Reflection.CustomAttributeData oneToManyAttribute)

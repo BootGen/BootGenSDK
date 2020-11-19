@@ -33,6 +33,10 @@ namespace BootGen
                     return "number";
                 case BuiltInType.Int64:
                     return "number";
+                case BuiltInType.Float:
+                    return "number";
+                case BuiltInType.Double:
+                    return "number";
                 case BuiltInType.String:
                     return "string";
                 case BuiltInType.DateTime:

@@ -20,6 +20,10 @@ namespace BootGen
                     return "integer";
                 case BuiltInType.Int64:
                     return "integer";
+                case BuiltInType.Float:
+                    return "number";
+                case BuiltInType.Double:
+                    return "number";
                 case BuiltInType.String:
                     return "string";
                 case BuiltInType.Guid:
@@ -40,6 +44,10 @@ namespace BootGen
                     return "int32";
                 case BuiltInType.Int64:
                     return "int64";
+                case BuiltInType.Float:
+                    return "float";
+                case BuiltInType.Double:
+                    return "double";
                 case BuiltInType.DateTime:
                     return "date-time";
                 case BuiltInType.Guid:
