@@ -37,14 +37,19 @@ namespace BootGen
         public void Render(string folderName, string targetFileName, string templateFile, Dictionary<string, object> parameters)
         {
             var dir = GetPath(folderName);
+            File.WriteAllText(System.IO.Path.Combine(dir, targetFileName), Render(templateFile, parameters));
+        }
+
+        public string Render(string templateFile, Dictionary<string, object> parameters)
+        {
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
             var context = new TemplateContext();
             context.PushGlobal(this);
             foreach (var param in parameters)
                 context.SetValue(new ScriptVariableGlobal(param.Key), param.Value);
-            var rendered = template.Render(context);
-            File.WriteAllText(System.IO.Path.Combine(dir, targetFileName), rendered);
+            return template.Render(context);
         }
+
         public void RenderApi(string folderName, string targetFileName, string templateFile, string projectTitle, Api api)
         {
             var dir = GetPath(folderName);
@@ -64,13 +69,26 @@ namespace BootGen
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
             foreach (var c in classes)
             {
-                var context = new TemplateContext();
-                context.PushGlobal(this);
-                context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
-                context.SetValue(new ScriptVariableGlobal("class"), c);
-                var renderedModel = template.Render(context);
-                File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(c)), renderedModel);
+                File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(c)), RenderClass(template, c));
             }
+        }
+
+        public IEnumerable<string> RenderClasses(string templateFile, IEnumerable<ClassModel> classes)
+        {
+            var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
+            foreach (var c in classes)
+            {
+                yield return RenderClass(template, c);
+            }
+        }
+
+        private string RenderClass(Template template, ClassModel c)
+        {
+            var context = new TemplateContext();
+            context.PushGlobal(this);
+            context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
+            context.SetValue(new ScriptVariableGlobal("class"), c);
+            return template.Render(context);;
         }
 
         public void RenderEnums(string folderName, Func<BootGen.EnumModel, string> targetFileName, string templateFile, List<BootGen.EnumModel> enums)

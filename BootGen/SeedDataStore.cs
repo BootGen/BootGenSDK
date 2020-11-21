@@ -104,6 +104,11 @@ namespace BootGen
         public void Add<T>(Resource resource, IEnumerable<T> data)
         {
             List<JObject> rawDataList = data.Select(i => JObject.FromObject(i)).ToList();
+            Add(resource, rawDataList);
+        }
+
+        public void Add(Resource resource, List<JObject> rawDataList)
+        {
             List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Class, o))).ToList();
             Data[resource.Class.Id] = seedDataList;
 

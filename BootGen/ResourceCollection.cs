@@ -25,11 +25,13 @@ namespace BootGen
         public Resource Add(ClassModel c)
         {
             var resource = new Resource();
+            resource.Name = c.Name;
             resource.Class = c;
             resource.Class.MakePersisted();
             resource.Class.IsResource = true;
             resource.DataModel = DataModel;
             resource.RootResource = resource;
+            resource.NestedResources = new List<Resource>();
             AddRootResource(resource);
             return resource;
         }
