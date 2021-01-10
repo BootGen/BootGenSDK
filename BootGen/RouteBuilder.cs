@@ -5,9 +5,26 @@ namespace BootGen
 {
     internal static class RouteBuilder
     {
-        public static List<Route> GetRoutes(this Resource resource)
+        public static List<Route> GetRoutes(this RootResource resource)
         {
-            Path basePath = resource.ParentResource?.ItemRoute?.PathModel ?? resource.ParentResource?.Route?.PathModel ?? new Path();
+            var result = new List<Route>();
+            var route = new Route();
+            string resourceName = resource.Name.Plural.ToCamelCase();
+            Path basePath = new Path().Adding(new PathComponent { Name = resourceName.ToKebabCase() });
+            route.PathModel = basePath;
+            result.Add(route);
+            resource.Route = route;
+            route.Operations = new List<Operation>();
+            AddCollectionOperations(resource, route, basePath);
+            Route subRoute = GetItemRoute(resource, basePath);
+            result.Add(subRoute);
+            resource.ItemRoute = subRoute;
+            AddItemOperations(resource, subRoute);
+            return result;
+        }
+        public static List<Route> GetRoutes(this NestedResource resource)
+        {
+            Path basePath = resource.ParentResource.ItemRoute.PathModel;
             var result = new List<Route>();
             var route = new Route();
             string resourceName = resource.Name.Plural.ToCamelCase();
@@ -17,7 +34,7 @@ namespace BootGen
             resource.Route = route;
             route.Operations = new List<Operation>();
             AddCollectionOperations(resource, route, basePath);
-            if (resource.IsRootResource || resource.Pivot != null)
+            if (resource.Pivot != null)
             {
                 Route subRoute = GetItemRoute(resource, basePath);
                 result.Add(subRoute);
@@ -157,7 +174,7 @@ namespace BootGen
             });
             if (!resource.IsReadonly)
             {
-                if (resource.Pivot == null)
+                if (resource is RootResource)
                     subRoute.Operations.Add(new Operation
                     {
                         Verb = HttpVerb.Put,

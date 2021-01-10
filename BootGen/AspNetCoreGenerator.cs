@@ -107,8 +107,8 @@ namespace BootGen
         private static string FullName(Resource resource)
         {
             var builder = new StringBuilder();
-            if (resource.ParentResource != null)
-                builder.Append(resource.ParentResource.Name.Plural);
+            if (resource is NestedResource nestedResource && nestedResource.ParentResource != null)
+                builder.Append(nestedResource.ParentResource.Name.Plural);
             builder.Append(resource.Name.Plural);
             return builder.ToString();
         }

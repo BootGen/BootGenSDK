@@ -5,42 +5,29 @@ using Newtonsoft.Json.Linq;
 
 namespace BootGen
 {
-    public class Resource
+    public abstract class Resource
     {
         public Noun Name { get; set; }
         public ClassModel Class { get; set; }
         public Route Route { get; set; }
         public Route ItemRoute { get; set; }
-        public Resource ParentResource => ParentRelation?.Resource;
-        public string ParentName
-        {
-            get
-            {
-                return ParentRelation?.Name;
-            }
-
-            set
-            {
-                if (ParentRelation != null)
-                    ParentRelation.Name = value;
-            }
-        }
-        public Resource RootResource { get; set; }
-        public bool IsRootResource => RootResource == this;
-        internal ParentRelation ParentRelation { get; set; }
-        public List<Resource> NestedResources { get; set; }
-        public ClassModel Pivot { get; set; }
+        public RootResource RootResource { get; set; }
+        public bool IsRootResource => this is RootResource;
         public bool HasTimestamps { get => Class.HasTimestamps; set => Class.HasTimestamps = value; }
         public bool Authenticate { get; set; }
         public bool IsReadonly { get; set; }
         public ResourceGenerationSettings GenerationSettings { get; } = new ResourceGenerationSettings();
         internal DataModel DataModel { get; set; }
 
-        public Resource OneToMany(Type type, Noun resourceName, string parentName = null)
+    }
+
+    public class RootResource : Resource
+    {
+        public List<NestedResource> NestedResources { get; set; }
+
+        public NestedResource OneToMany(Type type, Noun resourceName, string parentName = null)
         {
-            if (ParentResource != null)
-                throw new Exception("Only a single layer of resource nesting is supported.");
-            Resource resource = DataModel.ResourceBuilder.FromType(type);
+            NestedResource resource = DataModel.ResourceBuilder.FromType<NestedResource>(type);
             if (resourceName != null)
                 resource.Name = resourceName;
             resource.DataModel = DataModel;
@@ -51,9 +38,9 @@ namespace BootGen
             return resource;
         }
         
-        public Resource ManyToMany(Type type, Noun resourceName, string pivotName)
+        public NestedResource ManyToMany(Type type, Noun resourceName, string pivotName)
         {
-            Resource resource = OneToMany(type, resourceName);
+            NestedResource resource = OneToMany(type, resourceName);
             resource.Pivot = CreatePivot(this, resource, pivotName);
             return resource;
         }
@@ -99,6 +86,26 @@ namespace BootGen
             pivotClass.MakePersisted();
             DataModel.ClassCollection.Add(pivotClass);
             return pivotClass;
+        }
+
+    }
+    public class NestedResource : Resource
+    {
+        internal ParentRelation ParentRelation { get; set; }
+        public Resource ParentResource => ParentRelation?.Resource;
+        public ClassModel Pivot { get; set; }
+        public string ParentName
+        {
+            get
+            {
+                return ParentRelation?.Name;
+            }
+
+            set
+            {
+                if (ParentRelation != null)
+                    ParentRelation.Name = value;
+            }
         }
 
     }

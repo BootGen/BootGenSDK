@@ -12,15 +12,15 @@ namespace BootGen
         {
             this.typeBuilder = typeBuilder;
         }
-        public Resource FromClass<T>()
+        public R FromClass<T, R>() where R : Resource, new()
         {
-            return FromType(typeof(T));
+            return FromType<R>(typeof(T));
         }
 
 
-        public Resource FromType(Type type)
+        public R FromType<R>(Type type) where R : Resource, new()
         {
-            var result = new Resource();
+            var result = new R();
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
                 type = type.GetGenericArguments()[0];
@@ -47,7 +47,8 @@ namespace BootGen
                 result.GenerationSettings.ServiceName = serviceNameAttr.GetFirstParameter<string>();
             }
             result.Class.IsResource = true;
-            result.NestedResources = new List<Resource>();
+            if (result is RootResource rootResource)
+                rootResource.NestedResources = new List<NestedResource>();
             result.Name = result.Class.Name;
             return result;
         }

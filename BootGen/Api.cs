@@ -11,6 +11,7 @@ namespace BootGen
         private ResourceCollection ResourceCollection { get; }
         private ControllerCollection ControllerCollection { get; }
         public List<Resource> Resources => ResourceCollection.Resources;
+        public List<RootResource> RootResources => ResourceCollection.RootResources;
         public List<Controller> Controllers => ControllerCollection?.Controllers ?? new List<Controller>();
         public DataModel DataModel => ResourceCollection.DataModel;
         public List<Route> Routes { get; } = new List<Route>();
@@ -20,19 +21,18 @@ namespace BootGen
         {
             ResourceCollection = resourceCollection;
             ControllerCollection = controllerCollection;
-            foreach (var resource in Resources)
+            foreach (var resource in RootResources)
             {
-                if (resource.Pivot != null && resource.RootResource == null) {
-                    throw new Exception($"{resource.Name.Plural} is declared as a Many-To-Many nested resource on {resource.ParentResource.Name.Plural}, but is does not have an associated root resource.");
-                }
-                if (resource.RootResource != null && resource.RootResource.Class != resource.Class) {
-                    throw new Exception($"Type mismatch: ${resource.Name.Plural} has type ${resource.Class.Name}, but its associated root resource has type {resource.RootResource.Class.Name}");
-                }
                 Routes.AddRange(resource.GetRoutes());
-                if (resource.Pivot == null)
-                    AddEfRelations(resource);
-                else
-                    DataModel.ClassCollection.Add(resource.Pivot);
+                foreach (var nestedResource in resource.NestedResources)
+                {
+                    DoNestingSanityChecks(nestedResource);
+                    Routes.AddRange(nestedResource.GetRoutes());
+                    if (nestedResource.Pivot == null)
+                        AddEfRelations(nestedResource);
+                    else
+                        DataModel.ClassCollection.Add(nestedResource.Pivot);
+                }
             }
             
             foreach (var controller in Controllers)
@@ -48,12 +48,21 @@ namespace BootGen
             }
         }
 
+        private static void DoNestingSanityChecks(NestedResource nestedResource)
+        {
+            if (nestedResource.Pivot != null && nestedResource.RootResource == null)
+            {
+                throw new Exception($"{nestedResource.Name.Plural} is declared as a Many-To-Many nested resource on {nestedResource.ParentResource.Name.Plural}, but is does not have an associated root resource.");
+            }
+            if (nestedResource.RootResource != null && nestedResource.RootResource.Class != nestedResource.Class)
+            {
+                throw new Exception($"Type mismatch: ${nestedResource.Name.Plural} has type ${nestedResource.Class.Name}, but its associated root resource has type {nestedResource.RootResource.Class.Name}");
+            }
+        }
 
-        private static void AddEfRelations(Resource resource)
+        private static void AddEfRelations(NestedResource resource)
         {
             var parent = resource.ParentRelation;
-            if (parent == null)
-                return;
             if (!resource.Class.Properties.Any(p => p.Name == parent.Name))
             {
                 var referenceProperty = new Property

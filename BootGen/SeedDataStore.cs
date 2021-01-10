@@ -101,13 +101,13 @@ namespace BootGen
             record.Set(propertyName, $"new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second})");
         }
 
-        public void Add<T>(Resource resource, IEnumerable<T> data)
+        public void Add<T>(RootResource resource, IEnumerable<T> data)
         {
             List<JObject> rawDataList = data.Select(i => JObject.FromObject(i)).ToList();
             Add(resource, rawDataList);
         }
 
-        public void Add(Resource resource, List<JObject> rawDataList)
+        public void Add(RootResource resource, List<JObject> rawDataList)
         {
             List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Class, o))).ToList();
             Data[resource.Class.Id] = seedDataList;
@@ -148,7 +148,7 @@ namespace BootGen
             }
         }
 
-        private bool SplitData(SeedData item, Property property, Resource nestedResource = null)
+        private bool SplitData(SeedData item, Property property, NestedResource nestedResource = null)
         {
             var token = item.JObject.GetValue(property.Name);
             item.JObject.Remove(property.Name);
@@ -211,7 +211,7 @@ namespace BootGen
             return dataList;
         }
 
-        internal void PushSeedDataToNestedResources(Resource resource)
+        internal void PushSeedDataToNestedResources(RootResource resource)
         {
             foreach (var nestedResource in resource.NestedResources)
             {

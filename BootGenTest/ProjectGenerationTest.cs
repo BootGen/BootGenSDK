@@ -116,7 +116,7 @@ namespace BootGenTest
         public void GeneratePivotResourceServiceTest()
         {
             Api api = CreateAPI();
-            var resource = api.Resources.First(r => r.Name.Singular == "User").NestedResources.First(r => r.Name.Singular == "Friend");
+            var resource = api.RootResources.First(r => r.Name.Singular == "User").NestedResources.First(r => r.Name.Singular == "Friend");
             var aspNetCoreFunctions = new AspNetCoreGenerator("testOutput");
             aspNetCoreFunctions.NameSpace = "UsersWithFriends";
             aspNetCoreFunctions.RenderClasses("", c => $"FriendPivotService.txt", "templates/server/pivotService.sbn", new List<ClassModel> { resource.Pivot });
@@ -129,7 +129,7 @@ namespace BootGenTest
         public void GenerateNestedResourceServiceTest()
         {
             Api api = CreateAPI();
-            var resource = api.Resources.First(r => r.Name.Singular == "User").NestedResources.First(r => r.Name.Singular == "Pet");
+            var resource = api.RootResources.First(r => r.Name.Singular == "User").NestedResources.First(r => r.Name.Singular == "Pet");
             var generator = new AspNetCoreGenerator("testOutput");
             generator.NameSpace = "UsersWithFriends";
             generator.RenderResources("", c => $"{c.Name}ResourceService.txt", "templates/server/resourceService.sbn", new List<Resource> { resource });

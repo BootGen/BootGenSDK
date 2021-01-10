@@ -7,7 +7,7 @@ namespace BootGen
 {
     public class ResourceCollection
     {
-        public List<Resource> RootResources { get; } = new List<Resource>();
+        public List<RootResource> RootResources { get; } = new List<RootResource>();
         public List<Resource> Resources => Flatten(RootResources).ToList();
 
         public DataModel DataModel { get; }
@@ -17,28 +17,27 @@ namespace BootGen
             DataModel = dataModel;
         }
 
-        public Resource Add<T>()
+        public RootResource Add<T>()
         {
             return Add(typeof(T));
         }
 
-        public Resource Add(ClassModel c)
+        public RootResource Add(ClassModel c)
         {
-            var resource = new Resource();
+            var resource = new RootResource();
             resource.Name = c.Name;
             resource.Class = c;
             resource.Class.MakePersisted();
             resource.Class.IsResource = true;
             resource.DataModel = DataModel;
-            resource.RootResource = resource;
-            resource.NestedResources = new List<Resource>();
+            resource.NestedResources = new List<NestedResource>();
             AddRootResource(resource);
             return resource;
         }
 
-        private Resource Add(Type type)
+        private RootResource Add(Type type)
         {
-            Resource resource = DataModel.ResourceBuilder.FromType(type);
+            RootResource resource = DataModel.ResourceBuilder.FromType<RootResource>(type);
             resource.DataModel = DataModel;
             resource.RootResource = resource;
             AddRootResource(resource);
@@ -60,14 +59,14 @@ namespace BootGen
             return resource;
         }
 
-        private void AddRootResource(Resource resource)
+        private void AddRootResource(RootResource resource)
         {
             if (RootResources.Any(r => r.Name == resource.Name))
                 throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
             RootResources.Add(resource);
         }
 
-        private void CreateOneToManyRelation(Resource resource, System.Reflection.PropertyInfo property, System.Reflection.CustomAttributeData oneToManyAttribute)
+        private void CreateOneToManyRelation(RootResource resource, System.Reflection.PropertyInfo property, System.Reflection.CustomAttributeData oneToManyAttribute)
         {
             var propertyType = property.PropertyType;
             Type genericType;
@@ -105,7 +104,7 @@ namespace BootGen
             return resourceName;
         }
 
-        private void CreateManyToManyRelation(Resource resource, PropertyInfo property, CustomAttributeData manyToManyAttribute)
+        private void CreateManyToManyRelation(RootResource resource, PropertyInfo property, CustomAttributeData manyToManyAttribute)
         {
             var propertyType = property.PropertyType;
             Type genericType;
@@ -134,12 +133,12 @@ namespace BootGen
             nestedResource.RootResource = rootResource;
         }
 
-        private IEnumerable<Resource> Flatten(List<Resource> resources)
+        private IEnumerable<Resource> Flatten(List<RootResource> resources)
         {
             foreach (var r in resources)
             {
                 yield return r;
-                foreach (var sr in Flatten(r.NestedResources))
+                foreach (var sr in r.NestedResources)
                     yield return sr;
             }
         }

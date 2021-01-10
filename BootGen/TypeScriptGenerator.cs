@@ -71,10 +71,10 @@ namespace BootGen
                 {
                     builder.Append("/");
                 }
-                if (component.IsVariable)
+                if (component.IsVariable && resource is NestedResource nestedResource)
                 {
                     builder.Append("${");
-                    builder.Append(resource.ParentResource.Name.Singular.ToCamelCase());
+                    builder.Append(nestedResource.ParentResource.Name.Singular.ToCamelCase());
                     builder.Append(".id}");
                 }
                 else
@@ -101,8 +101,8 @@ namespace BootGen
                     builder.Append("${");
                     if (component == resource.ItemRoute.PathModel.Last())
                         builder.Append(resource.Name.Singular.ToCamelCase());
-                    else
-                        builder.Append(resource.ParentResource.Name.Singular.ToCamelCase());
+                    else if (resource is NestedResource nestedResource)
+                        builder.Append(nestedResource.ParentResource.Name.Singular.ToCamelCase());
                     builder.Append(".id}");
                 }
                 else
@@ -128,9 +128,9 @@ namespace BootGen
                     builder.Append("${");
                     if (component == resource.ItemRoute.PathModel.Last())
                         builder.Append("id");
-                    else
+                    else if (resource is NestedResource nestedResource)
                     {
-                        builder.Append(resource.ParentResource.Class.Name.Singular.ToCamelCase());
+                        builder.Append(nestedResource.ParentResource.Class.Name.Singular.ToCamelCase());
                         builder.Append(".id");
                     }
                     builder.Append("}");
@@ -146,32 +146,32 @@ namespace BootGen
 
         public static string GetListFunctionName(Resource resource)
         {
-            if (resource.ParentRelation != null)
-                return $"get{resource.Name.Plural}Of{resource.ParentResource.Name}";
+            if (resource is NestedResource nestedResource)
+                return $"get{resource.Name.Plural}Of{nestedResource.ParentResource.Name}";
             return $"get{resource.Name.Plural}";
         }
         public static string GetItemFunctionName(Resource resource)
         {
-            if (resource.ParentRelation != null)
-                return $"get{resource.Name}Of{resource.ParentResource.Name}";
+            if (resource is NestedResource nestedResource)
+                return $"get{resource.Name}Of{nestedResource.ParentResource.Name}";
             return $"get{resource.Name}";
         }
         public static string AddFunctionName(Resource resource)
         {
-            if (resource.ParentRelation != null)
-                return $"add{resource.Name}To{resource.ParentResource.Name}";
+            if (resource is NestedResource nestedResource)
+                return $"add{resource.Name}To{nestedResource.ParentResource.Name}";
             return $"add{resource.Name}";
         }
         public static string UpdateFunctionName(Resource resource)
         {
-            if (resource.ParentRelation != null)
-                return $"update{resource.Name}Of{resource.ParentResource.Name}";
+            if (resource is NestedResource nestedResource)
+                return $"update{resource.Name}Of{nestedResource.ParentResource.Name}";
             return $"update{resource.Name}";
         }
         public static string DeleteFunctionName(Resource resource)
         {
-            if (resource.ParentRelation != null)
-                return $"delete{resource.Name}Of{resource.ParentResource.Name}";
+            if (resource is NestedResource nestedResource)
+                return $"delete{resource.Name}Of{nestedResource.ParentResource.Name}";
             return $"delete{resource.Name}";
         }
     }
