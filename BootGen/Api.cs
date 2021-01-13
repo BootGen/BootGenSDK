@@ -12,6 +12,7 @@ namespace BootGen
         private ControllerCollection ControllerCollection { get; }
         public List<Resource> Resources => ResourceCollection.Resources;
         public List<RootResource> RootResources => ResourceCollection.RootResources;
+        public List<NestedResource> NestedResources => ResourceCollection.RootResources.SelectMany(r => r.NestedResources).ToList();
         public List<Controller> Controllers => ControllerCollection?.Controllers ?? new List<Controller>();
         public DataModel DataModel => ResourceCollection.DataModel;
         public List<Route> Routes { get; } = new List<Route>();

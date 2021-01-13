@@ -58,7 +58,7 @@ namespace BootGen
 
         public void RenderApiClient(string folderName, string targetFileName, string templateFile, Api api)
         {
-            Render(folderName, targetFileName, templateFile, new Dictionary<string, object> { { "base_url", api.BaseUrl }, { "resources", api.Resources }, { "classes", api.DataModel.CommonClasses }, {"controllers", api.Controllers} });
+            Render(folderName, targetFileName, templateFile, new Dictionary<string, object> { { "base_url", api.BaseUrl }, { "root_resources", api.RootResources }, { "classes", api.DataModel.CommonClasses }, {"controllers", api.Controllers} });
         }
 
         public static string PathTemplate(Resource resource)

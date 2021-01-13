@@ -130,7 +130,7 @@ namespace BootGen
             }
         }
 
-        public void RenderResources(string folderName, Func<Resource, string> targetFileName, string templateFile, List<Resource> resources)
+        public void RenderResources(string folderName, Func<Resource, string> targetFileName, string templateFile, IEnumerable<Resource> resources)
         {
             var dir = GetPath(folderName);
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
