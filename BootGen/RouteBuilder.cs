@@ -57,35 +57,6 @@ namespace BootGen
             return subRoute;
         }
 
-        public static IEnumerable<Route> GetRoutes(this Controller controller)
-        {
-
-            var path = new Path { new PathComponent { Name = controller.Name.ToKebabCase() } };
-            foreach (var method in controller.Methods)
-            {
-                yield return new Route
-                {
-                    PathModel = path.Adding(new PathComponent { Name = method.Name.ToKebabCase() }),
-                    Operations = new List<Operation> {
-                            new Operation
-                            {
-                                Verb = method.Verb,
-                                Name = method.Name.ToCamelCase(),
-                                Parameters = new List<Parameter>(),
-                                Body = method.Parameter?.Class,
-                                BodyIsCollection = method.Parameter?.IsCollection == true,
-                                Response = method.ReturnType.Class,
-                                ResponseIsCollection = method.ReturnType.IsCollection,
-                                SuccessCode = 200,
-                                SuccessDescription = method.Name + " success",
-                                Summary = method.Name,
-                                Authenticate = controller.Authenticate
-                            }
-                    }
-                };
-            }
-        }
-
         public static Parameter ConvertToParameter(Property property)
         {
             if (property == null)

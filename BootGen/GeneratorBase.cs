@@ -115,21 +115,6 @@ namespace BootGen
             return path;
         }
 
-        public void RenderControllers(string folderName, Func<Controller, string> targetFileName, string templateFile, List<Controller> controllers)
-        {
-            var dir = GetPath(folderName);
-            var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
-            foreach (var controller in controllers)
-            {
-                var context = new TemplateContext();
-                context.PushGlobal(this);
-                context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
-                context.SetValue(new ScriptVariableGlobal("controller"), controller);
-                var renderedController = template.Render(context);
-                File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(controller)), renderedController);
-            }
-        }
-
         public void RenderResources(string folderName, Func<Resource, string> targetFileName, string templateFile, IEnumerable<Resource> resources)
         {
             var dir = GetPath(folderName);

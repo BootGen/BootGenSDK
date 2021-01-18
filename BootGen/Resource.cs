@@ -11,7 +11,6 @@ namespace BootGen
         public ClassModel Class { get; set; }
         public Route Route { get; set; }
         public Route ItemRoute { get; set; }
-        public RootResource RootResource { get; set; }
         public bool IsRootResource => this is RootResource;
         public bool HasTimestamps { get => Class.HasTimestamps; set => Class.HasTimestamps = value; }
         public bool Authenticate { get; set; }
@@ -23,7 +22,8 @@ namespace BootGen
 
     public class RootResource : Resource
     {
-        public List<NestedResource> NestedResources { get; set; }
+        public List<NestedResource> NestedResources { get; } = new List<NestedResource>();
+        public List<NestedResource> AlternateResources { get; } = new List<NestedResource>();
 
         public NestedResource OneToMany(Type type, Noun resourceName, string parentName = null)
         {
@@ -93,6 +93,7 @@ namespace BootGen
     {
         internal ParentRelation ParentRelation { get; set; }
         public Resource ParentResource => ParentRelation?.Resource;
+        public RootResource RootResource { get; set; }
         public ClassModel Pivot { get; set; }
         public string ParentName
         {

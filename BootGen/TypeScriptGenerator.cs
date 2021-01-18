@@ -56,11 +56,6 @@ namespace BootGen
             return c.Properties.Where(p => p.Class != null && p.Location != Location.ServerOnly).Select(p => p.Class.Name.Singular).Distinct().Concat(c.Properties.Where(p => p.Enum != null).Select(p => p.Enum.Name).Distinct()).ToList();
         }
 
-        public void RenderApiClient(string folderName, string targetFileName, string templateFile, Api api)
-        {
-            Render(folderName, targetFileName, templateFile, new Dictionary<string, object> { { "base_url", api.BaseUrl }, { "root_resources", api.RootResources }, { "classes", api.DataModel.CommonClasses }, {"controllers", api.Controllers} });
-        }
-
         public static string PathTemplate(Resource resource)
         {
             var builder = new StringBuilder();

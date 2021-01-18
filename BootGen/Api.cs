@@ -9,19 +9,16 @@ namespace BootGen
     public class Api
     {
         private ResourceCollection ResourceCollection { get; }
-        private ControllerCollection ControllerCollection { get; }
         public List<Resource> Resources => ResourceCollection.Resources;
         public List<RootResource> RootResources => ResourceCollection.RootResources;
         public List<NestedResource> NestedResources => ResourceCollection.RootResources.SelectMany(r => r.NestedResources).ToList();
-        public List<Controller> Controllers => ControllerCollection?.Controllers ?? new List<Controller>();
         public DataModel DataModel => ResourceCollection.DataModel;
         public List<Route> Routes { get; } = new List<Route>();
         public string BaseUrl { get; set; }
 
-        public Api(ResourceCollection resourceCollection, ControllerCollection controllerCollection = null)
+        public Api(ResourceCollection resourceCollection)
         {
             ResourceCollection = resourceCollection;
-            ControllerCollection = controllerCollection;
             foreach (var resource in RootResources)
             {
                 Routes.AddRange(resource.GetRoutes());
@@ -35,9 +32,6 @@ namespace BootGen
                         DataModel.ClassCollection.Add(nestedResource.Pivot);
                 }
             }
-            
-            foreach (var controller in Controllers)
-                Routes.AddRange(controller.GetRoutes());
             
             foreach (var c in DataModel.StoredClasses)
             {

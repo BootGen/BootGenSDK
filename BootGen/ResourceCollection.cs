@@ -30,7 +30,6 @@ namespace BootGen
             resource.Class.MakePersisted();
             resource.Class.IsResource = true;
             resource.DataModel = DataModel;
-            resource.NestedResources = new List<NestedResource>();
             AddRootResource(resource);
             return resource;
         }
@@ -39,7 +38,6 @@ namespace BootGen
         {
             RootResource resource = DataModel.ResourceBuilder.FromType<RootResource>(type);
             resource.DataModel = DataModel;
-            resource.RootResource = resource;
             AddRootResource(resource);
 
             foreach (var property in type.GetProperties())
@@ -94,6 +92,7 @@ namespace BootGen
             nestedResource.Name = singularName ?? property.Name.Substring(0, property.Name.Length - 1);
             nestedResource.Name.Plural = property.Name;
             nestedResource.RootResource = rootResource;
+            rootResource.AlternateResources.Add(nestedResource);
         }
 
         private static Noun GetResourceName(PropertyInfo property)
@@ -131,6 +130,7 @@ namespace BootGen
             nestedResource.Name = singularName ?? property.Name.Substring(0, property.Name.Length - 1);
             nestedResource.Name.Plural = property.Name;
             nestedResource.RootResource = rootResource;
+            rootResource.AlternateResources.Add(nestedResource);
         }
 
         private IEnumerable<Resource> Flatten(List<RootResource> resources)

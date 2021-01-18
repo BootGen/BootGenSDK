@@ -47,8 +47,6 @@ namespace BootGen
                 result.GenerationSettings.ServiceName = serviceNameAttr.GetFirstParameter<string>();
             }
             result.Class.IsResource = true;
-            if (result is RootResource rootResource)
-                rootResource.NestedResources = new List<NestedResource>();
             result.Name = result.Class.Name;
             return result;
         }
