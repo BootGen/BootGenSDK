@@ -1,9 +1,4 @@
 using System;
-
-public class ClientOnlyAttribute : Attribute
-{
-}
-
 public class ServerOnlyAttribute : Attribute
 {
 }
@@ -67,22 +62,3 @@ public class ManyToManyAttribute : Attribute
     }
 }
 
-public class GetAttribute : Attribute
-{
-}
-
-public class PostAttribute : Attribute
-{
-}
-
-public class PutAttribute : Attribute
-{
-}
-
-public class PatchAttribute : Attribute
-{
-}
-
-public class DeleteAttribute : Attribute
-{
-}

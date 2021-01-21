@@ -45,7 +45,7 @@ namespace BootGen
             foreach (var property in obj.Properties())
             {
                 var classProperty = c.Properties.FirstOrDefault(p => p.Name == property.Name);
-                if (classProperty != null && classProperty.Location == Location.ClientOnly)
+                if (classProperty != null && classProperty.PropertyType == PropertyType.Virtual)
                     continue;
                 switch (property.Value.Type)
                 {
@@ -131,7 +131,7 @@ namespace BootGen
         {
             foreach (var property in c.Properties)
             {
-                if (property.Class == null || property.Location == Location.ClientOnly)
+                if (property.Class == null || property.PropertyType == PropertyType.Virtual)
                     continue;
                 foreach (var item in Data[c.Id])
                 {

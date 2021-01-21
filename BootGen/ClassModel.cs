@@ -18,7 +18,7 @@ namespace BootGen
             return Properties.FirstOrDefault(p => p.Name == name);
         }
 
-        public List<Property> ServerProperties => Properties.Where(p => p.Location != Location.ClientOnly).ToList();
+        public List<Property> ServerProperties => Properties.Where(p => p.PropertyType != PropertyType.Virtual).ToList();
 
         internal void MakePersisted()
         {
@@ -33,13 +33,11 @@ namespace BootGen
             Persisted = true;
         }
 
-        public List<Property> ClientProperties => Properties.Where(p => p.Location != Location.ServerOnly).ToList();
-
-        public List<Property> CommonProperties => Properties.Where(p => p.Location == Location.Both).ToList();
+        public List<Property> CommonProperties => Properties.Where(p => p.PropertyType == PropertyType.Normal).ToList();
 
         public bool HasRequiredProperties => Properties.Any(p => p.IsRequired);
 
-        public Location Location { get; set; }
+        public PropertyType Location { get; set; }
 
         public bool IsResource { get; set; }
 

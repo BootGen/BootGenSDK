@@ -57,14 +57,16 @@ namespace BootGen
                     property.Noun = singularName ?? p.Name;
                 }
                 c.Properties.Add(property);
-                if (p.Has<ClientOnlyAttribute>() || p.Has<OneToManyAttribute>() || p.Has<ManyToManyAttribute>())
+                if (p.Has<OneToManyAttribute>() || p.Has<ManyToManyAttribute>())
                 {
-                    property.Location = Location.ClientOnly;
+                    property.PropertyType = PropertyType.Virtual;
                 }
                 property.IsManyToMany = p.Has<ManyToManyAttribute>();
                 if (p.Has<ServerOnlyAttribute>())
                 {
-                    property.Location = Location.ServerOnly;
+                    property.PropertyType = PropertyType.ServerOnly;
+                    if (p.Has<OneToManyAttribute>() || p.Has<ManyToManyAttribute>())
+                        throw new Exception("ServerOnlyAttribute can not be used in combination with OneToManyAttribute or ManyToManyAttribute.");
                 }
             }
 

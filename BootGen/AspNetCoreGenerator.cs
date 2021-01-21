@@ -33,7 +33,7 @@ namespace BootGen
             var result = new List<string>();
             foreach (var property in c.Properties)
             {
-                if (property.BuiltInType == BuiltInType.Object && !property.IsParentReference && property.Location != Location.ClientOnly)
+                if (property.BuiltInType == BuiltInType.Object && !property.IsParentReference && property.PropertyType != PropertyType.Virtual)
                 {
                     string newPrefix;
                     if (prefix == null)
@@ -132,7 +132,7 @@ namespace BootGen
 
         public static bool IsLazyLoaded(Property property)
         {
-            return property.Class != null && property.Location != Location.ServerOnly;
+            return property.Class != null && property.PropertyType != PropertyType.ServerOnly;
         }
 
         public static bool HasLazyLoadedProperties(ClassModel c)

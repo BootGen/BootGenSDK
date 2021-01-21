@@ -4,6 +4,4 @@ import { User } from './User';
 export interface User {
     id: number;
     name: string;
-    pets: Pet[];
-    friends: User[];
 }

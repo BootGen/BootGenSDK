@@ -53,7 +53,7 @@ namespace BootGen
 
         public static List<string> ReferredClasses(ClassModel c)
         {
-            return c.Properties.Where(p => p.Class != null && p.Location != Location.ServerOnly).Select(p => p.Class.Name.Singular).Distinct().Concat(c.Properties.Where(p => p.Enum != null).Select(p => p.Enum.Name).Distinct()).ToList();
+            return c.Properties.Where(p => p.Class != null && p.PropertyType != PropertyType.ServerOnly).Select(p => p.Class.Name.Singular).Distinct().Concat(c.Properties.Where(p => p.Enum != null).Select(p => p.Enum.Name).Distinct()).ToList();
         }
 
         public static string PathTemplate(Resource resource)

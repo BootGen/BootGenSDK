@@ -14,15 +14,14 @@ namespace BootGen
         public EnumModel Enum { get; set; }
     }
 
-    public enum Location { Both, ServerOnly, ClientOnly }
+    public enum PropertyType { Normal, ServerOnly, Virtual }
 
     public class Property : TypeDescription
     {
         public Noun Noun { get; set; }
         public string Name { get; set; }
-        public Location Location { get; set; }
-        public bool IsServerOnly => Location == Location.ServerOnly;
-        public bool IsClientOnly => Location == Location.ClientOnly;
+        public PropertyType PropertyType { get; set; }
+        public bool IsServerOnly => PropertyType == PropertyType.ServerOnly;
         public Property MirrorProperty { get; set; }
         public bool IsParentReference { get; set; }
         public bool IsManyToMany { get; set; }

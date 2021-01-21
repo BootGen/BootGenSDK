@@ -55,7 +55,7 @@ namespace BootGen
             pivotClass = new ClassModel
             {
                 Name = name,
-                Location = Location.ServerOnly,
+                Location = PropertyType.ServerOnly,
                 Properties = new List<Property> {
                         new Property {
                             Name = name1 + "Id",

@@ -67,7 +67,7 @@ namespace BootGen
                     Class = parent.Resource.Class,
                     IsCollection = false,
                     IsRequired = true,
-                    Location = Location.ServerOnly,
+                    PropertyType = PropertyType.ServerOnly,
                     IsParentReference = true
                 };
                 resource.Class.Properties.Add(referenceProperty);
@@ -104,7 +104,7 @@ namespace BootGen
             c.RelationsAreSetUp = true;
             foreach (var property in c.Properties)
             {
-                if (property.Class == null || !property.IsCollection || property.MirrorProperty != null || property.Location == Location.ClientOnly)
+                if (property.Class == null || !property.IsCollection || property.MirrorProperty != null || property.PropertyType == PropertyType.Virtual)
                     continue;
 
                 Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Name == c.Name);
@@ -117,7 +117,7 @@ namespace BootGen
                         Class = c,
                         IsCollection = false,
                         IsRequired = true,
-                        Location = Location.ServerOnly,
+                        PropertyType = PropertyType.ServerOnly,
                         IsParentReference = true
                     };
                     property.Class.Properties.Add(referenceProperty);
@@ -154,10 +154,10 @@ namespace BootGen
                             Name = property.Name + "Id",
                             BuiltInType = property.Class.IdProperty.BuiltInType,
                             IsRequired = property.Class.IsResource,
-                            Location = property.Class.IsResource ? Location.Both : Location.ServerOnly
+                            PropertyType = property.Class.IsResource ? PropertyType.Normal : PropertyType.ServerOnly
                         });
                         if (property.Class.IsResource)
-                            property.Location = Location.ServerOnly;
+                            property.PropertyType = PropertyType.ServerOnly;
                         propertyIdx += 1;
                         AddEfRelationsChildToParent(property.Class);
                     }
