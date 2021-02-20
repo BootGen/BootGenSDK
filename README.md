@@ -4,7 +4,7 @@
 
 ## What is BootGen?
 
-BootGen is a model based, template driven application code generator toolkit for ASP.Net Core and Vue.js.
+BootGen is a model based, template driven application code generator toolkit for ASP.Net 5 and Vue.js.
 
 **Model based** means that to start working on your project, first you have to create a model of your entities, resources and operations. Unlike other code generators, it is not necessary to learn separate modelling language, because BootGen models are plain C# classes and interfaces.
 
