@@ -6,7 +6,7 @@ namespace BootGen
 {
     public class OASGenerator : GeneratorBase
     {
-        public OASGenerator(string folder) : base(folder)
+        public OASGenerator(IDisk disk) : base(disk)
         {
         }
 

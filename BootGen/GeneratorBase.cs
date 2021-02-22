@@ -9,11 +9,12 @@ namespace BootGen
 {
     public class GeneratorBase : ScriptObject
     {
-        public string Folder { get; }
         public string NameSpace { get; set; }
-        public GeneratorBase(string folder)
+        public IDisk Disk { get; }
+
+        public GeneratorBase(IDisk disk)
         {
-            Folder = folder;
+            Disk = disk;
         }
 
         public static string KebabCase(string value)
@@ -36,8 +37,7 @@ namespace BootGen
 
         public void Render(string folderName, string targetFileName, string templateFile, Dictionary<string, object> parameters)
         {
-            var dir = GetPath(folderName);
-            File.WriteAllText(System.IO.Path.Combine(dir, targetFileName), Render(templateFile, parameters));
+            Disk.WriteText(folderName,targetFileName, Render(templateFile, parameters));
         }
 
         public string Render(string templateFile, Dictionary<string, object> parameters)
@@ -52,24 +52,22 @@ namespace BootGen
 
         public void RenderApi(string folderName, string targetFileName, string templateFile, string projectTitle, Api api)
         {
-            var dir = GetPath(folderName);
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
             var context = new TemplateContext();
             context.PushGlobal(this);
             context.SetValue(new ScriptVariableGlobal("api"), api);
             context.SetValue(new ScriptVariableGlobal("project_title"), projectTitle);
             var rendered = template.Render(context);
-            File.WriteAllText(System.IO.Path.Combine(dir, targetFileName), rendered);
+            Disk.WriteText(folderName, targetFileName, rendered);
         }
 
 
         public void RenderClasses(string folderName, Func<ClassModel, string> targetFileName, string templateFile, List<ClassModel> classes)
         {
-            var dir = GetPath(folderName);
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
             foreach (var c in classes)
             {
-                File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(c)), RenderClass(template, c));
+                Disk.WriteText(folderName, targetFileName(c), RenderClass(template, c));
             }
         }
 
@@ -93,7 +91,6 @@ namespace BootGen
 
         public void RenderEnums(string folderName, Func<BootGen.EnumModel, string> targetFileName, string templateFile, List<BootGen.EnumModel> enums)
         {
-            var dir = GetPath(folderName);
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
             foreach (var e in enums)
             {
@@ -102,22 +99,11 @@ namespace BootGen
                 context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
                 context.SetValue(new ScriptVariableGlobal("enum"), e);
                 var renderedModel = template.Render(context);
-                File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(e)), renderedModel);
+                Disk.WriteText(folderName, targetFileName(e), renderedModel);
             }
         }
-        private string GetPath(string folderName)
-        {
-            var path = System.IO.Path.Combine(Folder, folderName);
-            if (!Directory.Exists(folderName))
-            {
-                Directory.CreateDirectory(path);
-            }
-            return path;
-        }
-
         public void RenderResources(string folderName, Func<Resource, string> targetFileName, string templateFile, IEnumerable<Resource> resources)
         {
-            var dir = GetPath(folderName);
             var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
             foreach (var resource in resources)
             {
@@ -126,7 +112,7 @@ namespace BootGen
                 context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
                 context.SetValue(new ScriptVariableGlobal("resource"), resource);
                 var renderedController = template.Render(context);
-                File.WriteAllText(System.IO.Path.Combine(dir, targetFileName(resource)), renderedController);
+                Disk.WriteText(folderName, targetFileName(resource), renderedController);
             }
         }
 

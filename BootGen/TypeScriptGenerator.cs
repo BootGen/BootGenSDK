@@ -11,7 +11,7 @@ namespace BootGen
 {
     public class TypeScriptGenerator : GeneratorBase
     {
-        public TypeScriptGenerator(string folder) : base(folder)
+        public TypeScriptGenerator(IDisk disk) : base(disk)
         {
         }
 

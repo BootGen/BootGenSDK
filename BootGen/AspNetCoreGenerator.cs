@@ -8,7 +8,7 @@ namespace BootGen
 
     public class AspNetCoreGenerator : GeneratorBase
     {
-        public AspNetCoreGenerator(string folder) : base(folder)
+        public AspNetCoreGenerator(IDisk disk) : base(disk)
         {
         }
 
