@@ -11,6 +11,7 @@ namespace BootGen
     {
         public string NameSpace { get; set; }
         public IDisk Disk { get; }
+        public string TemplateRoot { get; private set; }
 
         public GeneratorBase(IDisk disk)
         {
@@ -42,7 +43,7 @@ namespace BootGen
 
         public string Render(string templateFile, Dictionary<string, object> parameters)
         {
-            var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
+            var template = Parse(templateFile);
             var context = new TemplateContext();
             context.PushGlobal(this);
             foreach (var param in parameters)
@@ -52,7 +53,7 @@ namespace BootGen
 
         public void RenderApi(string folderName, string targetFileName, string templateFile, string projectTitle, Api api)
         {
-            var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
+            var template = Parse(templateFile);
             var context = new TemplateContext();
             context.PushGlobal(this);
             context.SetValue(new ScriptVariableGlobal("api"), api);
@@ -64,7 +65,7 @@ namespace BootGen
 
         public void RenderClasses(string folderName, Func<ClassModel, string> targetFileName, string templateFile, List<ClassModel> classes)
         {
-            var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
+            var template = Parse(templateFile);
             foreach (var c in classes)
             {
                 Disk.WriteText(folderName, targetFileName(c), RenderClass(template, c));
@@ -73,7 +74,7 @@ namespace BootGen
 
         public IEnumerable<string> RenderClasses(string templateFile, IEnumerable<ClassModel> classes)
         {
-            var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
+            var template = Parse(templateFile);
             foreach (var c in classes)
             {
                 yield return RenderClass(template, c);
@@ -91,7 +92,7 @@ namespace BootGen
 
         public void RenderEnums(string folderName, Func<BootGen.EnumModel, string> targetFileName, string templateFile, List<BootGen.EnumModel> enums)
         {
-            var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
+            var template = Parse(templateFile);
             foreach (var e in enums)
             {
                 var context = new TemplateContext();
@@ -104,7 +105,7 @@ namespace BootGen
         }
         public void RenderResources(string folderName, Func<Resource, string> targetFileName, string templateFile, IEnumerable<Resource> resources)
         {
-            var template = Template.Parse(File.ReadAllText(templateFile), templateFile);
+            var template = Parse(templateFile);
             foreach (var resource in resources)
             {
                 var context = new TemplateContext();
@@ -114,6 +115,14 @@ namespace BootGen
                 var renderedController = template.Render(context);
                 Disk.WriteText(folderName, targetFileName(resource), renderedController);
             }
+        }
+
+        private Template Parse(string templateFile)
+        {
+            string path = templateFile;
+            if (!string.IsNullOrWhiteSpace(TemplateRoot))
+                path = System.IO.Path.Combine(TemplateRoot, templateFile);
+            return Template.Parse(File.ReadAllText(path), templateFile);
         }
 
     }

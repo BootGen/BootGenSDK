@@ -27,6 +27,13 @@ namespace BootGen
             File.WriteAllText(System.IO.Path.Combine(dir, fileName), content);
         }
 
+        public void Delete(params string[] path)
+        {
+            var p = Folder;
+            foreach (var part in path)
+                p = System.IO.Path.Combine(p, part);
+            File.Delete(p);
+        }
     }
 
 
