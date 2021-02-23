@@ -11,7 +11,7 @@ namespace BootGen
     {
         public string NameSpace { get; set; }
         public IDisk Disk { get; }
-        public string TemplateRoot { get; private set; }
+        public string TemplateRoot { get; set; }
 
         public GeneratorBase(IDisk disk)
         {

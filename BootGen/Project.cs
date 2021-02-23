@@ -16,6 +16,7 @@ namespace BootGen
         private DataModel DataModel => ResourceCollection.DataModel;
         public ResourceCollection ResourceCollection { get; set; }
         public SeedDataStore SeedStore { get; set; }
+        public string TemplateRoot { get; set; }
         
         public void GenerateFiles(string projectName, string namespce, string baseUrl)
         {
@@ -27,9 +28,12 @@ namespace BootGen
         {
             var aspNetCoreGenerator = new AspNetCoreGenerator(disk);
             aspNetCoreGenerator.NameSpace = namespce;
+            aspNetCoreGenerator.TemplateRoot = TemplateRoot;
             var pivotResources = Api.NestedResources.Where(r => r.Pivot != null && r.GenerationSettings.GenerateController).ToList();
             var pivotClasses = Api.NestedResources.Where(r => r.Pivot != null && r.GenerationSettings.GenerateService).Select(r => r.Pivot).Distinct().ToList();
-            new OASGenerator(disk).RenderApi("", "restapi.yml", "oas3template.sbn", projectName, Api);
+            var oasGenerator = new OASGenerator(disk);
+            oasGenerator.TemplateRoot = TemplateRoot;
+            oasGenerator.RenderApi("", "restapi.yml", "oas3template.sbn", projectName, Api);
             aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{AspNetCoreGenerator.ControllerName(r)}.cs", "server/resourceController.sbn", ResourceCollection.RootResources.Where(r => r.GenerationSettings.GenerateController).ToList());
             aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{AspNetCoreGenerator.ControllerName(r)}.cs", "server/nestedResourceController.sbn", Api.NestedResources.Where(r => r.Pivot == null && r.GenerationSettings.GenerateController).ToList());
             aspNetCoreGenerator.RenderResources(ServiceFolder, r => $"I{AspNetCoreGenerator.ServiceName(r)}.cs", "server/resourceServiceInterface.sbn", ResourceCollection.RootResources.Where(r => r.GenerationSettings.GenerateServiceInterface).ToList());
@@ -51,6 +55,7 @@ namespace BootGen
                 {"pivots", pivotClasses}
             });
             var typeScriptGenerator = new TypeScriptGenerator(disk);
+            typeScriptGenerator.TemplateRoot = TemplateRoot;
             typeScriptGenerator.RenderClasses($"{ClientFolder}/models", s => $"{s.Name}.ts", "client/ts_model.sbn", DataModel.CommonClasses);
             typeScriptGenerator.RenderEnums($"{ClientFolder}/models", s => $"{s.Name}.ts", "client/ts_enum.sbn", DataModel.Enums);
             typeScriptGenerator.RenderResources($"{ClientFolder}/store", s => $"{s.Name}Module.ts", "client/vuex_module.sbn", Api.RootResources);
@@ -64,8 +69,13 @@ namespace BootGen
         {
             var vdisk = new VirtualDisk();
             GenerateFiles(string.Empty, string.Empty, string.Empty, vdisk);
-            foreach(var path in vdisk.Files.Keys)
+            foreach(var file in vdisk.Files)
+            {
+                var path = file.Name;
+                if (!string.IsNullOrWhiteSpace(file.Path))
+                    path = System.IO.Path.Combine(file.Path, file.Name);
                 Disk.Delete(path);
+            }
         }
     }
 

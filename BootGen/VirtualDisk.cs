@@ -2,19 +2,27 @@ using System.Collections.Generic;
 
 namespace BootGen
 {
+    public class VirtualFile
+    {
+        public string Name { get; set; }
+        public string Path { get; set; }
+        public string Content { get; set; }
+    }
     public class VirtualDisk : IDisk
     {
-        public Dictionary<string, string> Files = new Dictionary<string, string>();
+        public List<VirtualFile> Files = new List<VirtualFile>();
         public void Delete(params string[] path)
         {
         }
 
         public void WriteText(string folder, string fileName, string content)
         {
-            if (string.IsNullOrWhiteSpace(folder))
-                Files.Add(fileName, content);
-            else
-                Files.Add($"{folder}/{fileName}", content);
+            Files.Add(new VirtualFile
+            {
+                Name = fileName,
+                Path = folder,
+                Content = content
+            });
         }
     }
 }
