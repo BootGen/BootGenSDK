@@ -43,8 +43,8 @@ namespace BootGen
             aspNetCoreGenerator.RenderClasses(ServiceFolder, c => $"I{c.Name.Plural}Service.cs", "server/pivotServiceInterface.sbn", pivotClasses);
             aspNetCoreGenerator.RenderClasses(ServiceFolder, c => $"{c.Name.Plural}Service.cs", "server/pivotService.sbn", pivotClasses);
 
-            aspNetCoreGenerator.RenderClasses("", s => $"{s.Name}.cs", "server/csharp_model.sbn", DataModel.Classes);
-            aspNetCoreGenerator.RenderEnums("", s => $"{s.Name}.cs", "server/csharp_enum.sbn", DataModel.Enums);
+            aspNetCoreGenerator.RenderClasses("", s => $"{s.Name}.cs", "server/model.sbn", DataModel.Classes);
+            aspNetCoreGenerator.RenderEnums("", s => $"{s.Name}.cs", "server/enum.sbn", DataModel.Enums);
             aspNetCoreGenerator.Render("", "DataContext.cs", "server/dataContext.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.StoredClasses},
                 {"seedList", SeedStore.All()},
@@ -56,10 +56,19 @@ namespace BootGen
             });
             var typeScriptGenerator = new TypeScriptGenerator(disk);
             typeScriptGenerator.TemplateRoot = TemplateRoot;
-            typeScriptGenerator.RenderClasses($"{ClientFolder}/models", s => $"{s.Name}.ts", "client/ts_model.sbn", DataModel.CommonClasses);
-            typeScriptGenerator.RenderEnums($"{ClientFolder}/models", s => $"{s.Name}.ts", "client/ts_enum.sbn", DataModel.Enums);
-            typeScriptGenerator.RenderResources($"{ClientFolder}/store", s => $"{s.Name}Module.ts", "client/vuex_module.sbn", Api.RootResources);
-            typeScriptGenerator.Render($"{ClientFolder}/store", "index.ts", "client/vuex.sbn", new Dictionary<string, object> {
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/models", s => $"{s.Name}.ts", "client/model.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderEnums($"{ClientFolder}/models", s => $"{s.Name}.ts", "client/enum.sbn", DataModel.Enums);
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/views", s => $"{s.Name}List.vue", "client/model_list.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}View.vue", "client/model_view.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}Edit.vue", "client/model_edit.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderResources($"{ClientFolder}/store", s => $"{s.Name}Module.ts", "client/store_module.sbn", Api.RootResources);
+            typeScriptGenerator.Render($"{ClientFolder}/router", "index.ts", "client/router.sbn", new Dictionary<string, object> {
+                {"classes", Api.RootResources.Select(r => r.Class)}
+            });
+            typeScriptGenerator.Render($"{ClientFolder}", "App.vue", "client/app.sbn", new Dictionary<string, object> {
+                {"classes", Api.RootResources.Select(r => r.Class)}
+            });
+            typeScriptGenerator.Render($"{ClientFolder}/store", "index.ts", "client/store.sbn", new Dictionary<string, object> {
                 {"classes", Api.RootResources.Select(r => r.Class)},
                 {"base_url", baseUrl}
             });
