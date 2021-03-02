@@ -38,12 +38,18 @@ namespace BootGen
 
         public void Render(string folderName, string targetFileName, string templateFile, Dictionary<string, object> parameters)
         {
-            Disk.WriteText(folderName,targetFileName, Render(templateFile, parameters));
+            string content = Render(templateFile, parameters);
+            if (!string.IsNullOrEmpty(content))
+                Disk.WriteText(folderName, targetFileName, content);
         }
 
         public string Render(string templateFile, Dictionary<string, object> parameters)
         {
             var template = Parse(templateFile);
+            if (template == null) {
+                Console.WriteLine($"File not found: {templateFile}");
+                return null;
+            }
             var context = new TemplateContext();
             context.PushGlobal(this);
             foreach (var param in parameters)
@@ -54,6 +60,10 @@ namespace BootGen
         public void RenderApi(string folderName, string targetFileName, string templateFile, string projectTitle, Api api)
         {
             var template = Parse(templateFile);
+            if (template == null) {
+                Console.WriteLine($"File not found: {templateFile}");
+                return;
+            }
             var context = new TemplateContext();
             context.PushGlobal(this);
             context.SetValue(new ScriptVariableGlobal("api"), api);
@@ -66,6 +76,14 @@ namespace BootGen
         public void RenderClasses(string folderName, Func<ClassModel, string> targetFileName, string templateFile, List<ClassModel> classes)
         {
             var template = Parse(templateFile);
+            if (template == null) {
+                Console.WriteLine($"File not found: {templateFile}");
+                return;
+            }
+            if (template == null) {
+                Console.WriteLine($"File not found: {templateFile}");
+                return;
+            }
             foreach (var c in classes)
             {
                 Disk.WriteText(folderName, targetFileName(c), RenderClass(template, c));
@@ -75,6 +93,10 @@ namespace BootGen
         public IEnumerable<string> RenderClasses(string templateFile, IEnumerable<ClassModel> classes)
         {
             var template = Parse(templateFile);
+            if (template == null) {
+                Console.WriteLine($"File not found: {templateFile}");
+                yield break;
+            }
             foreach (var c in classes)
             {
                 yield return RenderClass(template, c);
@@ -106,6 +128,10 @@ namespace BootGen
         public void RenderResources(string folderName, Func<Resource, string> targetFileName, string templateFile, IEnumerable<Resource> resources)
         {
             var template = Parse(templateFile);
+            if (template == null) {
+                Console.WriteLine($"File not found: {templateFile}");
+                return;
+            }
             foreach (var resource in resources)
             {
                 var context = new TemplateContext();
@@ -122,6 +148,8 @@ namespace BootGen
             string path = templateFile;
             if (!string.IsNullOrWhiteSpace(TemplateRoot))
                 path = System.IO.Path.Combine(TemplateRoot, templateFile);
+            if (!File.Exists(path))
+                return null;
             return Template.Parse(File.ReadAllText(path), templateFile);
         }
 
