@@ -169,6 +169,8 @@ namespace BootGen
                 foreach (var o in array)
                 {
                     JObject jObj = o as JObject;
+                    if (jObj == null)
+                        continue;
                     SeedRecord record = ToSeedRecord(property.Class, jObj);
                     var id = record.GetId();
                     if (!dataList.Any(d => d.SeedRecord.GetId() == id))
