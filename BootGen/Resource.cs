@@ -44,7 +44,25 @@ namespace BootGen
             resource.Pivot = CreatePivot(this, resource, pivotName);
             return resource;
         }
+        public NestedResource OneToMany(ClassModel c)
+        {
+            NestedResource resource = new NestedResource();
+            resource.Name = c.Name;
+            resource.Class = c;
+            resource.DataModel = DataModel;
+            resource.ParentRelation = new ParentRelation(this);
+            if (NestedResources.Any(r => r.Name == resource.Name))
+                throw new Exception($"A nested resource with name \"{resource.Name}\" already exists under \"{Name}\".");
+            NestedResources.Add(resource);
+            return resource;
+        }
         
+        public NestedResource ManyToMany(ClassModel c, string pivotName)
+        {
+            NestedResource resource = OneToMany(c);
+            resource.Pivot = CreatePivot(this, resource, pivotName);
+            return resource;
+        }
         private ClassModel CreatePivot(Resource parent, Resource resource, string name)
         {
             var pivotClass = DataModel.Classes.FirstOrDefault(c => c.Name == name);
