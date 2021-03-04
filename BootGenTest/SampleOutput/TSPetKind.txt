@@ -1,6 +1,0 @@
-export enum PetKind {
-    Dog,
-    Cat,
-    Bird,
-    Fish,
-}

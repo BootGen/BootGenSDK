@@ -1,7 +1,0 @@
-import { Pet } from './Pet';
-import { User } from './User';
-
-export interface User {
-    id: number;
-    name: string;
-}

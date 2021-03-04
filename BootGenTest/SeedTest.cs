@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BootGen;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace BootGenTest
 {
@@ -10,60 +11,17 @@ namespace BootGenTest
     public class SeedTest
     {
 
-        class User
-        {
-            public string Email { get; set; }
-            public string Name { get; set; }
-            public Address Address { get; set; }
-
-            [OneToMany]
-            public List<Pet> Pets { get; set; }
-        }
-
-        class Address
-        {
-            public string City { get; set; }
-            public string Street { get; set; }
-            public string Number { get; set; }
-        }
-
-        enum PetType { Dog, Cat, Fish }
-
-        class Pet
-        {
-            public string Name { get; set; }
-            public PetType Type { get; set; }
-
-        }
-
         [TestMethod]
         public void TestSeed()
         {
+            var data = JObject.Parse("{\"users\":[{\"email\":\"Email\",\"name\":\"Name\",\"address\":{\"city\":\"Budapest\",\"street\":\"Macko\",\"number\":\"6\"},\"pets\":[{\"name\":\"Ubul\",\"type\":0},{\"name\":\"Garfield\",\"type\":1}]}]}");
             var dataModel = new DataModel();
-            var resourceCollection = new ResourceCollection(dataModel);
-            var Users = resourceCollection.Add<User>();
-            var Pets = Users.NestedResources.First();
-            var seedStore = new SeedDataStore(resourceCollection);
-            seedStore.Add(Users, new List<User> { new User {
-                    Name = "Name",
-                    Email = "Email",
-                    Address = new Address {
-                        City = "Budapest",
-                        Street = "Macko",
-                        Number = "6"
-                    },
-                    Pets = new List<Pet> {
-                        new Pet {
-                            Name = "Ubul",
-                            Type = PetType.Dog
-                        },
-                        new Pet {
-                            Name = "Garfield",
-                            Type = PetType.Cat
-                        }
-                    }
-                }
-            });
+            var resourceCollection = new JsonResourceCollection(dataModel);
+            resourceCollection.Load(data);
+            var seedStore = new JsonSeedStore(resourceCollection);
+            seedStore.Load(data);
+            var Users = resourceCollection.RootResources.First(r => r.Name.Singular == "User");
+            var Pets = resourceCollection.RootResources.First(r => r.Name.Singular == "Pet");
             var record = seedStore.Get(Users.Class).First();
             Assert.AreEqual(4, record.Values.Count);
             Assert.AreEqual("1", record.Get("Id"));
@@ -80,7 +38,7 @@ namespace BootGenTest
             Assert.AreEqual(4, record.Values.Count);
             Assert.AreEqual("1", record.Get("Id"));
             Assert.AreEqual("\"Ubul\"", record.Get("Name"));
-            Assert.AreEqual("PetType.Dog", record.Get("Type"));
+            Assert.AreEqual("0", record.Get("Type"));
         }
 
     }

@@ -25,25 +25,6 @@ namespace BootGen
         public List<NestedResource> NestedResources { get; } = new List<NestedResource>();
         public List<NestedResource> AlternateResources { get; } = new List<NestedResource>();
 
-        public NestedResource OneToMany(Type type, Noun resourceName, string parentName = null)
-        {
-            NestedResource resource = DataModel.ResourceBuilder.FromType<NestedResource>(type);
-            if (resourceName != null)
-                resource.Name = resourceName;
-            resource.DataModel = DataModel;
-            resource.ParentRelation = new ParentRelation(this, parentName);
-            if (NestedResources.Any(r => r.Name == resource.Name))
-                throw new Exception($"A nested resource with name \"{resource.Name}\" already exists under \"{Name}\".");
-            NestedResources.Add(resource);
-            return resource;
-        }
-        
-        public NestedResource ManyToMany(Type type, Noun resourceName, string pivotName)
-        {
-            NestedResource resource = OneToMany(type, resourceName);
-            resource.Pivot = CreatePivot(this, resource, pivotName);
-            return resource;
-        }
         public NestedResource OneToMany(ClassModel c)
         {
             NestedResource resource = new NestedResource();

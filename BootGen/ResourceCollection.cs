@@ -17,11 +17,6 @@ namespace BootGen
             DataModel = dataModel;
         }
 
-        public RootResource Add<T>()
-        {
-            return Add(typeof(T));
-        }
-
         public RootResource Add(ClassModel c)
         {
             var resource = new RootResource();
@@ -47,28 +42,6 @@ namespace BootGen
             return resource;
         }
 
-        private RootResource Add(Type type)
-        {
-            RootResource resource = DataModel.ResourceBuilder.FromType<RootResource>(type);
-            resource.DataModel = DataModel;
-            AddRootResource(resource);
-
-            foreach (var property in type.GetProperties())
-            {
-                var oneToManyAttribute = property.Get<OneToManyAttribute>();
-                if (oneToManyAttribute != null)
-                {
-                    CreateOneToManyRelation(resource, property, oneToManyAttribute);
-                }
-                var manyToManyAttribute = property.Get<ManyToManyAttribute>();
-                if (manyToManyAttribute != null)
-                {
-                    CreateManyToManyRelation(resource, property, manyToManyAttribute);
-                }
-            }
-
-            return resource;
-        }
 
         private void AddRootResource(RootResource resource)
         {
@@ -76,76 +49,6 @@ namespace BootGen
                 throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
             RootResources.Add(resource);
         }
-
-        private void CreateOneToManyRelation(RootResource resource, System.Reflection.PropertyInfo property, System.Reflection.CustomAttributeData oneToManyAttribute)
-        {
-            var propertyType = property.PropertyType;
-            Type genericType;
-            try
-            {
-                genericType = propertyType.GetGenericTypeDefinition();
-            }
-            catch
-            {
-                throw new Exception("A one-to-many reference must be a list.");
-            }
-            if (genericType != typeof(List<>))
-            {
-                throw new Exception("A one-to-many reference must be a list.");
-            }
-            propertyType = propertyType.GetGenericArguments()[0];
-            var rootResource = RootResources.FirstOrDefault(r => r.Class.Name == propertyType.Name);
-            if (rootResource == null)
-                rootResource = Add(propertyType);
-            var parentName = oneToManyAttribute.GetFirstParameter<string>();
-            var nestedResource = resource.OneToMany(propertyType, GetResourceName(property), parentName);
-            nestedResource.IsReadonly = true;
-            var singularNameAttribute = property.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(SingularNameAttribute));
-            var singularName = singularNameAttribute?.GetFirstParameter<string>();
-            nestedResource.Name = singularName ?? property.Name.Substring(0, property.Name.Length - 1);
-            nestedResource.Name.Plural = property.Name;
-            nestedResource.RootResource = rootResource;
-            rootResource.AlternateResources.Add(nestedResource);
-        }
-
-        private static Noun GetResourceName(PropertyInfo property)
-        {
-            var singularName = property.Get<SingularNameAttribute>()?.GetFirstParameter<string>();
-            Noun resourceName = singularName ?? property.Name.Substring(0, property.Name.Length - 1);
-            resourceName.Plural = property.Name;
-            return resourceName;
-        }
-
-        private void CreateManyToManyRelation(RootResource resource, PropertyInfo property, CustomAttributeData manyToManyAttribute)
-        {
-            var propertyType = property.PropertyType;
-            Type genericType;
-            try
-            {
-                genericType = propertyType.GetGenericTypeDefinition();
-            }
-            catch
-            {
-                throw new Exception("A many-to-many reference must be a list.");
-            }
-            if (genericType != typeof(List<>))
-            {
-                throw new Exception("A many-to-many reference must be a list.");
-            }
-            propertyType = propertyType.GetGenericArguments()[0];
-            var rootResource = RootResources.FirstOrDefault(r => r.Class.Name == propertyType.Name);
-            if (rootResource == null)
-                rootResource = Add(propertyType);
-            var pivotName = manyToManyAttribute.GetFirstParameter<string>();
-            var nestedResource = resource.ManyToMany(propertyType, GetResourceName(property), pivotName);
-            var singularNameAttribute = property.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(SingularNameAttribute));
-            var singularName = singularNameAttribute?.GetFirstParameter<string>();
-            nestedResource.Name = singularName ?? property.Name.Substring(0, property.Name.Length - 1);
-            nestedResource.Name.Plural = property.Name;
-            nestedResource.RootResource = rootResource;
-            rootResource.AlternateResources.Add(nestedResource);
-        }
-
         private void CreateOneToManyRelation(RootResource resource, Property property)
         {
             var rootResource = RootResources.FirstOrDefault(r => r.Class == property.Class);

@@ -112,8 +112,8 @@ namespace BootGen
             List<SeedData> seedDataList = rawDataList.Select(o => new SeedData(o, ToSeedRecord(resource.Class, o))).ToList();
             Data[resource.Class.Id] = seedDataList;
 
-            PushSeedDataToProperties(resource.Class);
             PushSeedDataToNestedResources(resource);
+            PushSeedDataToProperties(resource.Class);
         }
 
         public List<SeedRecord> Get(ClassModel c)

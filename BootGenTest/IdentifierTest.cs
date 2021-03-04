@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BootGen;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace BootGenTest
 {
@@ -19,8 +20,9 @@ namespace BootGenTest
         [TestMethod]
         public void TestResourceIds()
         {
-            var resourceCollection = new ResourceCollection(new DataModel());
-            var Users = resourceCollection.Add<User>();
+            var resourceCollection = new JsonResourceCollection(new DataModel());
+            resourceCollection.Load(JObject.Parse("{\"users\":[{\"email\":\"\", \"name\":\"\"}]}"));
+            var Users = resourceCollection.RootResources.First();
             var api = new Api(resourceCollection);
             Assert.AreEqual(3, Users.Class.Properties.Count);
             Assert.AreEqual(BuiltInType.Int32, Users.Class.IdProperty.BuiltInType);
@@ -38,40 +40,16 @@ namespace BootGenTest
         [TestMethod]
         public void TestParentId()
         {
-            var resourceCollection = new ResourceCollection(new DataModel());
-            var Issues = resourceCollection.Add<Issue>();
+            var resourceCollection = new JsonResourceCollection(new DataModel());
+            resourceCollection.Load(JObject.Parse("{\"users\":[{\"email\":\"\", \"name\":\"\", \"issues\":[{\"title\":\"\",\"description\":\"\"}]}]}"));
+            var Issues = resourceCollection.RootResources.First(r => r.Name.Singular == "Issue");
             var api = new Api(resourceCollection);
             Assert.AreEqual(5, Issues.Class.Properties.Count);
             Assert.AreEqual(BuiltInType.Int32, Issues.Class.IdProperty.BuiltInType);
-            Assert.AreEqual("Id, Title, Description, Assignee, AssigneeId", GetPropertyList(Issues.Class));
-            Assert.AreEqual(BuiltInType.Int32, Issues.Class.PropertyWithName("AssigneeId").BuiltInType);
+            Assert.AreEqual("Id, Title, Description, User, UserId", GetPropertyList(Issues.Class));
+            Assert.AreEqual(BuiltInType.Int32, Issues.Class.PropertyWithName("UserId").BuiltInType);
         }
 
-        class User3
-        {
-            public string Email { get; set; }
-            public string Name { get; set; }
-            public List<Issue3> Issues { get; set; }
-        }
-        class Issue3
-        {
-            public string Title { get; set; }
-            public string Description { get; set; }
-        }
-
-        
-        [TestMethod]
-        public void TestParentIdOneToMany()
-        {
-            var resourceCollection = new ResourceCollection(new DataModel());
-            var Users = resourceCollection.Add<User3>();
-            var Issues = resourceCollection.Add<Issue3>();
-            var api = new Api(resourceCollection);
-            Assert.AreEqual(5, Issues.Class.Properties.Count);
-            Assert.AreEqual(BuiltInType.Int32, Issues.Class.IdProperty.BuiltInType);
-            Assert.AreEqual("Id, Title, Description, User3, User3Id", GetPropertyList(Issues.Class));
-            Assert.AreEqual(BuiltInType.Int32, Issues.Class.PropertyWithName("User3Id").BuiltInType);
-        }
         private string GetPropertyList(ClassModel c)
         {
             return c.Properties.Select(p => p.Name).Aggregate( (a, b) => $"{a}, {b}");
