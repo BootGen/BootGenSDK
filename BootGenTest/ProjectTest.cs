@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO.Compression;
 using System.IO;
 using System;
+using System.Linq;
 
 namespace BootGenTest
 {
@@ -42,6 +43,11 @@ namespace BootGenTest
                 var actualLines = file.Content.Split(Environment.NewLine);
                 for (int i = 0; i < expectedLines.Length; ++i) {
                     Assert.AreEqual(expectedLines[i], actualLines[i], false, $"Line {i}.");
+                }
+                if (expectedLines.Length + 1 == actualLines.Length) {
+                    string lastLine = actualLines.Last();
+                    Assert.IsTrue(string.IsNullOrWhiteSpace(lastLine), lastLine);
+                    continue;
                 }
                 Assert.AreEqual(expectedLines.Length, actualLines.Length, "File length");
             }
