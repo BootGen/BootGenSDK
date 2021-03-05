@@ -36,7 +36,15 @@ namespace BootGenTest
             project.GenerateFiles("TestProject", "TestProject", "http://localhost:5000");
             if (Directory.Exists("SampleOutput"))
                 Directory.Delete("SampleOutput", true);
-            ZipFile.ExtractToDirectory("SampleOutput.zip", ".");
+            try {
+                ZipFile.ExtractToDirectory("SampleOutput.zip", ".");
+            } catch {
+                if (File.Exists("SampleOutput.zip")) {
+                    Assert.Fail($"SampleOutput.zip length: {new FileInfo("SampleOutput.zip").Length}");
+                } else {
+                    Assert.Fail("SampleOutput.zip is missing!");
+                }
+            }
             foreach (var file in disk.Files) {
                var path = System.IO.Path.Combine("SampleOutput", file.Path, file.Name);
                 var expectedLines = File.ReadAllLines(path);
