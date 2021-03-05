@@ -235,6 +235,18 @@ namespace BootGen
                 }
             }
         }
+
+        public void Load(JObject jObject)
+        {
+            foreach (var property in jObject.Properties())
+            {
+                var resource = resourceCollection.RootResources.First(r => r.Name.Plural.ToLower() == property.Name.ToLower());
+                var data = (property.Value as JArray).Select(t => t as JObject).ToList();
+                foreach (var item in data)
+                    item.Capitalize();
+                Add(resource, data);
+            }
+        }
     }
 
     public class SeedRecord

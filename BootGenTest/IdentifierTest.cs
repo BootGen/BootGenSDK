@@ -20,7 +20,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestResourceIds()
         {
-            var resourceCollection = new JsonResourceCollection(new DataModel());
+            var resourceCollection = new ResourceCollection(new DataModel());
             resourceCollection.Load(JObject.Parse("{\"users\":[{\"email\":\"\", \"name\":\"\"}]}"));
             var Users = resourceCollection.RootResources.First();
             var api = new Api(resourceCollection);
@@ -40,7 +40,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestParentId()
         {
-            var resourceCollection = new JsonResourceCollection(new DataModel());
+            var resourceCollection = new ResourceCollection(new DataModel());
             resourceCollection.Load(JObject.Parse("{\"users\":[{\"email\":\"\", \"name\":\"\", \"issues\":[{\"title\":\"\",\"description\":\"\"}]}]}"));
             var Issues = resourceCollection.RootResources.First(r => r.Name.Singular == "Issue");
             var api = new Api(resourceCollection);

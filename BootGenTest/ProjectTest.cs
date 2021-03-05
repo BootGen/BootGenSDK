@@ -17,9 +17,9 @@ namespace BootGenTest
         {
             var data = JObject.Parse("{\"users\":[{\"email\":\"Email\",\"name\":\"Name\",\"address\":{\"city\":\"Budapest\",\"street\":\"Macko\",\"number\":\"6\"},\"pets\":[{\"name\":\"Ubul\",\"type\":0},{\"name\":\"Garfield\",\"type\":1}]}]}");
             var dataModel = new DataModel();
-            var resourceCollection = new JsonResourceCollection(dataModel);
+            var resourceCollection = new ResourceCollection(dataModel);
             resourceCollection.Load(data);
-            var seedStore = new JsonSeedStore(resourceCollection);
+            var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Load(data);
             var disk = new VirtualDisk();
             var project = new Project
@@ -50,7 +50,7 @@ namespace BootGenTest
                 var expectedLines = File.ReadAllLines(path);
                 var actualLines = file.Content.Split(Environment.NewLine);
                 for (int i = 0; i < expectedLines.Length; ++i) {
-                    Assert.AreEqual(expectedLines[i], actualLines[i], false, $"Line {i}.");
+                    Assert.AreEqual(expectedLines[i], actualLines[i], false, $"{file.Name} line {i}.");
                 }
                 if (expectedLines.Length + 1 == actualLines.Length) {
                     string lastLine = actualLines.Last();

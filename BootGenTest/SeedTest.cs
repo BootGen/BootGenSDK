@@ -16,9 +16,9 @@ namespace BootGenTest
         {
             var data = JObject.Parse("{\"users\":[{\"email\":\"Email\",\"name\":\"Name\",\"address\":{\"city\":\"Budapest\",\"street\":\"Macko\",\"number\":\"6\"},\"pets\":[{\"name\":\"Ubul\",\"type\":0},{\"name\":\"Garfield\",\"type\":1}]}]}");
             var dataModel = new DataModel();
-            var resourceCollection = new JsonResourceCollection(dataModel);
+            var resourceCollection = new ResourceCollection(dataModel);
             resourceCollection.Load(data);
-            var seedStore = new JsonSeedStore(resourceCollection);
+            var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Load(data);
             var Users = resourceCollection.RootResources.First(r => r.Name.Singular == "User");
             var Pets = resourceCollection.RootResources.First(r => r.Name.Singular == "Pet");

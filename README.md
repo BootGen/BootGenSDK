@@ -6,7 +6,7 @@
 
 BootGen is a model based, template driven application code generator toolkit for ASP.Net 5 and Vue.js.
 
-**Model based** means that to start working on your project, first you have to create a model of your entities, resources and operations. Unlike other code generators, it is not necessary to learn separate modelling language, because BootGen models are plain C# classes and interfaces.
+**Model based** means that to start working on your project, first you have to create a model of your entities, resources and operations. Unlike other code generators, it is not necessary to learn separate modelling language, you can simply use JSON.
 
 **Template driven** means that each piece of generated code (for example entity classes and controllers), is described by a [Scriban](https://github.com/lunet-io/scriban) template. Templates are customizable, this way you can make the generated code look consistent with the code you write by hand.
 
