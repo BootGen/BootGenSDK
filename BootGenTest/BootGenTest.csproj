@@ -24,14 +24,8 @@
     <ProjectReference Include="..\BootGen\BootGen.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="oas3template.sbn" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="simple-api.yml" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="collection-api.yml" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="nested-api.yml" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="auth-api.yml" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-  <ItemGroup>
     <None Update="templates/**" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="SampleOutput/**" CopyToOutputDirectory="Always" />
+    <None Update="SampleOutput.zip" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  
 </Project>

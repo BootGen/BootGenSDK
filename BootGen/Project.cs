@@ -20,8 +20,7 @@ namespace BootGen
         
         public void GenerateFiles(string projectName, string namespce, string baseUrl)
         {
-            IDisk disk = Disk;
-            GenerateFiles(projectName, namespce, baseUrl, disk);
+            GenerateFiles(projectName, namespce, baseUrl, Disk);
         }
 
         private void GenerateFiles(string projectName, string namespce, string baseUrl, IDisk disk)
