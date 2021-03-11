@@ -21,13 +21,18 @@ namespace BootGen
 
         public RootResource Add(ClassModel c)
         {
-            var resource = new RootResource();
-            resource.Name = c.Name;
-            resource.Class = c;
-            resource.Class.MakePersisted();
-            resource.Class.IsResource = true;
-            resource.DataModel = DataModel;
-            AddRootResource(resource);
+
+            var resource = RootResources.FirstOrDefault(r => r.Class == c);
+            if (resource == null)
+            {
+                resource = new RootResource();
+                resource.Name = c.Name;
+                resource.Class = c;
+                resource.Class.MakePersisted();
+                resource.Class.IsResource = true;
+                resource.DataModel = DataModel;
+                AddRootResource(resource);
+            }
 
             foreach (var property in c.Properties)
             {
@@ -92,6 +97,17 @@ namespace BootGen
             {
                 Parse(property, out var _);
             }
+
+            var classes = new List<ClassModel>(DataModel.Classes);
+            foreach (var c in classes)
+                Add(c);
+            
+            /*var userClass = DataModel.Classes.FirstOrDefault(c => c.Name == "User");
+            userClass.Properties.Add(new Property {
+                Name = "PasswordHash",
+                PropertyType = PropertyType.ServerOnly,
+                BuiltInType = BuiltInType.String
+            });*/
         }
 
         private ClassModel Parse(JProperty property, out bool manyToMany)
@@ -107,7 +123,6 @@ namespace BootGen
                 className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
             }
             ClassModel result = DataModel.Classes.FirstOrDefault(c => c.Name.Singular == className);
-            bool newClass = result == null;
             if (result == null)
             {
                 result = new ClassModel
@@ -115,6 +130,7 @@ namespace BootGen
                     Name = className,
                     Properties = new List<Property>()
                 };
+                DataModel.AddClass(result);
             }
             manyToMany = false;
             switch (property.Value.Type)
@@ -139,10 +155,6 @@ namespace BootGen
                 break;
                 default:
                 return null;
-            }
-            if (newClass) {
-                DataModel.AddClass(result);
-                Add(result);
             }
             return result;
         }

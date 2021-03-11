@@ -112,10 +112,10 @@ namespace BootGen
                 {
                     referenceProperty = new Property
                     {
-                        Name = c.Name,
+                        Name = property.IsManyToMany ? c.Name.Plural : c.Name.Singular,
                         BuiltInType = BuiltInType.Object,
                         Class = c,
-                        IsCollection = false,
+                        IsCollection = property.IsManyToMany,
                         IsRequired = true,
                         PropertyType = PropertyType.ServerOnly,
                         IsParentReference = true
@@ -125,7 +125,7 @@ namespace BootGen
                 referenceProperty.MirrorProperty = property;
                 property.MirrorProperty = referenceProperty;
 
-                if (!property.Class.Properties.Any(p => p.Name == c.Name + "Id"))
+                if (!property.IsManyToMany && !property.Class.Properties.Any(p => p.Name == c.Name + "Id"))
                     property.Class.Properties.Add(new Property
                     {
                         Name = c.Name + "Id",
