@@ -186,10 +186,9 @@ namespace BootGen
                         {
                             Name = property.Name + "Id",
                             BuiltInType = BuiltInType.Int32,
-                            PropertyType = property.Class.IsResource ? PropertyType.Normal : PropertyType.ServerOnly
+                            PropertyType = PropertyType.Normal
                         });
-                        if (property.Class.IsResource)
-                            property.PropertyType = PropertyType.ServerOnly;
+                        property.PropertyType = PropertyType.ServerOnly;
                         propertyIdx += 1;
                         AddEfRelationsChildToParent(property.Class);
                     }

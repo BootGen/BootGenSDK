@@ -37,8 +37,6 @@ namespace BootGen
 
         public PropertyType Location { get; set; }
 
-        public bool IsResource { get; set; }
-
         public bool HasTimestamps { get; set; }
         internal bool RelationsAreSetUp { get; set; }
     }
