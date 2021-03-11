@@ -132,17 +132,18 @@ namespace BootGen
         {
             string resourceName = resource.Name.Plural.ToWords();
             var path = subRoute.PathModel;
-            subRoute.Operations.Add(new Operation
-            {
-                Verb = HttpVerb.Get,
-                Name = TypeScriptGenerator.GetItemFunctionName(resource),
-                Summary = $"retrieve {resourceName} resource",
-                SuccessCode = 200,
-                SuccessDescription = $"successful query",
-                Response = resource.Class,
-                Parameters = path.Parameters,
-                Authenticate = resource.Authenticate
-            });
+            if (resource is RootResource)
+                subRoute.Operations.Add(new Operation
+                {
+                    Verb = HttpVerb.Get,
+                    Name = TypeScriptGenerator.GetItemFunctionName(resource),
+                    Summary = $"retrieve {resourceName} resource",
+                    SuccessCode = 200,
+                    SuccessDescription = $"successful query",
+                    Response = resource.Class,
+                    Parameters = path.Parameters,
+                    Authenticate = resource.Authenticate
+                });
             if (!resource.IsReadonly)
             {
                 if (resource is RootResource)

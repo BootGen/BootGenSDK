@@ -24,26 +24,12 @@ namespace BootGen
                 Routes.AddRange(resource.GetRoutes());
                 foreach (var nestedResource in resource.NestedResources)
                 {
-                    DoNestingSanityChecks(nestedResource);
                     Routes.AddRange(nestedResource.GetRoutes());
-                    if (nestedResource.Pivot != null)
-                        DataModel.ClassCollection.Add(nestedResource.Pivot);
                 }
             }
             
         }
 
-        private static void DoNestingSanityChecks(NestedResource nestedResource)
-        {
-            if (nestedResource.Pivot != null && nestedResource.RootResource == null)
-            {
-                throw new Exception($"{nestedResource.Name.Plural} is declared as a Many-To-Many nested resource on {nestedResource.ParentResource.Name.Plural}, but is does not have an associated root resource.");
-            }
-            if (nestedResource.RootResource != null && nestedResource.RootResource.Class != nestedResource.Class)
-            {
-                throw new Exception($"Type mismatch: ${nestedResource.Name.Plural} has type ${nestedResource.Class.Name}, but its associated root resource has type {nestedResource.RootResource.Class.Name}");
-            }
-        }
 
     }
 }
