@@ -20,8 +20,9 @@ namespace BootGenTest
         [TestMethod]
         public void TestResourceIds()
         {
-            var resourceCollection = new ResourceCollection(new DataModel());
-            resourceCollection.Load(JObject.Parse("{\"users\":[{\"email\":\"\", \"name\":\"\"}]}"));
+            var dataModel = new DataModel();
+            dataModel.Load(JObject.Parse("{\"users\":[{\"email\":\"\", \"name\":\"\"}]}"));
+            var resourceCollection = new ResourceCollection(dataModel);
             var Users = resourceCollection.RootResources.First();
             var api = new Api(resourceCollection);
             Assert.AreEqual(3, Users.Class.Properties.Count);
@@ -40,8 +41,9 @@ namespace BootGenTest
         [TestMethod]
         public void TestParentId()
         {
-            var resourceCollection = new ResourceCollection(new DataModel());
-            resourceCollection.Load(JObject.Parse("{\"users\":[{\"email\":\"\", \"name\":\"\", \"issues\":[{\"title\":\"\",\"description\":\"\"}]}]}"));
+            var dataModel = new DataModel();
+            dataModel.Load(JObject.Parse("{\"users\":[{\"email\":\"\", \"name\":\"\", \"issues\":[{\"title\":\"\",\"description\":\"\"}]}]}"));
+            var resourceCollection = new ResourceCollection(dataModel);
             var Issues = resourceCollection.RootResources.First(r => r.Name.Singular == "Issue");
             var api = new Api(resourceCollection);
             Assert.AreEqual(5, Issues.Class.Properties.Count);
