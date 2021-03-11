@@ -57,27 +57,23 @@ namespace BootGen
             };
             pivotClass.Properties.Add(new Property {
                             Name = name1 + "Id",
-                            BuiltInType = BuiltInType.Int32,
-                            IsRequired = true
+                            BuiltInType = BuiltInType.Int32
                         });
             pivotClass.Properties.Add(new Property {
                             Name = name1,
                             Noun = name1,
                             BuiltInType = BuiltInType.Object,
-                            Class = parent.Class,
-                            IsRequired = true
+                            Class = parent.Class
                         });
             pivotClass.Properties.Add(new Property {
                             Name = name2 + "Id",
-                            BuiltInType = BuiltInType.Int32,
-                            IsRequired = true
+                            BuiltInType = BuiltInType.Int32
                         });
             pivotClass.Properties.Add(new Property {
                             Name = name2,
                             Noun = name2,
                             BuiltInType = BuiltInType.Object,
-                            Class = resource.Class,
-                            IsRequired = true
+                            Class = resource.Class
                         });
             DataModel.ClassCollection.Add(pivotClass);
             return pivotClass;

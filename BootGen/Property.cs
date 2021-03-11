@@ -9,7 +9,6 @@ namespace BootGen
     {
         public BuiltInType BuiltInType { get; set; }
         public bool IsCollection { get; set; }
-        public bool IsRequired { get; set; }
         public ClassModel Class { get; set; }
     }
 

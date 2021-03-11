@@ -62,30 +62,6 @@ namespace BootGen
             if (property == null)
                 return null;
             var oasProp = new Parameter { Name = property.Name.ToCamelCase() };
-            switch (property.BuiltInType)
-            {
-                case BuiltInType.Bool:
-                    oasProp.IsRequired = true;
-                    break;
-                case BuiltInType.Int32:
-                    oasProp.IsRequired = true;
-                    break;
-                case BuiltInType.Int64:
-                    oasProp.IsRequired = true;
-                    break;
-                case BuiltInType.Float:
-                    oasProp.IsRequired = true;
-                    break;
-                case BuiltInType.Double:
-                    oasProp.IsRequired = true;
-                    break;
-                case BuiltInType.String:
-                    oasProp.IsRequired = false;
-                    break;
-                case BuiltInType.Object:
-                    oasProp.IsRequired = false;
-                    break;
-            }
             oasProp.BuiltInType = property.BuiltInType;
             oasProp.Class = property.Class;
             oasProp.IsCollection = property.IsCollection;

@@ -151,7 +151,6 @@ namespace BootGen
                         Class = c,
                         IsCollection = property.IsManyToMany,
                         IsManyToMany = property.IsManyToMany,
-                        IsRequired = true,
                         PropertyType = PropertyType.ServerOnly,
                         IsParentReference = true
                     };
@@ -164,8 +163,7 @@ namespace BootGen
                     property.Class.Properties.Add(new Property
                     {
                         Name = c.Name + "Id",
-                        BuiltInType = BuiltInType.Int32,
-                        IsRequired = true
+                        BuiltInType = BuiltInType.Int32
                     });
                 AddEfRelationsParentToChild(property.Class);
             }
@@ -188,7 +186,6 @@ namespace BootGen
                         {
                             Name = property.Name + "Id",
                             BuiltInType = BuiltInType.Int32,
-                            IsRequired = property.Class.IsResource,
                             PropertyType = property.Class.IsResource ? PropertyType.Normal : PropertyType.ServerOnly
                         });
                         if (property.Class.IsResource)
@@ -211,7 +208,6 @@ namespace BootGen
                     BuiltInType = BuiltInType.Object,
                     Class = parent,
                     IsCollection = false,
-                    IsRequired = true,
                     PropertyType = PropertyType.ServerOnly,
                     IsParentReference = true
                 };
@@ -229,8 +225,7 @@ namespace BootGen
                 {
                     Name = parent.Name + "Id",
                     BuiltInType = BuiltInType.Int32,
-                    IsCollection = false,
-                    IsRequired = true
+                    IsCollection = false
                 };
                 child.Properties.Add(property);
             }

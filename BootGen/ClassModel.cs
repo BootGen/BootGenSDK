@@ -21,7 +21,6 @@ namespace BootGen
                 {
                     Name = "Id",
                     BuiltInType = BuiltInType.Int32,
-                    IsRequired = true,
                     IsClientReadonly = true
                 }
             };
@@ -35,8 +34,6 @@ namespace BootGen
         public List<Property> ServerProperties => Properties.Where(p => p.PropertyType != PropertyType.Virtual).ToList();
 
         public List<Property> CommonProperties => Properties.Where(p => p.PropertyType == PropertyType.Normal).ToList();
-
-        public bool HasRequiredProperties => Properties.Any(p => p.IsRequired);
 
         public PropertyType Location { get; set; }
 
