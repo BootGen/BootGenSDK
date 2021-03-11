@@ -31,8 +31,6 @@ namespace BootGen
             return Properties.FirstOrDefault(p => p.Name == name);
         }
 
-        public List<Property> ServerProperties => Properties.Where(p => p.PropertyType != PropertyType.Virtual).ToList();
-
         public List<Property> CommonProperties => Properties.Where(p => p.PropertyType == PropertyType.Normal).ToList();
 
         public PropertyType Location { get; set; }

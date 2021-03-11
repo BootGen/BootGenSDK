@@ -12,7 +12,7 @@ namespace BootGen
         public ClassModel Class { get; set; }
     }
 
-    public enum PropertyType { Normal, ServerOnly, Virtual }
+    public enum PropertyType { Normal, ServerOnly }
 
     public class Property : TypeDescription
     {

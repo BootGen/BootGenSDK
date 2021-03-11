@@ -44,9 +44,6 @@ namespace BootGen
             var record = new SeedRecord { Name = c.Name };
             foreach (var property in obj.Properties())
             {
-                var classProperty = c.Properties.FirstOrDefault(p => p.Name == property.Name);
-                if (classProperty != null && classProperty.PropertyType == PropertyType.Virtual)
-                    continue;
                 switch (property.Value.Type)
                 {
                     case JTokenType.None:
@@ -123,7 +120,7 @@ namespace BootGen
         {
             foreach (var property in c.Properties)
             {
-                if (property.Class == null || property.PropertyType == PropertyType.Virtual)
+                if (property.Class == null)
                     continue;
                 foreach (var item in Data[c.Id])
                 {

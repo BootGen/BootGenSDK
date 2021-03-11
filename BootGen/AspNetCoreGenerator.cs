@@ -31,7 +31,7 @@ namespace BootGen
             var result = new List<string>();
             foreach (var property in c.Properties)
             {
-                if (property.BuiltInType == BuiltInType.Object && !property.IsParentReference && property.PropertyType != PropertyType.Virtual)
+                if (property.BuiltInType == BuiltInType.Object && !property.IsParentReference)
                 {
                     string newPrefix;
                     if (prefix == null)
