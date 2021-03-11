@@ -225,9 +225,9 @@ namespace BootGen
                     };
                     if (SplitData(item, property, nestedResource))
                     {
-                        PushSeedDataToProperties(nestedResource.Class);
                         if (nestedResource.RootResource != null)
                             PushSeedDataToNestedResources(nestedResource.RootResource);
+                        PushSeedDataToProperties(nestedResource.Class);
                     }
                 }
             }

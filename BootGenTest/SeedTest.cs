@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BootGen;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,31 +15,38 @@ namespace BootGenTest
         [TestMethod]
         public void TestSeed()
         {
-            var data = JObject.Parse("{\"users\":[{\"email\":\"Email\",\"name\":\"Name\",\"address\":{\"city\":\"Budapest\",\"street\":\"Macko\",\"number\":\"6\"},\"pets\":[{\"name\":\"Ubul\",\"type\":0},{\"name\":\"Garfield\",\"type\":1}]}]}");
+            var data = JObject.Parse(File.ReadAllText("example_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
             var dataModel = new DataModel();
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
             var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Load(data);
-            var Users = resourceCollection.RootResources.First(r => r.Name.Singular == "User");
-            var Pets = resourceCollection.RootResources.First(r => r.Name.Singular == "Pet");
-            var record = seedStore.Get(Users.Class).First();
-            Assert.AreEqual(4, record.Values.Count);
-            Assert.AreEqual("1", record.Get("Id"));
-            Assert.AreEqual("\"Name\"", record.Get("Name"));
-            Assert.AreEqual("\"Email\"", record.Get("Email"));
-            Assert.AreEqual("1", record.Get("AddressId"));
-            record = seedStore.Get(dataModel.Classes.First(c => c.Name == "Address")).First();
-            Assert.AreEqual(4, record.Values.Count);
-            Assert.AreEqual("1", record.Get("Id"));
-            Assert.AreEqual("\"Budapest\"", record.Get("City"));
-            Assert.AreEqual("\"Macko\"", record.Get("Street"));
-            Assert.AreEqual("\"6\"", record.Get("Number"));
-            record = seedStore.Get(Pets.Class).First();
-            Assert.AreEqual(4, record.Values.Count);
-            Assert.AreEqual("1", record.Get("Id"));
-            Assert.AreEqual("\"Ubul\"", record.Get("Name"));
-            Assert.AreEqual("0", record.Get("Type"));
+            var users = resourceCollection.RootResources.First(r => r.Name.Singular == "User");
+            var tasks = resourceCollection.RootResources.First(r => r.Name.Singular == "Task");
+            var tag = resourceCollection.RootResources.First(r => r.Name.Singular == "Tag");
+            var userRecord = seedStore.Get(users.Class).First();
+            Assert.AreEqual(3, userRecord.Values.Count);
+            Assert.AreEqual("1", userRecord.Get("Id"));
+            Assert.AreEqual("\"Test User\"", userRecord.Get("UserName"));
+            Assert.AreEqual("\"example@email.com\"", userRecord.Get("Email"));
+            
+            var taskRecord = seedStore.Get(tasks.Class).First();
+            Assert.AreEqual(4, taskRecord.Values.Count);
+            Assert.AreEqual("1", taskRecord.Get("Id"));
+            Assert.AreEqual("1", taskRecord.Get("UserId"));
+            Assert.AreEqual("\"Task Title\"", taskRecord.Get("Title"));
+            Assert.AreEqual("\"Task description\"", taskRecord.Get("Description"));
+
+            var tagRecord = seedStore.Get(tag.Class).First();
+            Assert.AreEqual(3, tagRecord.Values.Count);
+            Assert.AreEqual("1", tagRecord.Get("Id"));
+            Assert.AreEqual("\"important\"", tagRecord.Get("Name"));
+            Assert.AreEqual("\"red\"", tagRecord.Get("Color"));
+
+            var pivotRecord = seedStore.Get(dataModel.Classes.First(c => c.Name.Singular == "TagsTasksPivot")).First();
+            Assert.AreEqual("1", pivotRecord.Get("Id"));
+            Assert.AreEqual("1", pivotRecord.Get("TagId"));
+            Assert.AreEqual("1", pivotRecord.Get("TaskId"));
         }
 
     }
