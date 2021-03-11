@@ -7,7 +7,6 @@ namespace BootGen
     public class ResourceCollection
     {
         public List<RootResource> RootResources { get; } = new List<RootResource>();
-        public List<Resource> Resources => Flatten(RootResources).ToList();
 
         public DataModel DataModel { get; }
 
@@ -65,21 +64,16 @@ namespace BootGen
         private void CreateManyToManyRelation(RootResource resource, Property property)
         {
             var rootResource = RootResources.First(r => r.Class == property.Class);
-            var nestedResource = resource.ManyToMany(property.Class, $"{resource.Class.Name.Plural}{property.Class.Name.Plural}Pivot");
+            string pivotName;
+            if (string.Compare(resource.Class.Name, property.Class.Name, StringComparison.InvariantCulture) < 0)
+                pivotName = $"{resource.Class.Name.Plural}{property.Class.Name.Plural}Pivot";
+            else
+                pivotName = $"{property.Class.Name.Plural}{resource.Class.Name.Plural}Pivot";
+            var nestedResource = resource.ManyToMany(property.Class, pivotName);
             nestedResource.Name = property.Name.Substring(0, property.Name.Length - 1);
             nestedResource.Name.Plural = property.Name;
             nestedResource.RootResource = rootResource;
             rootResource.AlternateResources.Add(nestedResource);
-        }
-
-        private IEnumerable<Resource> Flatten(List<RootResource> resources)
-        {
-            foreach (var r in resources)
-            {
-                yield return r;
-                foreach (var sr in r.NestedResources)
-                    yield return sr;
-            }
         }
 
     }

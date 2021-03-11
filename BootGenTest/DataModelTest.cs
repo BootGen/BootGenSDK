@@ -27,14 +27,14 @@ namespace BootGenTest
             AssertHasProperty(tagClass, "Id", BuiltInType.Int32);
             AssertHasProperty(tagClass, "Name", BuiltInType.String);
             AssertHasProperty(tagClass, "Color", BuiltInType.String);
-            AssertHasProperty(tagClass, "Tasks", BuiltInType.Object);
+            AssertHasManyToManyProperty(tagClass, "Tasks");
 
             var taskClass = dataModel.Classes.First(c => c.Name.Singular == "Task");
             Assert.AreEqual(6, taskClass.Properties.Count);
             AssertHasProperty(taskClass, "Id", BuiltInType.Int32);
             AssertHasProperty(taskClass, "Title", BuiltInType.String);
             AssertHasProperty(taskClass, "Description", BuiltInType.String);
-            AssertHasProperty(taskClass, "Tags", BuiltInType.Object);
+            AssertHasManyToManyProperty(taskClass, "Tags");
             AssertHasProperty(taskClass, "User", BuiltInType.Object);
             AssertHasProperty(taskClass, "UserId", BuiltInType.Int32);
 
@@ -44,18 +44,30 @@ namespace BootGenTest
             AssertHasProperty(userClass, "UserName", BuiltInType.String);
             AssertHasProperty(userClass, "Email", BuiltInType.String);
             //AssertHasProperty(UserClass, "PasswordHash", BuiltInType.String);
-            AssertHasProperty(userClass, "Tasks", BuiltInType.Object);
+            AssertHasOneToManyProperty(userClass, "Tasks");
 
             var userResource = resourceCollection.RootResources.First(r => r.Class == userClass);
             Assert.AreEqual(0, userResource.AlternateResources.Count);
+            Assert.AreEqual(1, userResource.NestedResources.Count);
             var taskResource = resourceCollection.RootResources.First(r => r.Class == taskClass);
             Assert.AreEqual(2, taskResource.AlternateResources.Count);
+            Assert.AreEqual(1, taskResource.NestedResources.Count);
             var tagResource = resourceCollection.RootResources.First(r => r.Class == tagClass);
             Assert.AreEqual(1, tagResource.AlternateResources.Count);
+            Assert.AreEqual(1, tagResource.NestedResources.Count);
+            Assert.IsNotNull(tagResource.AlternateResources.First().Pivot);
         }
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
             Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{classModel.Name}.{propertyName} -> {type} is missing.");
+        }
+
+        private void AssertHasOneToManyProperty(ClassModel classModel, string propertyName) {
+            Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == BuiltInType.Object && p.IsCollection && !p.IsManyToMany), $"{classModel.Name}.{propertyName} is missing.");
+        }
+
+        private void AssertHasManyToManyProperty(ClassModel classModel, string propertyName) {
+            Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == BuiltInType.Object && p.IsCollection && p.IsManyToMany), $"{classModel.Name}.{propertyName} is missing.");
         }
     }
 }

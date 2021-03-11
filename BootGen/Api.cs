@@ -9,7 +9,6 @@ namespace BootGen
     public class Api
     {
         private ResourceCollection ResourceCollection { get; }
-        public List<Resource> Resources => ResourceCollection.Resources;
         public List<RootResource> RootResources => ResourceCollection.RootResources;
         public List<NestedResource> NestedResources => ResourceCollection.RootResources.SelectMany(r => r.NestedResources).ToList();
         public DataModel DataModel => ResourceCollection.DataModel;

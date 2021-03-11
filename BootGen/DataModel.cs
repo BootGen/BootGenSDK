@@ -159,6 +159,7 @@ namespace BootGen
                         BuiltInType = BuiltInType.Object,
                         Class = c,
                         IsCollection = property.IsManyToMany,
+                        IsManyToMany = property.IsManyToMany,
                         IsRequired = true,
                         PropertyType = PropertyType.ServerOnly,
                         IsParentReference = true
