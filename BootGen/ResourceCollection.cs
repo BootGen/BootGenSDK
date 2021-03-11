@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Newtonsoft.Json.Linq;
-using Pluralize.NET;
 
 namespace BootGen
 {
@@ -17,27 +14,29 @@ namespace BootGen
         public ResourceCollection(DataModel dataModel)
         {
             DataModel = dataModel;
-            
+
             var classes = new List<ClassModel>(DataModel.Classes);
             foreach (var c in classes)
-                Add(c);
+                AddRootResource(c);
+            foreach (var c in classes)
+                AddNestedResources(c);
         }
 
-        public RootResource Add(ClassModel c)
+        public void AddRootResource(ClassModel c)
         {
-
-            var resource = RootResources.FirstOrDefault(r => r.Class == c);
-            if (resource == null)
-            {
-                resource = new RootResource();
-                resource.Name = c.Name;
-                resource.Class = c;
-                resource.Class.MakePersisted();
-                resource.Class.IsResource = true;
-                resource.DataModel = DataModel;
-                AddRootResource(resource);
-            }
-
+            var resource = new RootResource();
+            resource.Name = c.Name;
+            resource.Class = c;
+            resource.Class.MakePersisted();
+            resource.Class.IsResource = true;
+            resource.DataModel = DataModel;
+            if (RootResources.Any(r => r.Name == resource.Name))
+                throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
+            RootResources.Add(resource);
+        }
+        public void AddNestedResources(ClassModel c)
+        {
+            var resource = RootResources.First(r => r.Class == c);
             foreach (var property in c.Properties)
             {
                 if (!property.IsCollection || property.BuiltInType != BuiltInType.Object)
@@ -45,26 +44,18 @@ namespace BootGen
                 if (property.IsManyToMany)
                 {
                     CreateManyToManyRelation(resource, property);
-                } else
+                }
+                else
                 {
                     CreateOneToManyRelation(resource, property);
                 }
             }
-            return resource;
         }
 
 
-        private void AddRootResource(RootResource resource)
-        {
-            if (RootResources.Any(r => r.Name == resource.Name))
-                throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
-            RootResources.Add(resource);
-        }
         private void CreateOneToManyRelation(RootResource resource, Property property)
         {
-            var rootResource = RootResources.FirstOrDefault(r => r.Class == property.Class);
-            if (rootResource == null)
-                rootResource = Add(property.Class);
+            var rootResource = RootResources.First(r => r.Class == property.Class);
             var nestedResource = resource.OneToMany(property.Class);
             nestedResource.IsReadonly = true;
             nestedResource.Name = property.Name.Substring(0, property.Name.Length - 1);
@@ -74,9 +65,7 @@ namespace BootGen
         }
         private void CreateManyToManyRelation(RootResource resource, Property property)
         {
-            var rootResource = RootResources.FirstOrDefault(r => r.Class == property.Class);
-            if (rootResource == null)
-                rootResource = Add(property.Class);
+            var rootResource = RootResources.First(r => r.Class == property.Class);
             var nestedResource = resource.ManyToMany(property.Class, $"{resource.Class.Name.Plural}{property.Class.Name.Plural}Pivot");
             nestedResource.Name = property.Name.Substring(0, property.Name.Length - 1);
             nestedResource.Name.Plural = property.Name;

@@ -34,6 +34,20 @@ namespace BootGen
             {
                 Parse(property, out var _);
             }
+
+            foreach (var c in Classes)
+                foreach (var p in c.Properties)
+                    if (p.IsCollection && p.BuiltInType == BuiltInType.Object && !p.IsManyToMany)
+                        AddEfRelations(c, p.Class);
+
+            foreach (var c in Classes)
+            {
+                if (!c.RelationsAreSetUp)
+                {
+                    AddEfRelationsParentToChild(c);
+                }
+                AddEfRelationsChildToParent(c);
+            }
         }
 
 
@@ -133,5 +147,108 @@ namespace BootGen
             }
             return BuiltInType.Object;
         }
+        private void AddEfRelationsParentToChild(ClassModel c)
+        {
+            c.RelationsAreSetUp = true;
+            foreach (var property in c.Properties)
+            {
+                if (property.Class == null || !property.IsCollection || property.MirrorProperty != null || property.PropertyType == PropertyType.Virtual)
+                    continue;
+
+                Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Name == c.Name);
+                if (referenceProperty == null)
+                {
+                    referenceProperty = new Property
+                    {
+                        Name = property.IsManyToMany ? c.Name.Plural : c.Name.Singular,
+                        BuiltInType = BuiltInType.Object,
+                        Class = c,
+                        IsCollection = property.IsManyToMany,
+                        IsRequired = true,
+                        PropertyType = PropertyType.ServerOnly,
+                        IsParentReference = true
+                    };
+                    property.Class.Properties.Add(referenceProperty);
+                }
+                referenceProperty.MirrorProperty = property;
+                property.MirrorProperty = referenceProperty;
+
+                if (!property.IsManyToMany && !property.Class.Properties.Any(p => p.Name == c.Name + "Id"))
+                    property.Class.Properties.Add(new Property
+                    {
+                        Name = c.Name + "Id",
+                        BuiltInType = BuiltInType.Int32,
+                        IsRequired = true
+                    });
+                AddEfRelationsParentToChild(property.Class);
+            }
+        }
+
+        public void AddEfRelationsChildToParent(ClassModel c)
+        {
+            var properties = new List<Property>(c.Properties);
+            var propertyIdx = -1;
+            foreach (var property in properties)
+            {
+                propertyIdx += 1;
+                if (property.Class == null)
+                    continue;
+                if (!property.IsCollection && property.Class != null)
+                {
+                    if (!c.Properties.Any(p => p.Name == property.Name + "Id"))
+                    {
+                        c.Properties.Insert(propertyIdx + 1, new Property
+                        {
+                            Name = property.Name + "Id",
+                            BuiltInType = BuiltInType.Int32,
+                            IsRequired = property.Class.IsResource,
+                            PropertyType = property.Class.IsResource ? PropertyType.Normal : PropertyType.ServerOnly
+                        });
+                        if (property.Class.IsResource)
+                            property.PropertyType = PropertyType.ServerOnly;
+                        propertyIdx += 1;
+                        AddEfRelationsChildToParent(property.Class);
+                    }
+                }
+            }
+        }
+
+
+        private static void AddEfRelations(ClassModel parent, ClassModel child)
+        {
+            if (!child.Properties.Any(p => p.Name == parent.Name))
+            {
+                var referenceProperty = new Property
+                {
+                    Name = parent.Name,
+                    BuiltInType = BuiltInType.Object,
+                    Class = parent,
+                    IsCollection = false,
+                    IsRequired = true,
+                    PropertyType = PropertyType.ServerOnly,
+                    IsParentReference = true
+                };
+                child.Properties.Add(referenceProperty);
+            }
+            else
+            {
+                var referenceProperty = child.Properties.First(p => p.Name == parent.Name);
+                referenceProperty.IsParentReference = true;
+            }
+
+            if (!child.Properties.Any(p => p.Name == parent.Name + "Id"))
+            {
+                Property property = new Property
+                {
+                    Name = parent.Name + "Id",
+                    BuiltInType = BuiltInType.Int32,
+                    IsCollection = false,
+                    IsRequired = true
+                };
+                child.Properties.Add(property);
+            }
+        }
+
+
     }
 }

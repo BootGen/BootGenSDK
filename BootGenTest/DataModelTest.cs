@@ -46,12 +46,12 @@ namespace BootGenTest
             //AssertHasProperty(UserClass, "PasswordHash", BuiltInType.String);
             AssertHasProperty(userClass, "Tasks", BuiltInType.Object);
 
-            /*var userResource = resourceCollection.RootResources.First(r => r.Class == userClass);
+            var userResource = resourceCollection.RootResources.First(r => r.Class == userClass);
             Assert.AreEqual(0, userResource.AlternateResources.Count);
             var taskResource = resourceCollection.RootResources.First(r => r.Class == taskClass);
             Assert.AreEqual(2, taskResource.AlternateResources.Count);
             var tagResource = resourceCollection.RootResources.First(r => r.Class == tagClass);
-            Assert.AreEqual(1, tagResource.AlternateResources.Count);*/
+            Assert.AreEqual(1, tagResource.AlternateResources.Count);
         }
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {

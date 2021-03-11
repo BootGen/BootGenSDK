@@ -26,7 +26,6 @@ namespace BootGen
         public bool IsParentReference { get; set; }
         public bool IsManyToMany { get; set; }
         public bool IsClientReadonly { get; set; }
-        internal Resource IdReferenceToParent { get; set; }
     }
     
 
