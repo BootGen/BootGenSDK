@@ -112,19 +112,6 @@ namespace BootGen
             return template.Render(context);;
         }
 
-        public void RenderEnums(string folderName, Func<BootGen.EnumModel, string> targetFileName, string templateFile, List<BootGen.EnumModel> enums)
-        {
-            var template = Parse(templateFile);
-            foreach (var e in enums)
-            {
-                var context = new TemplateContext();
-                context.PushGlobal(this);
-                context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
-                context.SetValue(new ScriptVariableGlobal("enum"), e);
-                var renderedModel = template.Render(context);
-                Disk.WriteText(folderName, targetFileName(e), renderedModel);
-            }
-        }
         public void RenderResources(string folderName, Func<Resource, string> targetFileName, string templateFile, IEnumerable<Resource> resources)
         {
             var template = Parse(templateFile);

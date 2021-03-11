@@ -36,10 +36,6 @@ namespace BootGen
                     return "string";
                 case BuiltInType.DateTime:
                     return "Date";
-                case BuiltInType.Guid:
-                    return "string";
-                case BuiltInType.Enum:
-                    return property.Enum.Name;
                 case BuiltInType.Object:
                     return property.Class.Name;
             }
@@ -48,7 +44,7 @@ namespace BootGen
 
         public static List<string> ReferredClasses(ClassModel c)
         {
-            return c.Properties.Where(p => p.Class != null && p.PropertyType != PropertyType.ServerOnly).Select(p => p.Class.Name.Singular).Distinct().Concat(c.Properties.Where(p => p.Enum != null).Select(p => p.Enum.Name).Distinct()).ToList();
+            return c.Properties.Where(p => p.Class != null && p.PropertyType != PropertyType.ServerOnly).Select(p => p.Class.Name.Singular).Distinct().ToList();
         }
 
         public static string PathTemplate(Resource resource)

@@ -11,7 +11,6 @@ namespace BootGen
         public bool IsCollection { get; set; }
         public bool IsRequired { get; set; }
         public ClassModel Class { get; set; }
-        public EnumModel Enum { get; set; }
     }
 
     public enum PropertyType { Normal, ServerOnly, Virtual }
@@ -29,5 +28,5 @@ namespace BootGen
     }
     
 
-    public enum BuiltInType { String, Int32, Int64, Float, Double, Bool, DateTime, Guid, Object, Enum }
+    public enum BuiltInType { String, Int32, Int64, Float, Double, Bool, DateTime, Object }
 }

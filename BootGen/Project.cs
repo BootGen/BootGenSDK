@@ -43,7 +43,6 @@ namespace BootGen
             aspNetCoreGenerator.RenderClasses(ServiceFolder, c => $"{c.Name.Plural}Service.cs", "server/pivotService.sbn", pivotClasses);
 
             aspNetCoreGenerator.RenderClasses("", s => $"{s.Name}.cs", "server/model.sbn", DataModel.Classes);
-            aspNetCoreGenerator.RenderEnums("", s => $"{s.Name}.cs", "server/enum.sbn", DataModel.Enums);
             aspNetCoreGenerator.Render("", "DataContext.cs", "server/dataContext.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.Classes},
                 {"seedList", SeedStore.All()},
@@ -56,7 +55,6 @@ namespace BootGen
             var typeScriptGenerator = new TypeScriptGenerator(disk);
             typeScriptGenerator.TemplateRoot = TemplateRoot;
             typeScriptGenerator.RenderClasses($"{ClientFolder}/models", s => $"{s.Name}.ts", "client/model.sbn", DataModel.CommonClasses);
-            typeScriptGenerator.RenderEnums($"{ClientFolder}/models", s => $"{s.Name}.ts", "client/enum.sbn", DataModel.Enums);
             typeScriptGenerator.RenderClasses($"{ClientFolder}/views", s => $"{s.Name}List.vue", "client/model_list.sbn", DataModel.CommonClasses);
             typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}View.vue", "client/model_view.sbn", DataModel.CommonClasses);
             typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}Edit.vue", "client/model_edit.sbn", DataModel.CommonClasses);

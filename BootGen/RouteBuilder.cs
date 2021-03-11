@@ -82,9 +82,6 @@ namespace BootGen
                 case BuiltInType.String:
                     oasProp.IsRequired = false;
                     break;
-                case BuiltInType.Guid:
-                    oasProp.IsRequired = true;
-                    break;
                 case BuiltInType.Object:
                     oasProp.IsRequired = false;
                     break;

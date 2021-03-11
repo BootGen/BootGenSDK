@@ -26,10 +26,6 @@ namespace BootGen
                     return "number";
                 case BuiltInType.String:
                     return "string";
-                case BuiltInType.Guid:
-                    return "string";
-                case BuiltInType.Enum:
-                    return "string";
                 case BuiltInType.DateTime:
                     return "string";
             }
@@ -50,15 +46,8 @@ namespace BootGen
                     return "double";
                 case BuiltInType.DateTime:
                     return "date-time";
-                case BuiltInType.Guid:
-                    return "uuid";
             }
             return null;
-        }
-
-        public static string GetEnum(TypeDescription property)
-        {
-            return $"[{property.Enum.Values.Select(s => $"'{s}'").Aggregate((s1, s2) => $"{s1}, {s2}")}]";
         }
     }
 }

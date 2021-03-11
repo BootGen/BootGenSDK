@@ -73,14 +73,10 @@ namespace BootGen
                     return "double";
                 case BuiltInType.String:
                     return "string";
-                case BuiltInType.Guid:
-                    return "Guid";
                 case BuiltInType.DateTime:
                     return "DateTime";
                 case BuiltInType.Object:
                     return property.Class.Name;
-                case BuiltInType.Enum:
-                    return property.Enum.Name;
             }
             return "object";
         }

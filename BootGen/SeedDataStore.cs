@@ -66,12 +66,7 @@ namespace BootGen
                         record.Set(property.Name, $"\"{property.Value.ToString()}\"");
                         break;
                     case JTokenType.Integer:
-                        if (classProperty.BuiltInType == BuiltInType.Enum)
-                        {
-                            record.Set(property.Name, $"{classProperty.Enum.Name}.{classProperty.Enum.Values[(int)property.Value]}");
-                        }
-                        else
-                            record.Set(property.Name, property.Value.ToString());
+                        record.Set(property.Name, property.Value.ToString());
                         break;
                     case JTokenType.Boolean:
                         record.Set(property.Name, ((bool)property.Value).ToString().ToLower());
