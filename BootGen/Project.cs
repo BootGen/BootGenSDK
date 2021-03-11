@@ -45,7 +45,7 @@ namespace BootGen
             aspNetCoreGenerator.RenderClasses("", s => $"{s.Name}.cs", "server/model.sbn", DataModel.Classes);
             aspNetCoreGenerator.RenderEnums("", s => $"{s.Name}.cs", "server/enum.sbn", DataModel.Enums);
             aspNetCoreGenerator.Render("", "DataContext.cs", "server/dataContext.sbn", new Dictionary<string, object> {
-                {"classes", DataModel.StoredClasses},
+                {"classes", DataModel.Classes},
                 {"seedList", SeedStore.All()},
                 {"name_space", namespce}
             });

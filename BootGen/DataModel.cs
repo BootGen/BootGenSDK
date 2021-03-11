@@ -9,7 +9,6 @@ namespace BootGen
     {
         public List<ClassModel> Classes => ClassCollection.Classes;
         public List<EnumModel> Enums => EnumCollection.Enums;
-        public List<ClassModel> StoredClasses => Classes.Where(s => s.Persisted).ToList();
         public List<ClassModel> CommonClasses => Classes.Where(p => p.Location == PropertyType.Normal).ToList();
         internal ClassCollection ClassCollection { get; }
         internal EnumCollection EnumCollection { get; }
@@ -38,7 +37,7 @@ namespace BootGen
             foreach (var c in Classes)
                 foreach (var p in c.Properties)
                     if (p.IsCollection && p.BuiltInType == BuiltInType.Object && !p.IsManyToMany)
-                        AddEfRelations(c, p.Class);
+                        AddOneToManyParentReference(c, p.Class);
 
             foreach (var c in Classes)
             {
@@ -66,11 +65,7 @@ namespace BootGen
             ClassModel result = Classes.FirstOrDefault(c => c.Name.Singular == className);
             if (result == null)
             {
-                result = new ClassModel
-                {
-                    Name = className,
-                    Properties = new List<Property>()
-                };
+                result = new ClassModel(className);
                 AddClass(result);
             }
             manyToMany = false;
@@ -214,7 +209,7 @@ namespace BootGen
         }
 
 
-        private static void AddEfRelations(ClassModel parent, ClassModel child)
+        private static void AddOneToManyParentReference(ClassModel parent, ClassModel child)
         {
             if (!child.Properties.Any(p => p.Name == parent.Name))
             {

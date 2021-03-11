@@ -27,7 +27,6 @@ namespace BootGen
             var resource = new RootResource();
             resource.Name = c.Name;
             resource.Class = c;
-            resource.Class.MakePersisted();
             resource.Class.IsResource = true;
             resource.DataModel = DataModel;
             if (RootResources.Any(r => r.Name == resource.Name))

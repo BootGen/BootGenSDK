@@ -51,38 +51,34 @@ namespace BootGen
                 return pivotClass;
             var name1 = parent.Name;
             var name2 = resource.Name;
-            pivotClass = new ClassModel
+            pivotClass = new ClassModel(name)
             {
-                Name = name,
-                Location = PropertyType.ServerOnly,
-                Properties = new List<Property> {
-                        new Property {
+                Location = PropertyType.ServerOnly
+            };
+            pivotClass.Properties.Add(new Property {
                             Name = name1 + "Id",
                             BuiltInType = BuiltInType.Int32,
                             IsRequired = true
-                        },
-                        new Property {
+                        });
+            pivotClass.Properties.Add(new Property {
                             Name = name1,
                             Noun = name1,
                             BuiltInType = BuiltInType.Object,
                             Class = parent.Class,
                             IsRequired = true
-                        },
-                        new Property {
+                        });
+            pivotClass.Properties.Add(new Property {
                             Name = name2 + "Id",
                             BuiltInType = BuiltInType.Int32,
                             IsRequired = true
-                        },
-                        new Property {
+                        });
+            pivotClass.Properties.Add(new Property {
                             Name = name2,
                             Noun = name2,
                             BuiltInType = BuiltInType.Object,
                             Class = resource.Class,
                             IsRequired = true
-                        }
-                    }
-            };
-            pivotClass.MakePersisted();
+                        });
             DataModel.ClassCollection.Add(pivotClass);
             return pivotClass;
         }

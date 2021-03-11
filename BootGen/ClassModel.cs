@@ -10,8 +10,22 @@ namespace BootGen
     {
         public int Id { get; set; }
         public Noun Name { get; set; }
-        public List<Property> Properties { get; set; }
+        public List<Property> Properties { get; }
         public Property IdProperty => PropertyWithName("Id");
+
+        public ClassModel(string name)
+        {
+            Name = name;
+            Properties = new List<Property> {
+                new Property
+                {
+                    Name = "Id",
+                    BuiltInType = BuiltInType.Int32,
+                    IsRequired = true,
+                    IsClientReadonly = true
+                }
+            };
+        }
 
         public Property PropertyWithName(string name)
         {
@@ -20,19 +34,6 @@ namespace BootGen
 
         public List<Property> ServerProperties => Properties.Where(p => p.PropertyType != PropertyType.Virtual).ToList();
 
-        internal void MakePersisted()
-        {
-            if (Properties.All(p => p.Name != "Id"))
-                    Properties.Insert(0, new Property
-                    {
-                        Name = "Id",
-                        BuiltInType = BuiltInType.Int32,
-                        IsRequired = true,
-                        IsClientReadonly = true
-                    });
-            Persisted = true;
-        }
-
         public List<Property> CommonProperties => Properties.Where(p => p.PropertyType == PropertyType.Normal).ToList();
 
         public bool HasRequiredProperties => Properties.Any(p => p.IsRequired);
@@ -40,8 +41,6 @@ namespace BootGen
         public PropertyType Location { get; set; }
 
         public bool IsResource { get; set; }
-
-        public bool Persisted { get; set; }
 
         public bool HasTimestamps { get; set; }
         internal bool RelationsAreSetUp { get; set; }

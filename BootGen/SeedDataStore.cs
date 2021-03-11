@@ -86,13 +86,10 @@ namespace BootGen
                 AddDateTime(record, "Created", DateTime.Now);
                 AddDateTime(record, "Updated", DateTime.Now);
             }
-            if (c.Persisted)
-            {
-                if (record.HasKey("Id"))
-                    record.Set("Id", GetNextId(c));
-                else
-                    record.Values.Insert(0, KeyValuePair.Create("Id", GetNextId(c)));
-            }
+            if (record.HasKey("Id"))
+                record.Set("Id", GetNextId(c));
+            else
+                record.Values.Insert(0, KeyValuePair.Create("Id", GetNextId(c)));
             return record;
         }
 
@@ -222,7 +219,7 @@ namespace BootGen
                     var property = new Property
                     {
                         Name = nestedResource.Name.Plural,
-                        Noun =nestedResource.Name,
+                        Noun = nestedResource.Name,
                         BuiltInType = BuiltInType.Object,
                         Class = nestedResource.Class
                     };
