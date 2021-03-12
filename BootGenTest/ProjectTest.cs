@@ -12,10 +12,10 @@ namespace BootGenTest
     [TestClass]
     public class ProjectTest
     {
-        [TestMethod, Ignore]
+        [TestMethod]
         public void TestGenerate()
         {
-            var data = JObject.Parse("{\"users\":[{\"email\":\"Email\",\"name\":\"Name\",\"address\":{\"city\":\"Budapest\",\"street\":\"Macko\",\"number\":\"6\"},\"pets\":[{\"name\":\"Ubul\",\"type\":0},{\"name\":\"Garfield\",\"type\":1}]}]}");
+            var data = JObject.Parse(File.ReadAllText("example_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
             var dataModel = new DataModel();
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
