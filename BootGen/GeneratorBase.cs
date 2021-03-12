@@ -90,19 +90,6 @@ namespace BootGen
             }
         }
 
-        public IEnumerable<string> RenderClasses(string templateFile, IEnumerable<ClassModel> classes)
-        {
-            var template = Parse(templateFile);
-            if (template == null) {
-                Console.WriteLine($"File not found: {templateFile}");
-                yield break;
-            }
-            foreach (var c in classes)
-            {
-                yield return RenderClass(template, c);
-            }
-        }
-
         private string RenderClass(Template template, ClassModel c)
         {
             var context = new TemplateContext();

@@ -106,33 +106,6 @@ namespace BootGen
             builder.Append(resource.Name.Plural);
             return builder.ToString();
         }
-
-        public static string Parameters(Method method)
-        {
-            if (method.Parameter == null)
-                return string.Empty;
-            StringBuilder builder = new StringBuilder();
-            if (builder.Length != 0)
-                builder.Append(", ");
-            builder.Append(method.Parameter.BuiltInType == BuiltInType.Object ? "[FromBody]" : "[FromQuery]");
-            builder.Append(" ");
-            builder.Append(GetType(method.Parameter));
-            builder.Append(" ");
-            builder.Append(method.Parameter.Name);
-            return builder.ToString();
-        }
-
-
-
-        public static bool IsLazyLoaded(Property property)
-        {
-            return property.Class != null && property.PropertyType != PropertyType.ServerOnly;
-        }
-
-        public static bool HasLazyLoadedProperties(ClassModel c)
-        {
-            return c.Properties.Any(IsLazyLoaded);
-        }
     }
 
 
