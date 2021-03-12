@@ -81,12 +81,12 @@ namespace BootGen
 
         public static string ControllerName(Resource resource)
         {
-            return resource.GenerationSettings.ControllerName ?? $"{FullName(resource)}Controller";
+            return $"{FullName(resource)}Controller";
         }
         
         public static string ServiceName(Resource resource)
         {
-            return resource.GenerationSettings.ServiceName ?? $"{resource.Class.Name.Plural}Service";
+            return $"{resource.Class.Name.Plural}Service";
         }
 
         public static Property FirstReference(ClassModel pivot)

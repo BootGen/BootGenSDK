@@ -28,15 +28,15 @@ namespace BootGen
             var aspNetCoreGenerator = new AspNetCoreGenerator(disk);
             aspNetCoreGenerator.NameSpace = namespce;
             aspNetCoreGenerator.TemplateRoot = TemplateRoot;
-            var pivotResources = Api.NestedResources.Where(r => r.Pivot != null && r.GenerationSettings.GenerateController).ToList();
-            var pivotClasses = Api.NestedResources.Where(r => r.Pivot != null && r.GenerationSettings.GenerateService).Select(r => r.Pivot).Distinct().ToList();
+            var pivotResources = Api.NestedResources.Where(r => r.Pivot != null).ToList();
+            var pivotClasses = pivotResources.Select(r => r.Pivot).Distinct().ToList();
             var oasGenerator = new OASGenerator(disk);
             oasGenerator.TemplateRoot = TemplateRoot;
             oasGenerator.RenderApi("", "restapi.yml", "oas3template.sbn", projectName, Api);
-            aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{AspNetCoreGenerator.ControllerName(r)}.cs", "server/resourceController.sbn", ResourceCollection.RootResources.Where(r => r.GenerationSettings.GenerateController).ToList());
-            aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{AspNetCoreGenerator.ControllerName(r)}.cs", "server/nestedResourceController.sbn", Api.NestedResources.Where(r => r.Pivot == null && r.GenerationSettings.GenerateController).ToList());
-            aspNetCoreGenerator.RenderResources(ServiceFolder, r => $"I{AspNetCoreGenerator.ServiceName(r)}.cs", "server/resourceServiceInterface.sbn", ResourceCollection.RootResources.Where(r => r.GenerationSettings.GenerateServiceInterface).ToList());
-            aspNetCoreGenerator.RenderResources(ServiceFolder, r => $"{AspNetCoreGenerator.ServiceName(r)}.cs", "server/resourceService.sbn", ResourceCollection.RootResources.Where(r => r.GenerationSettings.GenerateService).ToList());
+            aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{AspNetCoreGenerator.ControllerName(r)}.cs", "server/resourceController.sbn", ResourceCollection.RootResources.ToList());
+            aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{AspNetCoreGenerator.ControllerName(r)}.cs", "server/nestedResourceController.sbn", Api.NestedResources.Where(r => r.Pivot == null).ToList());
+            aspNetCoreGenerator.RenderResources(ServiceFolder, r => $"I{AspNetCoreGenerator.ServiceName(r)}.cs", "server/resourceServiceInterface.sbn", ResourceCollection.RootResources.ToList());
+            aspNetCoreGenerator.RenderResources(ServiceFolder, r => $"{AspNetCoreGenerator.ServiceName(r)}.cs", "server/resourceService.sbn", ResourceCollection.RootResources.ToList());
 
             aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{AspNetCoreGenerator.ControllerName(r)}.cs", "server/pivotController.sbn", pivotResources);
             aspNetCoreGenerator.RenderClasses(ServiceFolder, c => $"I{c.Name.Plural}Service.cs", "server/pivotServiceInterface.sbn", pivotClasses);
@@ -49,7 +49,7 @@ namespace BootGen
                 {"name_space", namespce}
             });
             aspNetCoreGenerator.Render("", "ServiceRegistrator.cs", "server/resourceRegistration.sbn", new Dictionary<string, object> {
-                {"resources", ResourceCollection.RootResources.Where(r => r.GenerationSettings.GenerateService && r.GenerationSettings.GenerateServiceInterface)},
+                {"resources", ResourceCollection.RootResources},
                 {"pivots", pivotClasses}
             });
             var typeScriptGenerator = new TypeScriptGenerator(disk);
@@ -69,19 +69,6 @@ namespace BootGen
                 {"classes", Api.RootResources.Select(r => r.Class)},
                 {"base_url", baseUrl}
             });
-        }
-
-        public void DeleteGeneratedFiles()
-        {
-            var vdisk = new VirtualDisk();
-            GenerateFiles(string.Empty, string.Empty, string.Empty, vdisk);
-            foreach(var file in vdisk.Files)
-            {
-                var path = file.Name;
-                if (!string.IsNullOrWhiteSpace(file.Path))
-                    path = System.IO.Path.Combine(file.Path, file.Name);
-                Disk.Delete(path);
-            }
         }
     }
 

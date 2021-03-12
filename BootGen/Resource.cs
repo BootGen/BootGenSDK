@@ -15,7 +15,6 @@ namespace BootGen
         public bool HasTimestamps { get => Class.HasTimestamps; set => Class.HasTimestamps = value; }
         public bool Authenticate { get; set; }
         public bool IsReadonly { get; set; }
-        public ResourceGenerationSettings GenerationSettings { get; } = new ResourceGenerationSettings();
         internal DataModel DataModel { get; set; }
 
     }
@@ -86,29 +85,6 @@ namespace BootGen
         public Resource ParentResource => ParentRelation?.Resource;
         public RootResource RootResource { get; set; }
         public ClassModel Pivot { get; set; }
-        public string ParentName
-        {
-            get
-            {
-                return ParentRelation?.Name;
-            }
-
-            set
-            {
-                if (ParentRelation != null)
-                    ParentRelation.Name = value;
-            }
-        }
-
+        public string ParentName =>  ParentRelation?.Name;
     }
-
-    public class ResourceGenerationSettings
-    {        
-        public bool GenerateController { get; set; } = true;
-        public bool GenerateServiceInterface { get; set; } = true;
-        public bool GenerateService { get; set; } = true;
-        public string ControllerName { get; set; }
-        public string ServiceName { get; set; }
-    }
-
 }
