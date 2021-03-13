@@ -14,7 +14,7 @@ namespace BootGen
         private string GetPath(string folderName)
         {
             var path = System.IO.Path.Combine(Folder, folderName);
-            if (!Directory.Exists(folderName))
+            if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
