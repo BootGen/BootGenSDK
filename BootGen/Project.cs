@@ -10,6 +10,7 @@ namespace BootGen
     {
         public string ControllerFolder { get; set; }
         public string ServiceFolder { get; set; }
+        public string ModelFolder { get; set; }
         public string ClientFolder { get; set; }
         public IDisk Disk { get; set; }
         public Api Api { get; set; }
@@ -25,6 +26,7 @@ namespace BootGen
 
         private void GenerateFiles(string projectName, string namespce, string baseUrl, IDisk disk)
         {
+            Api.BaseUrl = baseUrl;
             var aspNetCoreGenerator = new AspNetCoreGenerator(disk);
             aspNetCoreGenerator.NameSpace = namespce;
             aspNetCoreGenerator.TemplateRoot = TemplateRoot;
@@ -42,7 +44,7 @@ namespace BootGen
             aspNetCoreGenerator.RenderClasses(ServiceFolder, c => $"I{c.Name.Plural}Service.cs", "server/pivotServiceInterface.sbn", pivotClasses);
             aspNetCoreGenerator.RenderClasses(ServiceFolder, c => $"{c.Name.Plural}Service.cs", "server/pivotService.sbn", pivotClasses);
 
-            aspNetCoreGenerator.RenderClasses("", s => $"{s.Name}.cs", "server/model.sbn", DataModel.Classes);
+            aspNetCoreGenerator.RenderClasses(ModelFolder, s => $"{s.Name}.cs", "server/model.sbn", DataModel.Classes);
             aspNetCoreGenerator.Render("", "DataContext.cs", "server/dataContext.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.Classes},
                 {"seedList", SeedStore.All()},

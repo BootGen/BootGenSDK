@@ -31,9 +31,11 @@ namespace BootGenTest
             Assert.AreEqual("\"example@email.com\"", userRecord.Get("Email"));
             
             var taskRecord = seedStore.Get(tasks.Class).First();
-            Assert.AreEqual(4, taskRecord.Values.Count);
+            Assert.AreEqual(6, taskRecord.Values.Count);
             Assert.AreEqual("1", taskRecord.Get("Id"));
             Assert.AreEqual("1", taskRecord.Get("UserId"));
+            Assert.AreEqual("DateTime.Now", taskRecord.Get("Updated"));
+            Assert.AreEqual("DateTime.Now", taskRecord.Get("Created"));
             Assert.AreEqual("\"Task Title\"", taskRecord.Get("Title"));
             Assert.AreEqual("\"Task description\"", taskRecord.Get("Description"));
 

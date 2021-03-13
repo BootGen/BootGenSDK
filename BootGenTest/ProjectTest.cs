@@ -27,6 +27,7 @@ namespace BootGenTest
                 ControllerFolder = "Controllers",
                 ServiceFolder = "Services",
                 ClientFolder = "ClientApp/src",
+                ModelFolder = "Models",
                 Disk = disk,
                 ResourceCollection = resourceCollection,
                 SeedStore = seedStore,

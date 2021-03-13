@@ -30,10 +30,12 @@ namespace BootGenTest
             AssertHasManyToManyProperty(tagClass, "Tasks");
 
             var taskClass = dataModel.Classes.First(c => c.Name.Singular == "Task");
-            Assert.AreEqual(6, taskClass.Properties.Count);
+            Assert.AreEqual(8, taskClass.Properties.Count);
             AssertHasProperty(taskClass, "Id", BuiltInType.Int32);
             AssertHasProperty(taskClass, "Title", BuiltInType.String);
             AssertHasProperty(taskClass, "Description", BuiltInType.String);
+            AssertHasProperty(taskClass, "Created", BuiltInType.DateTime);
+            AssertHasProperty(taskClass, "Updated", BuiltInType.DateTime);
             AssertHasManyToManyProperty(taskClass, "Tags");
             AssertHasProperty(taskClass, "User", BuiltInType.Object);
             AssertHasProperty(taskClass, "UserId", BuiltInType.Int32);

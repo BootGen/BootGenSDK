@@ -70,8 +70,19 @@ namespace BootGen
                     foreach (JToken item in data)
                     {
                         if (item.Type == JTokenType.Comment) {
-                            if (item.Value<string>() == "many-to-many") {
+                            if (item.Value<string>().Trim() == "many-to-many") {
                                 manyToMany = true;
+                            }
+                            if (item.Value<string>().Trim() == "timestamps") {
+                                result.HasTimestamps = true;
+                                result.Properties.Add(new Property {
+                                    Name = "Created",
+                                    BuiltInType = BuiltInType.DateTime
+                                });
+                                result.Properties.Add(new Property {
+                                    Name = "Updated",
+                                    BuiltInType = BuiltInType.DateTime
+                                });
                             }
                         }
                         if (item.Type == JTokenType.Object) {

@@ -11,7 +11,11 @@ namespace BootGen
         public int Id { get; set; }
         public Noun Name { get; set; }
         public List<Property> Properties { get; }
+        public PropertyType Location { get; set; }
+        public bool HasTimestamps { get; set; }
+        internal bool RelationsAreSetUp { get; set; }
         public Property IdProperty => PropertyWithName("Id");
+        public List<Property> CommonProperties => Properties.Where(p => p.PropertyType == PropertyType.Normal).ToList();
 
         public ClassModel(string name)
         {
@@ -30,12 +34,5 @@ namespace BootGen
         {
             return Properties.FirstOrDefault(p => p.Name == name);
         }
-
-        public List<Property> CommonProperties => Properties.Where(p => p.PropertyType == PropertyType.Normal).ToList();
-
-        public PropertyType Location { get; set; }
-
-        public bool HasTimestamps { get; set; }
-        internal bool RelationsAreSetUp { get; set; }
     }
 }

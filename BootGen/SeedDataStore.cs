@@ -87,7 +87,7 @@ namespace BootGen
 
         private static void AddDateTime(SeedRecord record, string propertyName, DateTime dateTime)
         {
-            record.Set(propertyName, $"new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second})");
+            record.Set(propertyName, "DateTime.Now");
         }
 
         public void Add<T>(RootResource resource, IEnumerable<T> data)
