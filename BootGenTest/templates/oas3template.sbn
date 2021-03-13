@@ -11,10 +11,8 @@ paths:
   {{ route.path }}:
   {{~ for operation in route.operations ~}}
     {{ string.downcase operation.verb }}:
-      {{~ if operation.authenticate ~}}
       security:
       - bearerAuth: []
-      {{~ end ~}}
       summary: {{ operation.summary }}
       operationId: {{ operation.name }}
       {{~ if operation.has_parameters ~}}

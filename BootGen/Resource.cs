@@ -11,9 +11,7 @@ namespace BootGen
         public ClassModel Class { get; set; }
         public Route Route { get; set; }
         public Route ItemRoute { get; set; }
-        public bool IsRootResource => this is RootResource;
         public bool HasTimestamps { get => Class.HasTimestamps; set => Class.HasTimestamps = value; }
-        public bool Authenticate { get; set; }
         public bool IsReadonly { get; set; }
         internal DataModel DataModel { get; set; }
 

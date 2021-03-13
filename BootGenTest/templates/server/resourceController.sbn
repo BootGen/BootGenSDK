@@ -13,9 +13,7 @@ namespace {{ name_space }}.Controllers
 {
     [ApiController]
     [Route("{{ resource.route.path }}")]
-    {{~ if resource.authenticate ~}}
     [Authorize]
-    {{~ end ~}}
     public class {{ controller_name resource }} : BaseController
     {
         private I{{ service_name resource }} service;

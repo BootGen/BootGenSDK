@@ -81,8 +81,7 @@ namespace BootGen
                 ResponseIsCollection = true,
                 SuccessCode = 200,
                 SuccessDescription = $"successful query",
-                Parameters = path.Parameters,
-                Authenticate = resource.Authenticate
+                Parameters = path.Parameters
             });
             if (!resource.IsReadonly)
                 route.Operations.Add(new Operation
@@ -95,7 +94,6 @@ namespace BootGen
                     SuccessCode = 200,
                     SuccessDescription = $"successful insertion",
                     Parameters = path.Parameters,
-                    Authenticate = resource.Authenticate,
                     Response = resource.Class
                 });
         }
@@ -114,8 +112,7 @@ namespace BootGen
                     SuccessCode = 200,
                     SuccessDescription = $"successful query",
                     Response = resource.Class,
-                    Parameters = path.Parameters,
-                    Authenticate = resource.Authenticate
+                    Parameters = path.Parameters
                 });
             if (!resource.IsReadonly)
             {
@@ -128,8 +125,7 @@ namespace BootGen
                         SuccessCode = 200,
                         SuccessDescription = $"successful update",
                         Body = resource.Class,
-                        Parameters = path.Parameters,
-                        Authenticate = resource.Authenticate
+                        Parameters = path.Parameters
                     });
                 subRoute.Operations.Add(new Operation
                 {
@@ -138,8 +134,7 @@ namespace BootGen
                     Summary = $"delete {resourceName} resource",
                     SuccessCode = 200,
                     SuccessDescription = $"successful deletion",
-                    Parameters = path.Parameters,
-                    Authenticate = resource.Authenticate
+                    Parameters = path.Parameters
                 });
             }
         }
