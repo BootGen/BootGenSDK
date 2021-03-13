@@ -80,10 +80,6 @@ namespace BootGen
                 Console.WriteLine($"File not found: {templateFile}");
                 return;
             }
-            if (template == null) {
-                Console.WriteLine($"File not found: {templateFile}");
-                return;
-            }
             foreach (var c in classes)
             {
                 Disk.WriteText(folderName, targetFileName(c), RenderClass(template, c));
