@@ -46,15 +46,6 @@ namespace BootGen
             {
                 switch (property.Value.Type)
                 {
-                    case JTokenType.None:
-                    case JTokenType.Object:
-                    case JTokenType.Array:
-                    case JTokenType.Constructor:
-                    case JTokenType.Property:
-                    case JTokenType.Comment:
-                    case JTokenType.Null:
-                    case JTokenType.Undefined:
-                        continue;
                     case JTokenType.Date:
                         var dateTime = (DateTime)property.Value;
                         record.Set(property.Name, $"new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second})");
@@ -71,9 +62,6 @@ namespace BootGen
                     case JTokenType.Boolean:
                         record.Set(property.Name, ((bool)property.Value).ToString().ToLower());
                         break;
-                    default:
-                        record.Set(property.Name, property.Value.ToString());
-                        break;
                 }
             }
             if (c.HasTimestamps)
@@ -86,13 +74,6 @@ namespace BootGen
             else
                 record.Values.Insert(0, KeyValuePair.Create("Id", GetNextId(c)));
             return record;
-        }
-
-
-        public void Add<T>(RootResource resource, IEnumerable<T> data)
-        {
-            List<JObject> rawDataList = data.Select(i => JObject.FromObject(i)).ToList();
-            Add(resource, rawDataList);
         }
 
         public void Add(RootResource resource, List<JObject> rawDataList)

@@ -18,10 +18,6 @@ namespace BootGen
             Disk = disk;
         }
 
-        public static string KebabCase(string value)
-        {
-            return value.ToKebabCase();
-        }
         public static string SnakeCase(string value)
         {
             return value.ToSnakeCase();
@@ -33,7 +29,7 @@ namespace BootGen
         }
         public static string CamelCase(string value)
         {
-            return value[0].ToString().ToLower() + value.Substring(1);
+            return value.ToCamelCase();
         }
 
         public void Render(string folderName, string targetFileName, string templateFile, Dictionary<string, object> parameters)
@@ -45,9 +41,8 @@ namespace BootGen
 
         public string Render(string templateFile, Dictionary<string, object> parameters)
         {
-            var template = Parse(templateFile);
+            var template = LoadTemplate(templateFile);
             if (template == null) {
-                Console.WriteLine($"File not found: {templateFile}");
                 return null;
             }
             var context = new TemplateContext();
@@ -59,9 +54,8 @@ namespace BootGen
 
         public void RenderApi(string folderName, string targetFileName, string templateFile, string projectTitle, Api api)
         {
-            var template = Parse(templateFile);
+            var template = LoadTemplate(templateFile);
             if (template == null) {
-                Console.WriteLine($"File not found: {templateFile}");
                 return;
             }
             var context = new TemplateContext();
@@ -72,12 +66,19 @@ namespace BootGen
             Disk.WriteText(folderName, targetFileName, rendered);
         }
 
-
-        public void RenderClasses(string folderName, Func<ClassModel, string> targetFileName, string templateFile, List<ClassModel> classes)
-        {
+        Template LoadTemplate(string templateFile) {
             var template = Parse(templateFile);
             if (template == null) {
                 Console.WriteLine($"File not found: {templateFile}");
+            }
+            return template;
+        }
+
+
+        public void RenderClasses(string folderName, Func<ClassModel, string> targetFileName, string templateFile, IEnumerable<ClassModel> classes)
+        {
+            var template = LoadTemplate(templateFile);
+            if (template == null) {
                 return;
             }
             foreach (var c in classes)
@@ -97,9 +98,8 @@ namespace BootGen
 
         public void RenderResources(string folderName, Func<Resource, string> targetFileName, string templateFile, IEnumerable<Resource> resources)
         {
-            var template = Parse(templateFile);
+            var template = LoadTemplate(templateFile);
             if (template == null) {
-                Console.WriteLine($"File not found: {templateFile}");
                 return;
             }
             foreach (var resource in resources)
