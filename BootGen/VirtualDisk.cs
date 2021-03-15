@@ -11,9 +11,6 @@ namespace BootGen
     public class VirtualDisk : IDisk
     {
         public List<VirtualFile> Files = new List<VirtualFile>();
-        public void Delete(params string[] path)
-        {
-        }
 
         public void WriteText(string folder, string fileName, string content)
         {
