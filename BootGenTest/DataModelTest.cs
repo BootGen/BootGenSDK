@@ -20,7 +20,7 @@ namespace BootGenTest
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
             var api = new Api(resourceCollection);
-            Assert.AreEqual(4, dataModel.Classes.Count);
+            Assert.AreEqual(5, dataModel.Classes.Count);
 
             var tagClass = dataModel.Classes.First(c => c.Name.Singular == "Tag");
             Assert.AreEqual(4, tagClass.Properties.Count);
@@ -45,12 +45,22 @@ namespace BootGenTest
             AssertHasProperty(taskClass, "UserId", BuiltInType.Int);
 
             var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
-            Assert.AreEqual(4, userClass.Properties.Count);
+            Assert.AreEqual(6, userClass.Properties.Count);
             AssertHasProperty(userClass, "Id", BuiltInType.Int);
             AssertHasProperty(userClass, "UserName", BuiltInType.String);
             AssertHasProperty(userClass, "Email", BuiltInType.String);
-            //AssertHasProperty(UserClass, "PasswordHash", BuiltInType.String);
             AssertHasOneToManyProperty(userClass, "Tasks");
+            AssertHasProperty(userClass, "Address", BuiltInType.Object);
+            AssertHasProperty(userClass, "AddressId", BuiltInType.Int);
+
+
+            var addressClass = dataModel.Classes.First(c => c.Name.Singular == "Address");
+            Assert.AreEqual(5, addressClass.Properties.Count);
+            AssertHasProperty(addressClass, "Id", BuiltInType.Int);
+            AssertHasProperty(addressClass, "City", BuiltInType.String);
+            AssertHasProperty(addressClass, "Street", BuiltInType.String);
+            AssertHasProperty(addressClass, "Zip", BuiltInType.String);
+            AssertHasProperty(addressClass, "HouseNumber", BuiltInType.String);
 
             var userResource = resourceCollection.RootResources.First(r => r.Class == userClass);
             Assert.AreEqual(0, userResource.AlternateResources.Count);

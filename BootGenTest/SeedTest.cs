@@ -25,10 +25,11 @@ namespace BootGenTest
             var tasks = resourceCollection.RootResources.First(r => r.Name.Singular == "Task");
             var tag = resourceCollection.RootResources.First(r => r.Name.Singular == "Tag");
             var userRecord = seedStore.Get(users.Class).First();
-            Assert.AreEqual(3, userRecord.Values.Count);
+            Assert.AreEqual(4, userRecord.Values.Count);
             Assert.AreEqual("1", userRecord.Get("Id"));
             Assert.AreEqual("\"Test User\"", userRecord.Get("UserName"));
             Assert.AreEqual("\"example@email.com\"", userRecord.Get("Email"));
+            Assert.AreEqual("1", userRecord.Get("AddressId"));
             
             var taskRecord = seedStore.Get(tasks.Class).First();
             Assert.AreEqual(10, taskRecord.Values.Count);

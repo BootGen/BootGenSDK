@@ -3,6 +3,12 @@
 		{
 			"userName": "Test User",
 			"email": "example@email.com",
+			"address": {
+				"city": "Pécs",
+				"zip": "7621",
+				"street": "Király utca",
+				"houseNumber": "42"
+			},
 			"tasks": [
 				//timestamps
 				{
