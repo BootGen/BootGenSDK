@@ -26,7 +26,7 @@ namespace BootGenTest
             var Users = resourceCollection.RootResources.First();
             var api = new Api(resourceCollection);
             Assert.AreEqual(3, Users.Class.Properties.Count);
-            Assert.AreEqual(BuiltInType.Int32, Users.Class.IdProperty.BuiltInType);
+            Assert.AreEqual(BuiltInType.Int, Users.Class.IdProperty.BuiltInType);
             Assert.AreEqual("Id, Email, Name", GetPropertyList(Users.Class));
         }
 
@@ -47,9 +47,9 @@ namespace BootGenTest
             var Issues = resourceCollection.RootResources.First(r => r.Name.Singular == "Issue");
             var api = new Api(resourceCollection);
             Assert.AreEqual(5, Issues.Class.Properties.Count);
-            Assert.AreEqual(BuiltInType.Int32, Issues.Class.IdProperty.BuiltInType);
+            Assert.AreEqual(BuiltInType.Int, Issues.Class.IdProperty.BuiltInType);
             Assert.AreEqual("Id, Title, Description, User, UserId", GetPropertyList(Issues.Class));
-            Assert.AreEqual(BuiltInType.Int32, Issues.Class.PropertyWithName("UserId").BuiltInType);
+            Assert.AreEqual(BuiltInType.Int, Issues.Class.PropertyWithName("UserId").BuiltInType);
         }
 
         private string GetPropertyList(ClassModel c)

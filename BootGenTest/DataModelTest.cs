@@ -24,25 +24,25 @@ namespace BootGenTest
 
             var tagClass = dataModel.Classes.First(c => c.Name.Singular == "Tag");
             Assert.AreEqual(4, tagClass.Properties.Count);
-            AssertHasProperty(tagClass, "Id", BuiltInType.Int32);
+            AssertHasProperty(tagClass, "Id", BuiltInType.Int);
             AssertHasProperty(tagClass, "Name", BuiltInType.String);
             AssertHasProperty(tagClass, "Color", BuiltInType.String);
             AssertHasManyToManyProperty(tagClass, "Tasks");
 
             var taskClass = dataModel.Classes.First(c => c.Name.Singular == "Task");
             Assert.AreEqual(8, taskClass.Properties.Count);
-            AssertHasProperty(taskClass, "Id", BuiltInType.Int32);
+            AssertHasProperty(taskClass, "Id", BuiltInType.Int);
             AssertHasProperty(taskClass, "Title", BuiltInType.String);
             AssertHasProperty(taskClass, "Description", BuiltInType.String);
             AssertHasProperty(taskClass, "Created", BuiltInType.DateTime);
             AssertHasProperty(taskClass, "Updated", BuiltInType.DateTime);
             AssertHasManyToManyProperty(taskClass, "Tags");
             AssertHasProperty(taskClass, "User", BuiltInType.Object);
-            AssertHasProperty(taskClass, "UserId", BuiltInType.Int32);
+            AssertHasProperty(taskClass, "UserId", BuiltInType.Int);
 
             var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
             Assert.AreEqual(4, userClass.Properties.Count);
-            AssertHasProperty(userClass, "Id", BuiltInType.Int32);
+            AssertHasProperty(userClass, "Id", BuiltInType.Int);
             AssertHasProperty(userClass, "UserName", BuiltInType.String);
             AssertHasProperty(userClass, "Email", BuiltInType.String);
             //AssertHasProperty(UserClass, "PasswordHash", BuiltInType.String);

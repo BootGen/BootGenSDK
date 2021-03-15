@@ -24,7 +24,7 @@ namespace BootGen
                 new Property
                 {
                     Name = "Id",
-                    BuiltInType = BuiltInType.Int32,
+                    BuiltInType = BuiltInType.Int,
                     IsClientReadonly = true
                 }
             };

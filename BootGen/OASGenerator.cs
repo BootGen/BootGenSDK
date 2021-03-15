@@ -16,13 +16,9 @@ namespace BootGen
             {
                 case BuiltInType.Bool:
                     return "boolean";
-                case BuiltInType.Int32:
-                    return "integer";
-                case BuiltInType.Int64:
+                case BuiltInType.Int:
                     return "integer";
                 case BuiltInType.Float:
-                    return "number";
-                case BuiltInType.Double:
                     return "number";
                 case BuiltInType.String:
                     return "string";
@@ -36,14 +32,10 @@ namespace BootGen
         {
             switch (property.BuiltInType)
             {
-                case BuiltInType.Int32:
+                case BuiltInType.Int:
                     return "int32";
-                case BuiltInType.Int64:
-                    return "int64";
                 case BuiltInType.Float:
                     return "float";
-                case BuiltInType.Double:
-                    return "double";
                 case BuiltInType.DateTime:
                     return "date-time";
             }

@@ -54,7 +54,7 @@ namespace BootGen
             };
             pivotClass.Properties.Add(new Property {
                             Name = name1 + "Id",
-                            BuiltInType = BuiltInType.Int32
+                            BuiltInType = BuiltInType.Int
                         });
             pivotClass.Properties.Add(new Property {
                             Name = name1,
@@ -64,7 +64,7 @@ namespace BootGen
                         });
             pivotClass.Properties.Add(new Property {
                             Name = name2 + "Id",
-                            BuiltInType = BuiltInType.Int32
+                            BuiltInType = BuiltInType.Int
                         });
             pivotClass.Properties.Add(new Property {
                             Name = name2,

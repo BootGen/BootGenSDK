@@ -61,14 +61,10 @@ namespace BootGen
             {
                 case BuiltInType.Bool:
                     return "bool";
-                case BuiltInType.Int32:
+                case BuiltInType.Int:
                     return "int";
-                case BuiltInType.Int64:
-                    return "long";
                 case BuiltInType.Float:
                     return "float";
-                case BuiltInType.Double:
-                    return "double";
                 case BuiltInType.String:
                     return "string";
                 case BuiltInType.DateTime:

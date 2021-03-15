@@ -134,7 +134,7 @@ namespace BootGen
                 case JTokenType.Date:
                     return BuiltInType.DateTime;
                 case JTokenType.Integer:
-                    return BuiltInType.Int32;
+                    return BuiltInType.Int;
                 case JTokenType.Float:
                     return BuiltInType.Float;
                 case JTokenType.Array:
@@ -174,7 +174,7 @@ namespace BootGen
                     property.Class.Properties.Add(new Property
                     {
                         Name = c.Name + "Id",
-                        BuiltInType = BuiltInType.Int32
+                        BuiltInType = BuiltInType.Int
                     });
                 AddEfRelationsParentToChild(property.Class);
             }
@@ -196,7 +196,7 @@ namespace BootGen
                         c.Properties.Insert(propertyIdx + 1, new Property
                         {
                             Name = property.Name + "Id",
-                            BuiltInType = BuiltInType.Int32,
+                            BuiltInType = BuiltInType.Int,
                             PropertyType = PropertyType.Normal
                         });
                         property.PropertyType = PropertyType.ServerOnly;
@@ -234,7 +234,7 @@ namespace BootGen
                 Property property = new Property
                 {
                     Name = parent.Name + "Id",
-                    BuiltInType = BuiltInType.Int32,
+                    BuiltInType = BuiltInType.Int,
                     IsCollection = false
                 };
                 child.Properties.Add(property);
