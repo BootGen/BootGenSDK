@@ -57,13 +57,16 @@ namespace BootGen
                         continue;
                     case JTokenType.Date:
                         var dateTime = (DateTime)property.Value;
-                        AddDateTime(record, property.Name, dateTime);
+                        record.Set(property.Name, $"new DateTime({dateTime.Year}, {dateTime.Month}, {dateTime.Day}, {dateTime.Hour}, {dateTime.Minute}, {dateTime.Second})");
                         break;
                     case JTokenType.String:
                         record.Set(property.Name, $"\"{property.Value.ToString()}\"");
                         break;
                     case JTokenType.Integer:
                         record.Set(property.Name, property.Value.ToString());
+                        break;
+                    case JTokenType.Float:
+                        record.Set(property.Name, $"{property.Value.ToString()}f");
                         break;
                     case JTokenType.Boolean:
                         record.Set(property.Name, ((bool)property.Value).ToString().ToLower());
@@ -75,8 +78,8 @@ namespace BootGen
             }
             if (c.HasTimestamps)
             {
-                AddDateTime(record, "Created", DateTime.Now);
-                AddDateTime(record, "Updated", DateTime.Now);
+                record.Set("Created", "DateTime.Now");
+                record.Set("Updated", "DateTime.Now");
             }
             if (record.HasKey("Id"))
                 record.Set("Id", GetNextId(c));
@@ -85,10 +88,6 @@ namespace BootGen
             return record;
         }
 
-        private static void AddDateTime(SeedRecord record, string propertyName, DateTime dateTime)
-        {
-            record.Set(propertyName, "DateTime.Now");
-        }
 
         public void Add<T>(RootResource resource, IEnumerable<T> data)
         {
