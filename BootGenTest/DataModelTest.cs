@@ -74,6 +74,21 @@ namespace BootGenTest
             Assert.IsNotNull(tagResource.AlternateResources.First().Pivot);
         }
 
+        [TestMethod]
+        public void TestLoadRecursiveModel()
+        {
+            var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var dataModel = new DataModel();
+            dataModel.Load(data);
+            var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
+            Assert.AreEqual(4, userClass.Properties.Count);
+            AssertHasProperty(userClass, "Id", BuiltInType.Int);
+            AssertHasProperty(userClass, "UserName", BuiltInType.String);
+            AssertHasProperty(userClass, "Email", BuiltInType.String);
+            var property = AssertHasManyToManyProperty(userClass, "Friends");
+            Assert.AreEqual(property, property.MirrorProperty);
+        }
+
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
             Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{classModel.Name}.{propertyName} -> {type} is missing.");
         }
@@ -82,8 +97,10 @@ namespace BootGenTest
             Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == BuiltInType.Object && p.IsCollection && !p.IsManyToMany), $"{classModel.Name}.{propertyName} is missing.");
         }
 
-        private void AssertHasManyToManyProperty(ClassModel classModel, string propertyName) {
-            Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == BuiltInType.Object && p.IsCollection && p.IsManyToMany), $"{classModel.Name}.{propertyName} is missing.");
+        private Property AssertHasManyToManyProperty(ClassModel classModel, string propertyName) {
+            var property = classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == BuiltInType.Object && p.IsCollection && p.IsManyToMany);
+            Assert.IsNotNull(property, $"{classModel.Name}.{propertyName} is missing.");
+            return property;
         }
     }
 }

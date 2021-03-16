@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -28,9 +29,12 @@ namespace BootGen
             }
 
             foreach (var c in Classes)
-                foreach (var p in c.Properties)
+            {
+                var properties = new List<Property>(c.Properties);
+                foreach (var p in properties)
                     if (p.IsCollection && p.BuiltInType == BuiltInType.Object && !p.IsManyToMany)
                         AddOneToManyParentReference(c, p.Class);
+            }
 
             foreach (var c in Classes)
             {
@@ -55,12 +59,7 @@ namespace BootGen
                 className = property.Name.Capitalize();
                 className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
             }
-            ClassModel result = Classes.FirstOrDefault(c => c.Name.Singular == className);
-            if (result == null)
-            {
-                result = new ClassModel(className);
-                AddClass(result);
-            }
+            Lazy<ClassModel> result = new Lazy<ClassModel>(() => GetClassModel(className));
             manyToMany = false;
             switch (property.Value.Type)
             {
@@ -70,33 +69,50 @@ namespace BootGen
                     foreach (JToken item in data)
                     {
                         if (item.Type == JTokenType.Comment) {
-                            if (item.Value<string>().Trim() == "many-to-many") {
+                            string comment = item.Value<string>().Trim();
+                            if (comment == "many-to-many") {
                                 manyToMany = true;
                             }
-                            if (item.Value<string>().Trim() == "timestamps") {
-                                result.HasTimestamps = true;
-                                result.Properties.Add(new Property {
+                            if (comment == "timestamps") {
+                                result.Value.HasTimestamps = true;
+                                result.Value.Properties.Add(new Property {
                                     Name = "Created",
                                     BuiltInType = BuiltInType.DateTime
                                 });
-                                result.Properties.Add(new Property {
+                                result.Value.Properties.Add(new Property {
                                     Name = "Updated",
                                     BuiltInType = BuiltInType.DateTime
                                 });
                             }
+                            if (comment.StartsWith("class:")) {
+                                Noun explicitClassName = comment.Split(":").Last().Capitalize();
+                                explicitClassName.Plural = pluralizer.Pluralize(property.Name).Capitalize();
+                                result = new Lazy<ClassModel>(() => GetClassModel(explicitClassName));
+                            }
                         }
                         if (item.Type == JTokenType.Object) {
-                            ExtendModel(result, (JObject)item);
+                            ExtendModel(result.Value, (JObject)item);
                         }
                     }
                 break;
                 case JTokenType.Object:
-                    ExtendModel(result, property.Value as JObject);
+                    ExtendModel(result.Value, property.Value as JObject);
                 break;
                 default:
                 return null;
             }
-            return result;
+            return result.Value;
+        }
+
+        private ClassModel GetClassModel(Noun className)
+        {
+            var c = Classes.FirstOrDefault(c => c.Name.Singular == className);
+            if (c == null)
+            {
+                c = new ClassModel(className);
+                AddClass(c);
+            }
+            return c;
         }
 
         private void ExtendModel(ClassModel model, JObject item)
@@ -147,12 +163,13 @@ namespace BootGen
         private void AddEfRelationsParentToChild(ClassModel c)
         {
             c.RelationsAreSetUp = true;
-            foreach (var property in c.Properties)
+            var properties = new List<Property>(c.Properties);
+            foreach (var property in properties)
             {
                 if (property.Class == null || !property.IsCollection || property.MirrorProperty != null)
                     continue;
 
-                Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Name == c.Name);
+                Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Class == c);
                 if (referenceProperty == null)
                 {
                     referenceProperty = new Property
