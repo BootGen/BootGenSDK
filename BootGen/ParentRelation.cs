@@ -9,6 +9,5 @@ namespace BootGen
         }
         public string Name { get; set; }
         public Resource Resource { get; set; }
-        internal Property ParentIdProperty { get; set; }
     }
 }

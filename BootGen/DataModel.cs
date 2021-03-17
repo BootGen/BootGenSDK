@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -46,21 +47,66 @@ namespace BootGen
             }
         }
 
-
         private ClassModel Parse(JProperty property, out bool manyToMany)
         {
             var pluralizer = new Pluralizer();
             Noun className;
+            bool hasTimestamps = false;
+            manyToMany = false;
             if (property.Value.Type == JTokenType.Array)
             {
                 className = pluralizer.Singularize(property.Name).Capitalize();
                 className.Plural = property.Name.Capitalize();
-            } else {
+                var data = property.Value as JArray;
+                foreach (JToken item in data)
+                {
+                    if (item.Type != JTokenType.Comment)
+                        continue;
+                    string comment = item.Value<string>().Trim();
+                    if (comment == "many-to-many")
+                    {
+                        manyToMany = true;
+                        continue;
+                    }
+                    if (comment == "timestamps")
+                    {
+                        hasTimestamps = true;
+                        continue;
+                    }
+                    if (comment.StartsWith("class:"))
+                    {
+                        string name = comment.Split(":").Last();
+                        var provider = CodeDomProvider.CreateProvider("C#");
+                        if (provider.IsValidIdentifier(name))
+                        {
+                            className = name.Capitalize();
+                            className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
+                            continue;
+                        }
+                    }
+                    throw new Exception($"Unrecognised hint: {comment}");
+                }
+            }
+            else
+            {
                 className = property.Name.Capitalize();
                 className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
             }
-            Lazy<ClassModel> result = new Lazy<ClassModel>(() => GetClassModel(className));
-            manyToMany = false;
+            ClassModel result = GetClassModel(className);
+            if (hasTimestamps && !result.HasTimestamps)
+            {
+                result.HasTimestamps = true;
+                result.Properties.Add(new Property
+                {
+                    Name = "Created",
+                    BuiltInType = BuiltInType.DateTime
+                });
+                result.Properties.Add(new Property
+                {
+                    Name = "Updated",
+                    BuiltInType = BuiltInType.DateTime
+                });
+            }
             switch (property.Value.Type)
             {
                 case JTokenType.Array:
@@ -68,40 +114,19 @@ namespace BootGen
                     var comments = new List<JToken>();
                     foreach (JToken item in data)
                     {
-                        if (item.Type == JTokenType.Comment) {
-                            string comment = item.Value<string>().Trim();
-                            if (comment == "many-to-many") {
-                                manyToMany = true;
-                            }
-                            if (comment == "timestamps") {
-                                result.Value.HasTimestamps = true;
-                                result.Value.Properties.Add(new Property {
-                                    Name = "Created",
-                                    BuiltInType = BuiltInType.DateTime
-                                });
-                                result.Value.Properties.Add(new Property {
-                                    Name = "Updated",
-                                    BuiltInType = BuiltInType.DateTime
-                                });
-                            }
-                            if (comment.StartsWith("class:")) {
-                                Noun explicitClassName = comment.Split(":").Last().Capitalize();
-                                explicitClassName.Plural = pluralizer.Pluralize(property.Name).Capitalize();
-                                result = new Lazy<ClassModel>(() => GetClassModel(explicitClassName));
-                            }
-                        }
-                        if (item.Type == JTokenType.Object) {
-                            ExtendModel(result.Value, (JObject)item);
+                        if (item.Type == JTokenType.Object)
+                        {
+                            ExtendModel(result, (JObject)item);
                         }
                     }
-                break;
+                    break;
                 case JTokenType.Object:
-                    ExtendModel(result.Value, property.Value as JObject);
-                break;
+                    ExtendModel(result, property.Value as JObject);
+                    break;
                 default:
-                return null;
+                    return null;
             }
-            return result.Value;
+            return result;
         }
 
         private ClassModel GetClassModel(Noun className)
@@ -128,7 +153,8 @@ namespace BootGen
                         BuiltInType = ConvertType(property.Value.Type),
                         IsCollection = property.Value.Type == JTokenType.Array
                     };
-                    if (prop.BuiltInType == BuiltInType.Object) {
+                    if (prop.BuiltInType == BuiltInType.Object)
+                    {
                         prop.Class = Parse(property, out bool m2m);
                         prop.IsManyToMany = m2m;
                         if (prop.IsCollection)
