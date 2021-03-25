@@ -53,10 +53,8 @@ namespace BootGen
         private void CreateOneToManyRelation(RootResource resource, Property property)
         {
             var rootResource = RootResources.First(r => r.Class == property.Class);
-            var nestedResource = resource.OneToMany(property.Class);
+            var nestedResource = resource.OneToMany(property);
             nestedResource.IsReadonly = true;
-            nestedResource.Name = property.Name.Substring(0, property.Name.Length - 1);
-            nestedResource.Name.Plural = property.Name;
             nestedResource.RootResource = rootResource;
             rootResource.AlternateResources.Add(nestedResource);
         }
@@ -64,11 +62,11 @@ namespace BootGen
         {
             var rootResource = RootResources.First(r => r.Class == property.Class);
             string pivotName;
-            if (string.Compare(resource.Class.Name, property.Class.Name, StringComparison.InvariantCulture) < 0)
-                pivotName = $"{resource.Class.Name.Plural}{property.Class.Name.Plural}Pivot";
+            if (resource.Class == property.Class || string.Compare(resource.Class.Name, property.Noun, StringComparison.InvariantCulture) < 0)
+                pivotName = $"{resource.Class.Name.Plural}{property.Noun.Plural}Pivot";
             else
-                pivotName = $"{property.Class.Name.Plural}{resource.Class.Name.Plural}Pivot";
-            var nestedResource = resource.ManyToMany(property.Class, pivotName);
+                pivotName = $"{property.Noun.Plural}{resource.Class.Name.Plural}Pivot";
+            var nestedResource = resource.ManyToMany(property, pivotName);
             nestedResource.Name = property.Name.Substring(0, property.Name.Length - 1);
             nestedResource.Name.Plural = property.Name;
             nestedResource.RootResource = rootResource;

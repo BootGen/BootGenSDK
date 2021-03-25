@@ -142,6 +142,7 @@ namespace BootGen
 
         private void ExtendModel(ClassModel model, JObject item)
         {
+            var pluralizer = new Pluralizer();
             foreach (var property in item.Properties())
             {
                 var propertyName = property.Name.Capitalize();
@@ -153,6 +154,10 @@ namespace BootGen
                         BuiltInType = ConvertType(property.Value.Type),
                         IsCollection = property.Value.Type == JTokenType.Array
                     };
+                    if (prop.IsCollection) {
+                        prop.Noun = pluralizer.Singularize(propertyName);
+                        prop.Noun.Plural = propertyName;
+                    }
                     if (prop.BuiltInType == BuiltInType.Object)
                     {
                         prop.Class = Parse(property, out bool m2m);
@@ -188,6 +193,7 @@ namespace BootGen
         }
         private void AddEfRelationsParentToChild(ClassModel c)
         {
+            var pluralizer = new Pluralizer();
             c.RelationsAreSetUp = true;
             var properties = new List<Property>(c.Properties);
             foreach (var property in properties)
@@ -208,6 +214,10 @@ namespace BootGen
                         PropertyType = PropertyType.ServerOnly,
                         IsParentReference = true
                     };
+                    if (referenceProperty.IsCollection) {
+                        referenceProperty.Noun = pluralizer.Singularize(referenceProperty.Name);
+                        referenceProperty.Noun.Plural = referenceProperty.Name;
+                    }
                     property.Class.Properties.Add(referenceProperty);
                 }
                 referenceProperty.MirrorProperty = property;

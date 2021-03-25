@@ -22,11 +22,11 @@ namespace BootGen
         public List<NestedResource> NestedResources { get; } = new List<NestedResource>();
         public List<NestedResource> AlternateResources { get; } = new List<NestedResource>();
 
-        public NestedResource OneToMany(ClassModel c)
+        public NestedResource OneToMany(Property property)
         {
             NestedResource resource = new NestedResource();
-            resource.Name = c.Name;
-            resource.Class = c;
+            resource.Name = property.Noun;
+            resource.Class = property.Class;
             resource.DataModel = DataModel;
             resource.ParentRelation = new ParentRelation(this);
             if (NestedResources.Any(r => r.Name == resource.Name))
@@ -35,9 +35,9 @@ namespace BootGen
             return resource;
         }
         
-        public NestedResource ManyToMany(ClassModel c, string pivotName)
+        public NestedResource ManyToMany(Property property, string pivotName)
         {
-            NestedResource resource = OneToMany(c);
+            NestedResource resource = OneToMany(property);
             resource.Pivot = CreatePivot(this, resource, pivotName);
             return resource;
         }
@@ -46,8 +46,8 @@ namespace BootGen
             var pivotClass = DataModel.Classes.FirstOrDefault(c => c.Name == name);
             if (pivotClass != null)
                 return pivotClass;
-            var name1 = parent.Name;
-            var name2 = resource.Name;
+            var name1 = parent.Name.Singular;
+            var name2 = resource.Name.Singular;
             pivotClass = new ClassModel(name)
             {
                 Location = PropertyType.ServerOnly

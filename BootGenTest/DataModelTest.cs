@@ -87,6 +87,15 @@ namespace BootGenTest
             AssertHasProperty(userClass, "Email", BuiltInType.String);
             var property = AssertHasManyToManyProperty(userClass, "Friends");
             Assert.AreEqual(property, property.MirrorProperty);
+
+            var resourceCollection = new ResourceCollection(dataModel);
+            var pivotClass = dataModel.Classes.First(c => c.Name.Singular == "UsersFriendsPivot");
+            Assert.AreEqual(5, pivotClass.Properties.Count);
+            AssertHasProperty(pivotClass, "Id", BuiltInType.Int);
+            AssertHasProperty(pivotClass, "User", BuiltInType.Object);
+            AssertHasProperty(pivotClass, "UserId", BuiltInType.Int);
+            AssertHasProperty(pivotClass, "Friend", BuiltInType.Object);
+            AssertHasProperty(pivotClass, "FriendId", BuiltInType.Int);
         }
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
