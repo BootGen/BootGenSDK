@@ -10,8 +10,10 @@ namespace BootGen
     {
         public string ControllerFolder { get; set; }
         public string ServiceFolder { get; set; }
-        public string ModelFolder { get; set; }
+        public string EntityFolder { get; set; }
         public string ClientFolder { get; set; }
+        public string ClientExtension { get; set; }
+        public string ClientComponentExtension { get; set; }
         public IDisk Disk { get; set; }
         public Api Api { get; set; }
         private DataModel DataModel => ResourceCollection.DataModel;
@@ -44,8 +46,8 @@ namespace BootGen
             aspNetCoreGenerator.RenderClasses(ServiceFolder, c => $"I{c.Name.Plural}Service.cs", "server/pivotServiceInterface.sbn", pivotClasses);
             aspNetCoreGenerator.RenderClasses(ServiceFolder, c => $"{c.Name.Plural}Service.cs", "server/pivotService.sbn", pivotClasses);
 
-            aspNetCoreGenerator.RenderClasses(ModelFolder, s => $"{s.Name}.cs", "server/model.sbn", DataModel.Classes);
-            aspNetCoreGenerator.Render("", "DataContext.cs", "server/dataContext.sbn", new Dictionary<string, object> {
+            aspNetCoreGenerator.RenderClasses(EntityFolder, s => $"{s.Name}.cs", "server/entity.sbn", DataModel.Classes);
+            aspNetCoreGenerator.Render("", "ApplicationDbContext.cs", "server/applicationDbContext.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.Classes},
                 {"seedList", SeedStore.All()},
                 {"name_space", namespce}
@@ -56,18 +58,18 @@ namespace BootGen
             });
             var typeScriptGenerator = new TypeScriptGenerator(disk);
             typeScriptGenerator.TemplateRoot = TemplateRoot;
-            typeScriptGenerator.RenderClasses($"{ClientFolder}/models", s => $"{s.Name}.ts", "client/model.sbn", DataModel.CommonClasses);
-            typeScriptGenerator.RenderClasses($"{ClientFolder}/views", s => $"{s.Name}List.vue", "client/model_list.sbn", DataModel.CommonClasses);
-            typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}View.vue", "client/model_view.sbn", DataModel.CommonClasses);
-            typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}Edit.vue", "client/model_edit.sbn", DataModel.CommonClasses);
-            typeScriptGenerator.RenderResources($"{ClientFolder}/store", s => $"{s.Name}Module.ts", "client/store_module.sbn", Api.RootResources);
-            typeScriptGenerator.Render($"{ClientFolder}/router", "index.ts", "client/router.sbn", new Dictionary<string, object> {
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/models", s => $"{s.Name}.{ClientExtension}", "client/model.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/views", s => $"{s.Name}List.{ClientComponentExtension}", "client/model_list.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}View.{ClientComponentExtension}", "client/model_view.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}Edit.{ClientComponentExtension}", "client/model_edit.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderResources($"{ClientFolder}/store", s => $"{s.Name}Module.{ClientExtension}", "client/store_module.sbn", Api.RootResources);
+            typeScriptGenerator.Render($"{ClientFolder}/router", $"index.{ClientExtension}", "client/router.sbn", new Dictionary<string, object> {
                 {"classes", Api.RootResources.Select(r => r.Class)}
             });
-            typeScriptGenerator.Render($"{ClientFolder}", "App.vue", "client/app.sbn", new Dictionary<string, object> {
+            typeScriptGenerator.Render($"{ClientFolder}", $"App.{ClientComponentExtension}", "client/app.sbn", new Dictionary<string, object> {
                 {"classes", Api.RootResources.Select(r => r.Class)}
             });
-            typeScriptGenerator.Render($"{ClientFolder}/store", "index.ts", "client/store.sbn", new Dictionary<string, object> {
+            typeScriptGenerator.Render($"{ClientFolder}/store", $"index.{ClientExtension}", "client/store.sbn", new Dictionary<string, object> {
                 {"classes", Api.RootResources.Select(r => r.Class)},
                 {"base_url", baseUrl}
             });
