@@ -212,7 +212,7 @@ namespace BootGen
                         IsCollection = property.IsManyToMany,
                         IsManyToMany = property.IsManyToMany,
                         PropertyType = PropertyType.ServerOnly,
-                        IsParentReference = true
+                        IsParentReference = !property.IsManyToMany
                     };
                     if (referenceProperty.IsCollection) {
                         referenceProperty.Noun = pluralizer.Singularize(referenceProperty.Name);
