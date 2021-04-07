@@ -7,6 +7,7 @@ namespace BootGen
     public class ResourceCollection
     {
         public List<RootResource> RootResources { get; } = new List<RootResource>();
+        public List<NestedResource> NestedResources => RootResources.SelectMany(r => r.NestedResources).ToList();
 
         public DataModel DataModel { get; }
 

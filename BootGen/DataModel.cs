@@ -10,7 +10,7 @@ namespace BootGen
     public class DataModel
     {
         public List<ClassModel> Classes => ClassCollection.Classes;
-        public List<ClassModel> CommonClasses => Classes.Where(p => p.Location == PropertyType.Normal).ToList();
+        public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
         internal ClassCollection ClassCollection { get; }
 
         public DataModel()
@@ -163,7 +163,7 @@ namespace BootGen
                         prop.Class = Parse(property, out bool m2m);
                         prop.IsManyToMany = m2m;
                         if (prop.IsCollection)
-                            prop.PropertyType = PropertyType.ServerOnly;
+                            prop.IsServerOnly = true;
                     }
                     model.Properties.Add(prop);
                 }
@@ -211,7 +211,7 @@ namespace BootGen
                         Class = c,
                         IsCollection = property.IsManyToMany,
                         IsManyToMany = property.IsManyToMany,
-                        PropertyType = PropertyType.ServerOnly,
+                        IsServerOnly = true,
                         IsParentReference = !property.IsManyToMany
                     };
                     if (referenceProperty.IsCollection) {
@@ -249,10 +249,9 @@ namespace BootGen
                         c.Properties.Insert(propertyIdx + 1, new Property
                         {
                             Name = property.Name + "Id",
-                            BuiltInType = BuiltInType.Int,
-                            PropertyType = PropertyType.Normal
+                            BuiltInType = BuiltInType.Int
                         });
-                        property.PropertyType = PropertyType.ServerOnly;
+                        property.IsServerOnly = true;
                         propertyIdx += 1;
                         AddEfRelationsChildToParent(property.Class);
                     }
@@ -271,7 +270,7 @@ namespace BootGen
                     BuiltInType = BuiltInType.Object,
                     Class = parent,
                     IsCollection = false,
-                    PropertyType = PropertyType.ServerOnly,
+                    IsServerOnly = true,
                     IsParentReference = true
                 };
                 child.Properties.Add(referenceProperty);

@@ -23,6 +23,11 @@ namespace BootGen
             return value.ToSnakeCase();
         }
 
+        public static string KebabCase(string value)
+        {
+            return value.ToKebabCase();
+        }
+
         public static string LowerCase(string value)
         {
             return value.ToLower();
@@ -30,6 +35,10 @@ namespace BootGen
         public static string CamelCase(string value)
         {
             return value.ToCamelCase();
+        }
+        public static string ToWords(string value)
+        {
+            return value.ToWords();
         }
 
         public void Render(string folderName, string targetFileName, string templateFile, Dictionary<string, object> parameters)
@@ -50,20 +59,6 @@ namespace BootGen
             foreach (var param in parameters)
                 context.SetValue(new ScriptVariableGlobal(param.Key), param.Value);
             return template.Render(context);
-        }
-
-        public void RenderApi(string folderName, string targetFileName, string templateFile, string projectTitle, Api api)
-        {
-            var template = LoadTemplate(templateFile);
-            if (template == null) {
-                return;
-            }
-            var context = new TemplateContext();
-            context.PushGlobal(this);
-            context.SetValue(new ScriptVariableGlobal("api"), api);
-            context.SetValue(new ScriptVariableGlobal("project_title"), projectTitle);
-            var rendered = template.Render(context);
-            Disk.WriteText(folderName, targetFileName, rendered);
         }
 
         Template LoadTemplate(string templateFile) {

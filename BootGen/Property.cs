@@ -12,14 +12,11 @@ namespace BootGen
         public ClassModel Class { get; set; }
     }
 
-    public enum PropertyType { Normal, ServerOnly }
-
     public class Property : TypeDescription
     {
         public Noun Noun { get; set; }
         public string Name { get; set; }
-        public PropertyType PropertyType { get; set; }
-        public bool IsServerOnly => PropertyType == PropertyType.ServerOnly;
+        public bool IsServerOnly { get; set; }
         public Property MirrorProperty { get; set; }
         public bool IsParentReference { get; set; }
         public bool IsManyToMany { get; set; }
