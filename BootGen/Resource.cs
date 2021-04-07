@@ -44,29 +44,28 @@ namespace BootGen
             var pivotClass = DataModel.Classes.FirstOrDefault(c => c.Name == name);
             if (pivotClass != null)
                 return pivotClass;
-            var name1 = parent.Name.Singular;
-            var name2 = resource.Name.Singular;
             pivotClass = new ClassModel(name)
             {
-                IsServerOnly = true
+                IsServerOnly = true,
+                IsPivot = true
             };
             pivotClass.Properties.Add(new Property {
-                            Name = name1 + "Id",
+                            Name = parent.Name.Plural + "Id",
                             BuiltInType = BuiltInType.Int
                         });
             pivotClass.Properties.Add(new Property {
-                            Name = name1,
-                            Noun = name1,
+                            Name = parent.Name,
+                            Noun = parent.Name,
                             BuiltInType = BuiltInType.Object,
                             Class = parent.Class
                         });
             pivotClass.Properties.Add(new Property {
-                            Name = name2 + "Id",
+                            Name = resource.Name.Plural + "Id",
                             BuiltInType = BuiltInType.Int
                         });
             pivotClass.Properties.Add(new Property {
-                            Name = name2,
-                            Noun = name2,
+                            Name = resource.Name,
+                            Noun = resource.Name,
                             BuiltInType = BuiltInType.Object,
                             Class = resource.Class
                         });

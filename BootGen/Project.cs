@@ -43,22 +43,19 @@ namespace BootGen
             });
             aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{FullName(r)}Controller.cs", "server/resourceController.sbn", ResourceCollection.RootResources.ToList());
             aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{FullName(r)}Controller.cs", "server/nestedResourceController.sbn", ResourceCollection.NestedResources.Where(r => r.Pivot == null).ToList());
-            aspNetCoreGenerator.RenderResources(ServiceFolder, r => $"I{FullName(r)}Service.cs", "server/resourceServiceInterface.sbn", ResourceCollection.RootResources.ToList());
+            aspNetCoreGenerator.RenderResources($"{ServiceFolder}/Interfaces", r => $"I{FullName(r)}Service.cs", "server/resourceServiceInterface.sbn", ResourceCollection.RootResources.ToList());
             aspNetCoreGenerator.RenderResources(ServiceFolder, r => $"{FullName(r)}Service.cs", "server/resourceService.sbn", ResourceCollection.RootResources.ToList());
 
             aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{FullName(r)}Controller.cs", "server/pivotController.sbn", pivotResources);
-            aspNetCoreGenerator.RenderClasses(ServiceFolder, c => $"I{c.Name.Plural}Service.cs", "server/pivotServiceInterface.sbn", pivotClasses);
-            aspNetCoreGenerator.RenderClasses(ServiceFolder, c => $"{c.Name.Plural}Service.cs", "server/pivotService.sbn", pivotClasses);
 
-            aspNetCoreGenerator.RenderClasses(EntityFolder, s => $"{s.Name}.cs", "server/entity.sbn", DataModel.Classes);
+            aspNetCoreGenerator.RenderClasses(EntityFolder, s => $"{s.Name}.cs", "server/entity.sbn", DataModel.Classes.Where(c => !c.IsPivot));
             aspNetCoreGenerator.Render("", "ApplicationDbContext.cs", "server/applicationDbContext.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.Classes},
                 {"seedList", SeedStore.All()},
                 {"name_space", namespce}
             });
-            aspNetCoreGenerator.Render("", "ServiceRegistrator.cs", "server/resourceRegistration.sbn", new Dictionary<string, object> {
-                {"resources", ResourceCollection.RootResources},
-                {"pivots", pivotClasses}
+            aspNetCoreGenerator.Render("", "Startup.cs", "server/startup.sbn", new Dictionary<string, object> {
+                {"resources", ResourceCollection.RootResources}
             });
             var typeScriptGenerator = new TypeScriptGenerator(disk);
             typeScriptGenerator.TemplateRoot = TemplateRoot;

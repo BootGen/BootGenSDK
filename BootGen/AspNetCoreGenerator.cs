@@ -12,7 +12,7 @@ namespace BootGen
         {
         }
 
-        public static string GetType(TypeDescription property)
+        public static string GetType(Property property)
         {
             string baseType = GetBaseType(property);
             if (property.IsCollection)
@@ -20,7 +20,7 @@ namespace BootGen
             return baseType;
         }
 
-        public static string GetBaseType(TypeDescription property)
+        public static string GetBaseType(Property property)
         {
             switch (property.BuiltInType)
             {

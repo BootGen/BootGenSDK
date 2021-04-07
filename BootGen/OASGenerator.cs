@@ -10,7 +10,7 @@ namespace BootGen
         {
         }
 
-        public static string GetType(TypeDescription property)
+        public static string GetType(Property property)
         {
             switch (property.BuiltInType)
             {
@@ -28,7 +28,7 @@ namespace BootGen
             return null;
         }
 
-        public static string GetFormat(TypeDescription property)
+        public static string GetFormat(Property property)
         {
             switch (property.BuiltInType)
             {

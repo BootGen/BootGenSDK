@@ -64,9 +64,9 @@ namespace BootGen
             var rootResource = RootResources.First(r => r.Class == property.Class);
             string pivotName;
             if (resource.Class == property.Class || string.Compare(resource.Class.Name, property.Noun, StringComparison.InvariantCulture) < 0)
-                pivotName = $"{resource.Class.Name.Plural}{property.Noun.Plural}Pivot";
+                pivotName = $"{resource.Class.Name}{property.Noun}";
             else
-                pivotName = $"{property.Noun.Plural}{resource.Class.Name.Plural}Pivot";
+                pivotName = $"{property.Noun}{resource.Class.Name}";
             var nestedResource = resource.ManyToMany(property, pivotName);
             nestedResource.Name = property.Name.Substring(0, property.Name.Length - 1);
             nestedResource.Name.Plural = property.Name;

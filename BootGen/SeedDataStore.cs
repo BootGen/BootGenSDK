@@ -154,10 +154,12 @@ namespace BootGen
                         var pivotRecord = new SeedRecord
                         {
                             Name = nestedResource.Pivot.Name,
-                            Values = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("Id", (pivotDataList.Count + 1).ToString()) }
+                            IsPivot = true,
+                            Values = new List<KeyValuePair<string, string>> { 
+                                new KeyValuePair<string, string>(item.SeedRecord.Name.Plural + "Id", item.SeedRecord.GetId()),
+                                new KeyValuePair<string, string>(property.Noun.Plural + "Id", record.GetId())
+                             }
                         };
-                        pivotRecord.Values.Add(new KeyValuePair<string, string>(item.SeedRecord.Name + "Id", item.SeedRecord.GetId()));
-                        pivotRecord.Values.Add(new KeyValuePair<string, string>(property.Noun.Singular + "Id", record.GetId()));
                         pivotDataList.Add(new SeedData(null, pivotRecord));
                     }
                     else
@@ -220,7 +222,8 @@ namespace BootGen
 
     public class SeedRecord
     {
-        public string Name { get; set; }
+        public Noun Name { get; set; }
+        public bool IsPivot { get; set; }
         public List<KeyValuePair<string, string>> Values { get; set; } = new List<KeyValuePair<string, string>>();
 
         internal string GetId()
