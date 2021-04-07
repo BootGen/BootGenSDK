@@ -36,5 +36,6 @@ export default Vue.extend({
   created: async function () {
     this.{{ camel_case class.name.plural }} = await this.$store.dispatch("{{ camel_case class.name.plural }}/get{{ class.name.plural }}");
   },
+  methods: {}
 });
 </script>

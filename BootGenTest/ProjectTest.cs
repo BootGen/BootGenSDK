@@ -33,7 +33,6 @@ namespace BootGenTest
                 Disk = disk,
                 ResourceCollection = resourceCollection,
                 SeedStore = seedStore,
-                Api = new Api(resourceCollection),
                 TemplateRoot = "templates"
             };
             project.GenerateFiles("TestProject", "TestProject", "http://localhost:5000");

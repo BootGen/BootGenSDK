@@ -50,10 +50,10 @@ namespace BootGenTest
             Assert.AreEqual("\"important\"", tagRecord.Get("Name"));
             Assert.AreEqual("\"red\"", tagRecord.Get("Color"));
 
-            var pivotRecord = seedStore.Get(dataModel.Classes.First(c => c.Name.Singular == "TagsTasksPivot")).First();
-            Assert.AreEqual("1", pivotRecord.Get("Id"));
-            Assert.AreEqual("1", pivotRecord.Get("TagId"));
-            Assert.AreEqual("1", pivotRecord.Get("TaskId"));
+            var pivotRecord = seedStore.Get(dataModel.Classes.First(c => c.Name.Singular == "TagTask")).First();
+            Assert.AreEqual(2, pivotRecord.Values.Count);
+            Assert.AreEqual("1", pivotRecord.Get("TagsId"));
+            Assert.AreEqual("1", pivotRecord.Get("TasksId"));
         }
 
     }

@@ -19,7 +19,6 @@ namespace BootGenTest
             var dataModel = new DataModel();
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
-            var api = new Api(resourceCollection);
             Assert.AreEqual(5, dataModel.Classes.Count);
 
             var tagClass = dataModel.Classes.First(c => c.Name.Singular == "Tag");
@@ -89,13 +88,13 @@ namespace BootGenTest
             Assert.AreEqual(property, property.MirrorProperty);
 
             var resourceCollection = new ResourceCollection(dataModel);
-            var pivotClass = dataModel.Classes.First(c => c.Name.Singular == "UsersFriendsPivot");
+            var pivotClass = dataModel.Classes.First(c => c.Name.Singular == "UserFriend");
             Assert.AreEqual(5, pivotClass.Properties.Count);
             AssertHasProperty(pivotClass, "Id", BuiltInType.Int);
             AssertHasProperty(pivotClass, "User", BuiltInType.Object);
-            AssertHasProperty(pivotClass, "UserId", BuiltInType.Int);
+            AssertHasProperty(pivotClass, "UsersId", BuiltInType.Int);
             AssertHasProperty(pivotClass, "Friend", BuiltInType.Object);
-            AssertHasProperty(pivotClass, "FriendId", BuiltInType.Int);
+            AssertHasProperty(pivotClass, "FriendsId", BuiltInType.Int);
         }
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
