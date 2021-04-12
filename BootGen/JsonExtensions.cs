@@ -11,16 +11,7 @@ namespace BootGen
             {
                 var childObj = x as JObject;
                 if (childObj != null)
-                {
                     childObj.Capitalize();
-                    continue;
-                }
-                var childArr = x as JArray;
-                if (childArr != null)
-                {
-                    childArr.Capitalize();
-                    continue;
-                }
             }
         }
 

@@ -26,8 +26,6 @@ namespace BootGen
             {
                 case BuiltInType.Bool:
                     return "bool";
-                case BuiltInType.Int:
-                    return "int";
                 case BuiltInType.Float:
                     return "float";
                 case BuiltInType.String:
@@ -36,8 +34,9 @@ namespace BootGen
                     return "DateTime";
                 case BuiltInType.Object:
                     return property.Class.Name;
+                default:
+                    return "int";
             }
-            return "object";
         }
 
         public static Property FirstReference(ClassModel pivot)

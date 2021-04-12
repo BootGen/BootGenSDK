@@ -28,8 +28,6 @@ namespace BootGen
             resource.Name = c.Name;
             resource.Class = c;
             resource.DataModel = DataModel;
-            if (RootResources.Any(r => r.Name == resource.Name))
-                throw new Exception($"A root resource with name \"{resource.Name}\" already exists.");
             RootResources.Add(resource);
         }
         public void AddNestedResources(ClassModel c)

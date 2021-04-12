@@ -9,7 +9,7 @@ namespace BootGen
     {
         public Noun Name { get; set; }
         public ClassModel Class { get; set; }
-        public bool HasTimestamps { get => Class.HasTimestamps; set => Class.HasTimestamps = value; }
+        public bool HasTimestamps  => Class.HasTimestamps;
         public bool IsReadonly { get; set; }
         internal DataModel DataModel { get; set; }
 
@@ -27,8 +27,6 @@ namespace BootGen
             resource.Class = property.Class;
             resource.DataModel = DataModel;
             resource.ParentRelation = new ParentRelation(this);
-            if (NestedResources.Any(r => r.Name == resource.Name))
-                throw new Exception($"A nested resource with name \"{resource.Name}\" already exists under \"{Name}\".");
             NestedResources.Add(resource);
             return resource;
         }
@@ -69,7 +67,8 @@ namespace BootGen
                             BuiltInType = BuiltInType.Object,
                             Class = resource.Class
                         });
-            DataModel.ClassCollection.Add(pivotClass);
+            pivotClass.Id = DataModel.Classes.Count;
+            DataModel.Classes.Add(pivotClass);
             return pivotClass;
         }
 

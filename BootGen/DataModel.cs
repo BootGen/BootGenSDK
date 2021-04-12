@@ -9,18 +9,13 @@ namespace BootGen
 {
     public class DataModel
     {
-        public List<ClassModel> Classes => ClassCollection.Classes;
+        public List<ClassModel> Classes { get; } = new List<ClassModel>();
         public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
-        internal ClassCollection ClassCollection { get; }
-
-        public DataModel()
-        {
-            ClassCollection = new ClassCollection();
-        }
 
         public void AddClass(ClassModel c)
         {
-            ClassCollection.Add(c);
+            c.Id = Classes.Count;
+            Classes.Add(c);
         }
         public void Load(JObject jObject)
         {
@@ -123,8 +118,6 @@ namespace BootGen
                 case JTokenType.Object:
                     ExtendModel(result, property.Value as JObject);
                     break;
-                default:
-                    return null;
             }
             return result;
         }
@@ -154,7 +147,8 @@ namespace BootGen
                         BuiltInType = ConvertType(property.Value.Type),
                         IsCollection = property.Value.Type == JTokenType.Array
                     };
-                    if (prop.IsCollection) {
+                    if (prop.IsCollection)
+                    {
                         prop.Noun = pluralizer.Singularize(propertyName);
                         prop.Noun.Plural = propertyName;
                     }
@@ -184,12 +178,9 @@ namespace BootGen
                     return BuiltInType.Int;
                 case JTokenType.Float:
                     return BuiltInType.Float;
-                case JTokenType.Array:
-                    return BuiltInType.Object;
-                case JTokenType.Object:
+                default:
                     return BuiltInType.Object;
             }
-            return BuiltInType.Object;
         }
         private void AddEfRelationsParentToChild(ClassModel c)
         {
@@ -214,7 +205,8 @@ namespace BootGen
                         IsServerOnly = true,
                         IsParentReference = !property.IsManyToMany
                     };
-                    if (referenceProperty.IsCollection) {
+                    if (referenceProperty.IsCollection)
+                    {
                         referenceProperty.Noun = pluralizer.Singularize(referenceProperty.Name);
                         referenceProperty.Noun.Plural = referenceProperty.Name;
                     }
@@ -223,12 +215,6 @@ namespace BootGen
                 referenceProperty.MirrorProperty = property;
                 property.MirrorProperty = referenceProperty;
 
-                if (!property.IsManyToMany && !property.Class.Properties.Any(p => p.Name == c.Name + "Id"))
-                    property.Class.Properties.Add(new Property
-                    {
-                        Name = c.Name + "Id",
-                        BuiltInType = BuiltInType.Int
-                    });
                 AddEfRelationsParentToChild(property.Class);
             }
         }
@@ -262,24 +248,16 @@ namespace BootGen
 
         private static void AddOneToManyParentReference(ClassModel parent, ClassModel child)
         {
-            if (!child.Properties.Any(p => p.Name == parent.Name))
+            var referenceProperty = new Property
             {
-                var referenceProperty = new Property
-                {
-                    Name = parent.Name,
-                    BuiltInType = BuiltInType.Object,
-                    Class = parent,
-                    IsCollection = false,
-                    IsServerOnly = true,
-                    IsParentReference = true
-                };
-                child.Properties.Add(referenceProperty);
-            }
-            else
-            {
-                var referenceProperty = child.Properties.First(p => p.Name == parent.Name);
-                referenceProperty.IsParentReference = true;
-            }
+                Name = parent.Name,
+                BuiltInType = BuiltInType.Object,
+                Class = parent,
+                IsCollection = false,
+                IsServerOnly = true,
+                IsParentReference = true
+            };
+            child.Properties.Add(referenceProperty);
 
             if (!child.Properties.Any(p => p.Name == parent.Name + "Id"))
             {

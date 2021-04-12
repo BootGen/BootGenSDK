@@ -20,12 +20,9 @@ namespace BootGen
                     return "integer";
                 case BuiltInType.Float:
                     return "number";
-                case BuiltInType.String:
-                    return "string";
-                case BuiltInType.DateTime:
+                default:
                     return "string";
             }
-            return null;
         }
 
         public static string GetFormat(Property property)

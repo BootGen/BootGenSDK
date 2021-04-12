@@ -28,10 +28,6 @@ namespace BootGen
             return value.ToKebabCase();
         }
 
-        public static string LowerCase(string value)
-        {
-            return value.ToLower();
-        }
         public static string CamelCase(string value)
         {
             return value.ToCamelCase();

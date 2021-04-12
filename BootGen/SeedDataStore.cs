@@ -18,7 +18,7 @@ namespace BootGen
                 SeedRecord = record;
             }
         }
-        private Dictionary<int, List<SeedData>> Data { get; set; } = new Dictionary<int, List<SeedData>>();
+        private Dictionary<int, List<SeedData>> Data { get; } = new Dictionary<int, List<SeedData>>();
         private Dictionary<int, int> NextClassIds = new Dictionary<int, int>();
         private readonly ResourceCollection resourceCollection;
 
@@ -117,7 +117,7 @@ namespace BootGen
             }
         }
 
-        private bool SplitData(SeedData item, Property property, NestedResource nestedResource = null)
+        private bool SplitData(SeedData item, Property property)
         {
             var token = item.JObject.GetValue(property.Name);
             item.JObject.Remove(property.Name);
@@ -133,21 +133,27 @@ namespace BootGen
                 item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + "Id", record.GetId()));
                 return true;
             }
-            else if (token is JArray array)
+            return false;
+        }
+
+        private bool SplitData(SeedData item, NestedResource nestedResource)
+        {
+            var token = item.JObject.GetValue(nestedResource.Name.Plural);
+            item.JObject.Remove(nestedResource.Name.Plural);
+            var dataList = GetDataList(nestedResource.Class);
+            if (token is JArray array)
             {
                 foreach (var o in array)
                 {
                     JObject jObj = o as JObject;
                     if (jObj == null)
                         continue;
-                    SeedRecord record = ToSeedRecord(property.Class, jObj);
+                    SeedRecord record = ToSeedRecord(nestedResource.Class, jObj);
                     var id = record.GetId();
                     if (!dataList.Any(d => d.SeedRecord.GetId() == id))
                     {
                         dataList.Add(new SeedData(jObj, record));
                     }
-                    if (nestedResource == null)
-                        continue;
                     if (nestedResource.Pivot != null)
                     {
                         var pivotDataList = GetDataList(nestedResource.Pivot);
@@ -157,7 +163,7 @@ namespace BootGen
                             IsPivot = true,
                             Values = new List<KeyValuePair<string, string>> { 
                                 new KeyValuePair<string, string>(item.SeedRecord.Name.Plural + "Id", item.SeedRecord.GetId()),
-                                new KeyValuePair<string, string>(property.Noun.Plural + "Id", record.GetId())
+                                new KeyValuePair<string, string>(nestedResource.Name.Plural + "Id", record.GetId())
                              }
                         };
                         pivotDataList.Add(new SeedData(null, pivotRecord));
@@ -190,14 +196,7 @@ namespace BootGen
             {
                 foreach (var item in Data[resource.Class.Id].ToList())
                 {
-                    var property = new Property
-                    {
-                        Name = nestedResource.Name.Plural,
-                        Noun = nestedResource.Name,
-                        BuiltInType = BuiltInType.Object,
-                        Class = nestedResource.Class
-                    };
-                    if (SplitData(item, property, nestedResource))
+                    if (SplitData(item, nestedResource))
                     {
                         if (nestedResource.RootResource != null)
                             PushSeedDataToNestedResources(nestedResource.RootResource);
