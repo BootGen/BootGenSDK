@@ -72,7 +72,7 @@ namespace BootGen
             });
             typeScriptGenerator.Render($"{ClientFolder}/api", $"index.{ClientExtension}", "client/api_client.sbn", new Dictionary<string, object> {
                 {"resources", ResourceCollection.RootResources},
-                {"classes", DataModel.Classes}
+                {"classes", DataModel.CommonClasses}
             });
             typeScriptGenerator.Render($"{ClientFolder}/store", $"index.{ClientExtension}", "client/store.sbn", new Dictionary<string, object> {
                 {"classes", ResourceCollection.RootResources.Select(r => r.Class)},

@@ -24,18 +24,15 @@ namespace BootGen
             {
                 case BuiltInType.Bool:
                     return "boolean";
-                case BuiltInType.Int:
-                    return "number";
-                case BuiltInType.Float:
-                    return "number";
                 case BuiltInType.String:
                     return "string";
                 case BuiltInType.DateTime:
                     return "Date";
                 case BuiltInType.Object:
                     return property.Class.Name;
+                default:
+                    return "number";
             }
-            return "object";
         }
     }
 }
