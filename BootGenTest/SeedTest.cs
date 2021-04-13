@@ -56,5 +56,30 @@ namespace BootGenTest
             Assert.AreEqual("1", pivotRecord.Get("TasksId"));
         }
 
+        [TestMethod]
+        public void TestSeed2()
+        {
+            var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var dataModel = new DataModel();
+            dataModel.Load(data);
+            var resourceCollection = new ResourceCollection(dataModel);
+            var seedStore = new SeedDataStore(resourceCollection);
+            seedStore.Load(data);
+            var users = resourceCollection.RootResources.First(r => r.Name.Singular == "User");
+            var seedRecords = seedStore.Get(users.Class);
+            Assert.AreEqual(2, seedRecords.Count);
+            var userRecord = seedRecords.First();
+            Assert.AreEqual(3, userRecord.Values.Count);
+            Assert.AreEqual("1", userRecord.Get("Id"));
+            Assert.AreEqual("\"Test User\"", userRecord.Get("UserName"));
+            Assert.AreEqual("\"example@email.com\"", userRecord.Get("Email"));
+
+            userRecord = seedRecords.Last();
+            Assert.AreEqual(3, userRecord.Values.Count);
+            Assert.AreEqual("2", userRecord.Get("Id"));
+            Assert.AreEqual("\"Test User 2\"", userRecord.Get("UserName"));
+            Assert.AreEqual("\"example2@email.com\"", userRecord.Get("Email"));
+        }
+
     }
 }

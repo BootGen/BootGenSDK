@@ -69,10 +69,7 @@ namespace BootGen
                 record.Set("Created", "DateTime.Now");
                 record.Set("Updated", "DateTime.Now");
             }
-            if (record.HasKey("Id"))
-                record.Set("Id", GetNextId(c));
-            else
-                record.Values.Insert(0, KeyValuePair.Create("Id", GetNextId(c)));
+            record.Values.Insert(0, KeyValuePair.Create("Id", GetNextId(c)));
             return record;
         }
 

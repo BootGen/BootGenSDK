@@ -76,9 +76,9 @@ namespace BootGen
     public class NestedResource : Resource
     {
         internal ParentRelation ParentRelation { get; set; }
-        public Resource ParentResource => ParentRelation?.Resource;
+        public Resource ParentResource => ParentRelation.Resource;
         public RootResource RootResource { get; set; }
         public ClassModel Pivot { get; set; }
-        public string ParentName =>  ParentRelation?.Name;
+        public string ParentName =>  ParentRelation.Name;
     }
 }

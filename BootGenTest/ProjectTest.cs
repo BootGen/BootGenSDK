@@ -16,18 +16,31 @@ namespace BootGenTest
         [TestMethod]
         public void TestGenerate()
         {
-            TestWithTemplates("templates");
+            TestWithTemplates("templates", "example_input.json");
+        }
+
+
+        [TestMethod]
+        public void TestGenerateError()
+        {
+            try
+            {
+                TestWithTemplates("templates", "example_input_wrong_hint.json");
+                Assert.Fail();
+            } catch (Exception e) {
+                Assert.IsTrue(e.Message.StartsWith("Unrecognised hint:"));
+            }
         }
 
         [TestMethod]
         public void TestWithoutTemplates()
         {
-            TestWithTemplates("does_not_exists");
+            TestWithTemplates("does_not_exists", "example_input.json");
         }
 
-        private static void TestWithTemplates(string templateRoot)
+        private static void TestWithTemplates(string templateRoot, string fileName)
         {
-            var data = JObject.Parse(File.ReadAllText("example_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText(fileName), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
             var dataModel = new DataModel();
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
