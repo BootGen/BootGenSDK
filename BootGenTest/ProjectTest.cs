@@ -21,7 +21,7 @@ namespace BootGenTest
 
 
         [TestMethod]
-        public void TestGenerateError()
+        public void TestGenerateWrongHint()
         {
             try
             {
@@ -29,6 +29,18 @@ namespace BootGenTest
                 Assert.Fail();
             } catch (Exception e) {
                 Assert.IsTrue(e.Message.StartsWith("Unrecognised hint:"));
+            }
+        }
+
+        [TestMethod]
+        public void TestGenerateInvalidClassName()
+        {
+            try
+            {
+                TestWithTemplates("templates", "example_input_invalid_class_name.json");
+                Assert.Fail();
+            } catch (Exception e) {
+                Assert.IsTrue(e.Message.StartsWith("Invalid class name:"));
             }
         }
 

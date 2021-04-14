@@ -85,7 +85,7 @@ namespace BootGen
         public List<SeedRecord> Get(ClassModel c)
         {
             Data.TryGetValue(c.Id, out var data);
-            return data.Select(t => t.SeedRecord).ToList() ?? new List<SeedRecord>();
+            return data.Select(t => t.SeedRecord).ToList();
         }
 
         public List<SeedRecord> All()
@@ -122,11 +122,7 @@ namespace BootGen
             if (token is JObject obj)
             {
                 SeedRecord record = ToSeedRecord(property.Class, obj);
-                var id = record.GetId();
-                if (!dataList.Any(d => d.SeedRecord.GetId() == id))
-                {
-                    dataList.Add(new SeedData(obj, record));
-                }
+                dataList.Add(new SeedData(obj, record));
                 item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + "Id", record.GetId()));
                 return true;
             }
@@ -227,10 +223,6 @@ namespace BootGen
             return Values.FirstOrDefault(kvp => kvp.Key == "Id").Value;
         }
 
-        internal bool HasKey(string key)
-        {
-            return Values.Any(kvp => kvp.Key == key);
-        }
         public string Get(string key)
         {
             return Values.FirstOrDefault(kvp => kvp.Key == key).Value;
@@ -238,14 +230,6 @@ namespace BootGen
 
         internal void Set(string key, string value)
         {
-            for (int i = 0; i < Values.Count; ++i)
-            {
-                if (Values[i].Key == key)
-                {
-                    Values[i] = KeyValuePair.Create(key, value);
-                    return;
-                }
-            }
             Values.Add(new KeyValuePair<string, string>(key, value));
         }
     }

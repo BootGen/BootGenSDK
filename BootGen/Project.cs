@@ -65,17 +65,17 @@ namespace BootGen
             typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}Edit.{ClientComponentExtension}", "client/model_edit.sbn", DataModel.CommonClasses);
             typeScriptGenerator.RenderResources($"{ClientFolder}/store", s => $"{s.Name}Module.{ClientExtension}", "client/store_module.sbn", ResourceCollection.RootResources);
             typeScriptGenerator.Render($"{ClientFolder}/router", $"index.{ClientExtension}", "client/router.sbn", new Dictionary<string, object> {
-                {"classes", ResourceCollection.RootResources.Select(r => r.Class)}
+                {"classes", DataModel.CommonClasses}
             });
             typeScriptGenerator.Render($"{ClientFolder}", $"App.{ClientComponentExtension}", "client/app.sbn", new Dictionary<string, object> {
-                {"classes", ResourceCollection.RootResources.Select(r => r.Class)}
+                {"classes", DataModel.CommonClasses}
             });
             typeScriptGenerator.Render($"{ClientFolder}/api", $"index.{ClientExtension}", "client/api_client.sbn", new Dictionary<string, object> {
                 {"resources", ResourceCollection.RootResources},
                 {"classes", DataModel.CommonClasses}
             });
             typeScriptGenerator.Render($"{ClientFolder}/store", $"index.{ClientExtension}", "client/store.sbn", new Dictionary<string, object> {
-                {"classes", ResourceCollection.RootResources.Select(r => r.Class)},
+                {"classes", DataModel.CommonClasses},
                 {"base_url", baseUrl}
             });
         }

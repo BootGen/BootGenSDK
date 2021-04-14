@@ -12,14 +12,6 @@ namespace BootGen
 
         public static string GetType(Property property)
         {
-            string baseType = GetBaseType(property);
-            if (property.IsCollection)
-                baseType += "[]";
-            return baseType;
-        }
-
-        private static string GetBaseType(Property property)
-        {
             switch (property.BuiltInType)
             {
                 case BuiltInType.Bool:
@@ -28,8 +20,6 @@ namespace BootGen
                     return "string";
                 case BuiltInType.DateTime:
                     return "Date";
-                case BuiltInType.Object:
-                    return property.Class.Name;
                 default:
                     return "number";
             }

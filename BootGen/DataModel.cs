@@ -70,14 +70,15 @@ namespace BootGen
                     }
                     if (comment.StartsWith("class:"))
                     {
-                        string name = comment.Split(":").Last();
+                        string name = comment.Split(":").Last().Trim();
                         var provider = CodeDomProvider.CreateProvider("C#");
-                        if (provider.IsValidIdentifier(name))
+                        if (!provider.IsValidIdentifier(name))
                         {
-                            className = name.Capitalize();
-                            className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
-                            continue;
+                            throw new Exception($"Invalid class name: {name}");
                         }
+                        className = name.Capitalize();
+                        className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
+                        continue;
                     }
                     throw new Exception($"Unrecognised hint: {comment}");
                 }
