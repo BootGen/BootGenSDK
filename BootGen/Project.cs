@@ -21,12 +21,12 @@ namespace BootGen
         public SeedDataStore SeedStore { get; set; }
         public string TemplateRoot { get; set; }
         
-        public void GenerateFiles(string projectName, string namespce, string baseUrl)
+        public void GenerateFiles(string namespce, string baseUrl)
         {
-            GenerateFiles(projectName, namespce, baseUrl, Disk);
+            GenerateFiles(namespce, baseUrl, Disk);
         }
 
-        private void GenerateFiles(string projectName, string namespce, string baseUrl, IDisk disk)
+        private void GenerateFiles(string namespce, string baseUrl, IDisk disk)
         {
             var aspNetCoreGenerator = new AspNetCoreGenerator(disk);
             aspNetCoreGenerator.NameSpace = namespce;
@@ -38,7 +38,7 @@ namespace BootGen
             oasGenerator.Render("", "restapi.yml", "oas3template.sbn", new Dictionary<string, object> {
                 {"resources", ResourceCollection.RootResources},
                 {"classes", DataModel.CommonClasses},
-                {"project_title", projectName},
+                {"project_title", namespce},
                 {"base_url", baseUrl}
             });
             aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{FullName(r)}Controller.cs", "server/resourceController.sbn", ResourceCollection.RootResources.ToList());

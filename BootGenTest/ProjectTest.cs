@@ -104,7 +104,7 @@ namespace BootGenTest
                 SeedStore = seedStore,
                 TemplateRoot = templateRoot
             };
-            project.GenerateFiles("TestProject", "TestProject", "http://localhost:5000");
+            project.GenerateFiles("TestProject", "http://localhost:5000");
             return disk;
         }
     }
