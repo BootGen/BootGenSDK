@@ -67,7 +67,7 @@ namespace BootGen
             typeScriptGenerator.Render($"{ClientFolder}/router", $"index.{ClientExtension}", "client/router.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses}
             });
-            typeScriptGenerator.Render($"{ClientFolder}", $"App.{ClientComponentExtension}", "client/app.sbn", new Dictionary<string, object> {
+            typeScriptGenerator.Render(ClientFolder, $"App.{ClientComponentExtension}", "client/app.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses}
             });
             typeScriptGenerator.Render($"{ClientFolder}/api", $"index.{ClientExtension}", "client/api_client.sbn", new Dictionary<string, object> {
