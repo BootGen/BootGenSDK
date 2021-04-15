@@ -25,7 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="templates/**" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="SampleOutput.zip" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="*.zip" CopyToOutputDirectory="PreserveNewest" />
     <None Update="*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   
