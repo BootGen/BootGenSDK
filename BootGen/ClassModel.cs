@@ -13,7 +13,6 @@ namespace BootGen
         public List<Property> Properties { get; }
         public bool IsServerOnly { get; set; }
         public bool HasTimestamps { get; set; }
-        internal bool RelationsAreSetUp { get; set; }
         public bool IsPivot { get; set; }
         public Property IdProperty => PropertyWithName("Id");
         public List<Property> CommonProperties => Properties.Where(p => !p.IsServerOnly).ToList();

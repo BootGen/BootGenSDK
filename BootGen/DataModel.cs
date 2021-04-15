@@ -29,16 +29,13 @@ namespace BootGen
                 var properties = new List<Property>(c.Properties);
                 foreach (var p in properties)
                     if (p.IsCollection && p.BuiltInType == BuiltInType.Object && !p.IsManyToMany)
-                        AddOneToManyParentReference(c, p.Class);
+                        AddOneToManyParentReference(c, p);
             }
 
             foreach (var c in Classes)
             {
-                if (!c.RelationsAreSetUp)
-                {
-                    AddEfRelationsParentToChild(c);
-                }
-                AddEfRelationsChildToParent(c);
+                AddManyToManyMirrorProperties(c);
+                AddManyToOneParentReference(c);
             }
         }
 
@@ -183,14 +180,13 @@ namespace BootGen
                     return BuiltInType.Object;
             }
         }
-        private void AddEfRelationsParentToChild(ClassModel c)
+        private void AddManyToManyMirrorProperties(ClassModel c)
         {
             var pluralizer = new Pluralizer();
-            c.RelationsAreSetUp = true;
             var properties = new List<Property>(c.Properties);
             foreach (var property in properties)
             {
-                if (property.Class == null || !property.IsCollection || property.MirrorProperty != null)
+                if (!property.IsManyToMany)
                     continue;
 
                 Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Class == c);
@@ -198,77 +194,67 @@ namespace BootGen
                 {
                     referenceProperty = new Property
                     {
-                        Name = property.IsManyToMany ? c.Name.Plural : c.Name.Singular,
+                        Name = c.Name.Plural,
                         BuiltInType = BuiltInType.Object,
                         Class = c,
-                        IsCollection = property.IsManyToMany,
-                        IsManyToMany = property.IsManyToMany,
+                        IsCollection = true,
+                        IsManyToMany = true,
                         IsServerOnly = true,
-                        IsParentReference = !property.IsManyToMany
+                        Noun = c.Name
                     };
-                    if (referenceProperty.IsCollection)
-                    {
-                        referenceProperty.Noun = pluralizer.Singularize(referenceProperty.Name);
-                        referenceProperty.Noun.Plural = referenceProperty.Name;
-                    }
                     property.Class.Properties.Add(referenceProperty);
                 }
                 referenceProperty.MirrorProperty = property;
                 property.MirrorProperty = referenceProperty;
-
-                AddEfRelationsParentToChild(property.Class);
             }
         }
 
-        public void AddEfRelationsChildToParent(ClassModel c)
+        public void AddManyToOneParentReference(ClassModel c)
         {
             var properties = new List<Property>(c.Properties);
             var propertyIdx = -1;
             foreach (var property in properties)
             {
                 propertyIdx += 1;
-                if (property.Class == null)
+                if (property.Class == null || property.IsCollection)
                     continue;
-                if (!property.IsCollection && property.Class != null)
+                if (!c.Properties.Any(p => p.Name == property.Name + "Id"))
                 {
-                    if (!c.Properties.Any(p => p.Name == property.Name + "Id"))
+                    c.Properties.Insert(propertyIdx + 1, new Property
                     {
-                        c.Properties.Insert(propertyIdx + 1, new Property
-                        {
-                            Name = property.Name + "Id",
-                            BuiltInType = BuiltInType.Int
-                        });
-                        property.IsServerOnly = true;
-                        propertyIdx += 1;
-                        AddEfRelationsChildToParent(property.Class);
-                    }
+                        Name = property.Name + "Id",
+                        BuiltInType = BuiltInType.Int
+                    });
+                    property.IsServerOnly = true;
+                    propertyIdx += 1;
                 }
             }
         }
 
 
-        private static void AddOneToManyParentReference(ClassModel parent, ClassModel child)
+        private static void AddOneToManyParentReference(ClassModel parent, Property property)
         {
             var referenceProperty = new Property
             {
                 Name = parent.Name,
                 BuiltInType = BuiltInType.Object,
                 Class = parent,
-                IsCollection = false,
                 IsServerOnly = true,
-                IsParentReference = true
+                IsParentReference = true,
+                MirrorProperty = property
             };
+            var child = property.Class;
             child.Properties.Add(referenceProperty);
 
             if (!child.Properties.Any(p => p.Name == parent.Name + "Id"))
             {
-                Property property = new Property
+
+                var idProperty = new Property
                 {
                     Name = parent.Name + "Id",
-                    BuiltInType = BuiltInType.Int,
-                    IsCollection = false
+                    BuiltInType = BuiltInType.Int
                 };
-                child.Properties.Add(property);
+                child.Properties.Add(idProperty);
             }
         }
 
