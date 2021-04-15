@@ -55,7 +55,7 @@ namespace BootGen
                     if (item.Type != JTokenType.Comment)
                         continue;
                     string comment = item.Value<string>().Trim();
-                    if (comment == "many-to-many")
+                    if (comment == "manyToMany")
                     {
                         manyToMany = true;
                         continue;

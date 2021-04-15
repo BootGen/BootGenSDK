@@ -19,7 +19,7 @@
 					"estimatedHours": 1.5,
 					"priority": 1,
 					"tags": [
-						//many-to-many
+						//manyToMany
 						{
 							"name": "important",
 							"color": "red"
