@@ -6,6 +6,9 @@ Customizable code generator library for rapid application prototyping.
 
 See a live demo at  [bootgen.com](https://bootgen.com)!
 
+## Supported Languages
+C#, TypeScript, Swagger (OAS3)
+
 ## How Does it Work?
 
 From a set of sample data given JSON format BootGen will determine a data model. Using this data model and a set of Scriban templates it will generate a server and a client application.
@@ -42,12 +45,15 @@ An example set of Scriban templates can be found [here.](https://github.com/Boot
   ]
 }
 ```
+#### Conventions
+   * Property and class names should be camelCase. Casing will be set in the generated code according to the type of file generated. In C# PascalCase will be used, in TypeScript property names will remain camelCase.
+   * Array names should be plural nouns, everithing else should be in singular form.in the generated code the fitten plural or singular form of names will be used.
 
 ### Hinting
 
 You can give hints in the form of comments for the generator. Hints can be placed at the beginning of arrays. Possible hints:
   * `timestamps`: Adds a `Created` and an `Updated` timestamp property to the class.
-  * `manyToMany`: Declears that the given relation is a Many-To-Many relation, as oppesed to the default One-To-Many relation.
+  * `manyToMany`: Declears that the given relation is a Many-To-Many relation, as opposed to the default One-To-Many relation.
   * `class:[name]`: Substitute `[name]` with the intended name of the class. Example:
 
 ```js
