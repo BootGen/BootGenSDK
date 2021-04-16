@@ -47,7 +47,7 @@ An example set of Scriban templates can be found [here.](https://github.com/Boot
 ```
 #### Conventions
    * Property and class names should be camelCase. Casing will be set in the generated code according to the type of file generated. In C# PascalCase will be used, in TypeScript property names will remain camelCase.
-   * Array names should be plural nouns, everithing else should be in singular form.in the generated code the fitten plural or singular form of names will be used.
+   * Array names should be plural nouns, everything else should be in singular form. In the generated code the fitting plural or singular form of names will be used.
 
 ### Hinting
 
