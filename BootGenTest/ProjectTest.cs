@@ -27,14 +27,14 @@ namespace BootGenTest
 
 
         [TestMethod]
-        public void TestGenerateWrongHint()
+        public void TestGenerateWrongAnnotation()
         {
             try
             {
-                GenerateWithTemplates("templates", "example_input_wrong_hint.json");
+                GenerateWithTemplates("templates", "example_input_wrong_annotation.json");
                 Assert.Fail();
             } catch (Exception e) {
-                Assert.IsTrue(e.Message.StartsWith("Unrecognised hint:"));
+                Assert.IsTrue(e.Message.StartsWith("Unrecognised annotation:"));
             }
         }
 

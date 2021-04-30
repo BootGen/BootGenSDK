@@ -77,7 +77,7 @@ namespace BootGen
                         className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
                         continue;
                     }
-                    throw new Exception($"Unrecognised hint: {comment}");
+                    throw new Exception($"Unrecognised annotation: {comment}");
                 }
             }
             else
