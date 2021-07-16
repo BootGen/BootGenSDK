@@ -80,6 +80,18 @@ namespace BootGenTest
             Assert.AreEqual("\"Test User 2\"", userRecord.Get("UserName"));
             Assert.AreEqual("\"example2@email.com\"", userRecord.Get("Email"));
         }
+        
 
+
+        [TestMethod]
+        public void TestLoad()
+        {
+            var data = JObject.Parse(File.ReadAllText("example_input_3_users.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var dataModel = new DataModel();
+            dataModel.Load(data);
+            var resourceCollection = new ResourceCollection(dataModel);
+            var seedStore = new SeedDataStore(resourceCollection);
+            seedStore.Load(data);
+        }
     }
 }

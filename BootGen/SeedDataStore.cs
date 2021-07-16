@@ -204,7 +204,7 @@ namespace BootGen
             foreach (var property in jObject.Properties())
             {
                 var resource = resourceCollection.RootResources.First(r => r.Name.Plural.ToLower() == property.Name.ToLower());
-                var data = (property.Value as JArray).Select(t => t as JObject).ToList();
+                var data = (property.Value as JArray).Select(t => t as JObject).Where(t => t != null).ToList();
                 foreach (var item in data)
                     item.Capitalize();
                 Add(resource, data);

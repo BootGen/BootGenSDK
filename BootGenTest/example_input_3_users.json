@@ -1,0 +1,23 @@
+{
+	"users": [
+		//timestamps
+		{
+			"userName": "admin",
+			"email": "admin@example.com",
+			"isAdmin": true,
+			"isActive": true
+		},
+		{
+			"userName": "user1",
+			"email": "user1@example.com",
+			"isAdmin": false,
+			"isActive": true
+		},
+		{
+			"userName": "user2",
+			"email": "user2@example.com",
+			"isAdmin": false,
+			"isActive": false
+		}
+	]
+}
