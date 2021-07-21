@@ -14,6 +14,7 @@ namespace BootGen
         public string EntityFolder { get; set; }
         public string ClientFolder { get; set; }
         public string ClientExtension { get; set; }
+        public string ClientRouterExtension { get; set; }
         public string ClientComponentExtension { get; set; }
         public string ClientModelsFolder { get; set; } = "models";
         public string ClientViewsFolder { get; set; } = "views";
@@ -21,7 +22,6 @@ namespace BootGen
         public string ClientStoreFolder { get; set; } = "store";
         public string ClientRouterFolder { get; set; } = "router";
         public string ClientApiFolder { get; set; } = "api";
-        public string ClientRouterExtension { get; set; } = "js";
         public IDisk Disk { get; set; }
         private DataModel DataModel => ResourceCollection.DataModel;
         public ResourceCollection ResourceCollection { get; set; }
