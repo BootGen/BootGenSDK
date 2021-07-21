@@ -20,6 +20,7 @@ namespace BootGen
         public string ClientComponentsFolder { get; set; } = "components";
         public string ClientStoreFolder { get; set; } = "store";
         public string ClientRouterFolder { get; set; } = "router";
+        public string ClientApiFolder { get; set; } = "api";
         public IDisk Disk { get; set; }
         private DataModel DataModel => ResourceCollection.DataModel;
         public ResourceCollection ResourceCollection { get; set; }
@@ -75,11 +76,11 @@ namespace BootGen
             typeScriptGenerator.Render(ClientFolder, $"App.{ClientComponentExtension}", "client/app.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses}
             });
-            typeScriptGenerator.Render($"{ClientFolder}/api", $"index.{ClientExtension}", "client/api_client.sbn", new Dictionary<string, object> {
+            typeScriptGenerator.Render($"{ClientFolder}/{ClientApiFolder}", $"index.{ClientExtension}", "client/api_client.sbn", new Dictionary<string, object> {
                 {"resources", ResourceCollection.RootResources},
                 {"classes", DataModel.CommonClasses}
             });
-            typeScriptGenerator.Render($"{ClientFolder}/store", $"index.{ClientExtension}", "client/store.sbn", new Dictionary<string, object> {
+            typeScriptGenerator.Render($"{ClientFolder}/{ClientStoreFolder}", $"index.{ClientExtension}", "client/store.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses},
                 {"base_url", baseUrl}
             });
