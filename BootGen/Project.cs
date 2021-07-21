@@ -15,6 +15,11 @@ namespace BootGen
         public string ClientFolder { get; set; }
         public string ClientExtension { get; set; }
         public string ClientComponentExtension { get; set; }
+        public string ClientModelsFolder { get; set; } = "models";
+        public string ClientViewsFolder { get; set; } = "views";
+        public string ClientComponentsFolder { get; set; } = "components";
+        public string ClientStoreFolder { get; set; } = "store";
+        public string ClientRouterFolder { get; set; } = "router";
         public IDisk Disk { get; set; }
         private DataModel DataModel => ResourceCollection.DataModel;
         public ResourceCollection ResourceCollection { get; set; }
@@ -59,12 +64,12 @@ namespace BootGen
             });
             var typeScriptGenerator = new TypeScriptGenerator(disk);
             typeScriptGenerator.TemplateRoot = TemplateRoot;
-            typeScriptGenerator.RenderClasses($"{ClientFolder}/models", s => $"{s.Name}.{ClientExtension}", "client/model.sbn", DataModel.CommonClasses);
-            typeScriptGenerator.RenderClasses($"{ClientFolder}/views", s => $"{s.Name}List.{ClientComponentExtension}", "client/model_list.sbn", DataModel.CommonClasses);
-            typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}View.{ClientComponentExtension}", "client/model_view.sbn", DataModel.CommonClasses);
-            typeScriptGenerator.RenderClasses($"{ClientFolder}/components", s => $"{s.Name}Edit.{ClientComponentExtension}", "client/model_edit.sbn", DataModel.CommonClasses);
-            typeScriptGenerator.RenderResources($"{ClientFolder}/store", s => $"{s.Name}Module.{ClientExtension}", "client/store_module.sbn", ResourceCollection.RootResources);
-            typeScriptGenerator.Render($"{ClientFolder}/router", $"index.{ClientExtension}", "client/router.sbn", new Dictionary<string, object> {
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/{ClientModelsFolder}", s => $"{s.Name}.{ClientExtension}", "client/model.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/{ClientViewsFolder}", s => $"{s.Name}List.{ClientComponentExtension}", "client/model_list.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/{ClientComponentsFolder}", s => $"{s.Name}View.{ClientComponentExtension}", "client/model_view.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderClasses($"{ClientFolder}/{ClientComponentsFolder}", s => $"{s.Name}Edit.{ClientComponentExtension}", "client/model_edit.sbn", DataModel.CommonClasses);
+            typeScriptGenerator.RenderResources($"{ClientFolder}/{ClientStoreFolder}", s => $"{s.Name}Module.{ClientExtension}", "client/store_module.sbn", ResourceCollection.RootResources);
+            typeScriptGenerator.Render($"{ClientFolder}/{ClientRouterFolder}", $"index.{ClientExtension}", "client/router.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses}
             });
             typeScriptGenerator.Render(ClientFolder, $"App.{ClientComponentExtension}", "client/app.sbn", new Dictionary<string, object> {
