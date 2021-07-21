@@ -21,6 +21,7 @@ namespace BootGen
         public string ClientStoreFolder { get; set; } = "store";
         public string ClientRouterFolder { get; set; } = "router";
         public string ClientApiFolder { get; set; } = "api";
+        public string ClientRouterExtension { get; set; } = "js";
         public IDisk Disk { get; set; }
         private DataModel DataModel => ResourceCollection.DataModel;
         public ResourceCollection ResourceCollection { get; set; }
@@ -70,7 +71,7 @@ namespace BootGen
             typeScriptGenerator.RenderClasses($"{ClientFolder}/{ClientComponentsFolder}", s => $"{s.Name}View.{ClientComponentExtension}", "client/model_view.sbn", DataModel.CommonClasses);
             typeScriptGenerator.RenderClasses($"{ClientFolder}/{ClientComponentsFolder}", s => $"{s.Name}Edit.{ClientComponentExtension}", "client/model_edit.sbn", DataModel.CommonClasses);
             typeScriptGenerator.RenderResources($"{ClientFolder}/{ClientStoreFolder}", s => $"{s.Name}Module.{ClientExtension}", "client/store_module.sbn", ResourceCollection.RootResources);
-            typeScriptGenerator.Render($"{ClientFolder}/{ClientRouterFolder}", $"index.{ClientExtension}", "client/router.sbn", new Dictionary<string, object> {
+            typeScriptGenerator.Render($"{ClientFolder}/{ClientRouterFolder}", $"index.{ClientRouterExtension}", "client/router.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses}
             });
             typeScriptGenerator.Render(ClientFolder, $"App.{ClientComponentExtension}", "client/app.sbn", new Dictionary<string, object> {
