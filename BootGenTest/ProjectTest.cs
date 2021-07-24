@@ -107,7 +107,7 @@ namespace BootGenTest
                 Folder = "ClientApp/src",
                 Extension = "ts",
                 ComponentExtension = "vue",
-                RouterExtension = "ts",
+                RouterFileName = "index.ts",
                 Disk = disk,
                 ResourceCollection = resourceCollection,
                 SeedStore = seedStore,

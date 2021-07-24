@@ -11,7 +11,7 @@ namespace BootGen
     {
         public string Folder { get; set; }
         public string Extension { get; set; }
-        public string RouterExtension { get; set; }
+        public string RouterFileName { get; set; }
         public string ComponentExtension { get; set; }
         public string ModelsFolder { get; set; } = "models";
         public string ViewsFolder { get; set; } = "views";
@@ -41,7 +41,7 @@ namespace BootGen
             generator.RenderClasses($"{Folder}/{ComponentsFolder}", s => $"{s.Name}View.{ComponentExtension}", "model_view.sbn", DataModel.CommonClasses);
             generator.RenderClasses($"{Folder}/{ComponentsFolder}", s => $"{s.Name}Edit.{ComponentExtension}", "model_edit.sbn", DataModel.CommonClasses);
             generator.RenderResources($"{Folder}/{StoreFolder}", s => $"{s.Name}Module.{Extension}", "store_module.sbn", ResourceCollection.RootResources);
-            generator.Render($"{Folder}/{RouterFolder}", $"index.{RouterExtension}", "router.sbn", new Dictionary<string, object> {
+            generator.Render($"{Folder}/{RouterFolder}", RouterFileName, "router.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses}
             });
             generator.Render(Folder, $"App.{ComponentExtension}", "app.sbn", new Dictionary<string, object> {
