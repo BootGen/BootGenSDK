@@ -91,21 +91,29 @@ namespace BootGenTest
             var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Load(data);
             var disk = new VirtualDisk();
-            var project = new Project
+            var project = new ServerProject
             {
                 ControllerFolder = "Controllers",
                 ServiceFolder = "Services",
-                ClientFolder = "ClientApp/src",
                 EntityFolder = "Models",
-                ClientExtension = "ts",
-                ClientComponentExtension = "vue",
-                ClientRouterExtension = "ts",
                 Disk = disk,
                 ResourceCollection = resourceCollection,
                 SeedStore = seedStore,
-                TemplateRoot = templateRoot
+                TemplateRoot = Path.Combine(templateRoot, "server")
             };
             project.GenerateFiles("TestProject", "http://localhost:5000");
+            var clientProject = new ClientProject
+            {
+                Folder = "ClientApp/src",
+                Extension = "ts",
+                ComponentExtension = "vue",
+                RouterExtension = "ts",
+                Disk = disk,
+                ResourceCollection = resourceCollection,
+                SeedStore = seedStore,
+                TemplateRoot = Path.Combine(templateRoot, "client")
+            };
+            clientProject.GenerateFiles("TestProject", "http://localhost:5000");
             return disk;
         }
     }
