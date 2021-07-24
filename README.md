@@ -1,4 +1,4 @@
-# BootGen [![Build Status](https://github.com/BootGen/BootGen/workflows/Test/badge.svg?branch=master)](https://github.com/BootGen/BootGen/actions) [![Coverage Status](https://coveralls.io/repos/github/BootGen/BootGen/badge.svg?branch=master)](https://coveralls.io/github/BootGen/BootGen?branch=master) [![NuGet](https://img.shields.io/nuget/v/BootGen.svg)](https://www.nuget.org/packages/BootGen/)
+# BootGen [![Build Status](https://github.com/BootGen/BootGenSDK/workflows/Test/badge.svg?branch=master)](https://github.com/BootGen/BootGenSDK/actions) [![Coverage Status](https://coveralls.io/repos/github/BootGen/BootGen/badge.svg?branch=master)](https://coveralls.io/github/BootGen/BootGenSDK?branch=master) [![NuGet](https://img.shields.io/nuget/v/BootGen.svg)](https://www.nuget.org/packages/BootGen/)
 
 <img align="right" width="200px" height="85px" src="BootGen/BootGenLogo.png">
 

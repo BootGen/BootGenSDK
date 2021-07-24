@@ -99,6 +99,7 @@ namespace BootGenTest
                 EntityFolder = "Models",
                 ClientExtension = "ts",
                 ClientComponentExtension = "vue",
+                ClientRouterExtension = "ts",
                 Disk = disk,
                 ResourceCollection = resourceCollection,
                 SeedStore = seedStore,
