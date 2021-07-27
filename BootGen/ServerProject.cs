@@ -51,7 +51,7 @@ namespace BootGen
                 {"seedList", SeedStore.All()},
                 {"name_space", namespce}
             });
-            aspNetCoreGenerator.Render("", "Startup.cs", "server/startup.sbn", new Dictionary<string, object> {
+            aspNetCoreGenerator.Render("", "Startup.cs", "startup.sbn", new Dictionary<string, object> {
                 {"resources", ResourceCollection.RootResources}
             });
         }
