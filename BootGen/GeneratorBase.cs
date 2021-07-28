@@ -11,7 +11,7 @@ namespace BootGen
     {
         public string NameSpace { get; set; }
         public IDisk Disk { get; }
-        public string TemplateRoot { get; set; }
+        public IDisk Templates { get; set; }
 
         public GeneratorBase(IDisk disk)
         {
@@ -106,12 +106,10 @@ namespace BootGen
 
         private Template Parse(string templateFile)
         {
-            string path = templateFile;
-            if (!string.IsNullOrWhiteSpace(TemplateRoot))
-                path = System.IO.Path.Combine(TemplateRoot, templateFile);
-            if (!File.Exists(path))
+            string content = Templates.GetFileContent(templateFile);
+            if (string.IsNullOrWhiteSpace(content))
                 return null;
-            return Template.Parse(File.ReadAllText(path), templateFile);
+            return Template.Parse(content, templateFile);
         }
 
     }

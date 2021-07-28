@@ -99,7 +99,7 @@ namespace BootGenTest
                 Disk = disk,
                 ResourceCollection = resourceCollection,
                 SeedStore = seedStore,
-                TemplateRoot = Path.Combine(templateRoot, "server")
+                Templates = new Disk(Path.Combine(templateRoot, "server"))
             };
             project.GenerateFiles("TestProject", "http://localhost:5000");
             var clientProject = new ClientProject
@@ -111,7 +111,7 @@ namespace BootGenTest
                 Disk = disk,
                 ResourceCollection = resourceCollection,
                 SeedStore = seedStore,
-                TemplateRoot = Path.Combine(templateRoot, "client")
+                Templates = new Disk(Path.Combine(templateRoot, "client"))
             };
             clientProject.GenerateFiles("TestProject", "http://localhost:5000");
             return disk;

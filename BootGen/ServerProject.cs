@@ -16,7 +16,7 @@ namespace BootGen
         private DataModel DataModel => ResourceCollection.DataModel;
         public ResourceCollection ResourceCollection { get; set; }
         public SeedDataStore SeedStore { get; set; }
-        public string TemplateRoot { get; set; }
+        public IDisk Templates { get; set; }
         
         public void GenerateFiles(string namespce, string baseUrl)
         {
@@ -27,11 +27,11 @@ namespace BootGen
         {
             var aspNetCoreGenerator = new AspNetCoreGenerator(disk);
             aspNetCoreGenerator.NameSpace = namespce;
-            aspNetCoreGenerator.TemplateRoot = TemplateRoot;
+            aspNetCoreGenerator.Templates = Templates;
             var pivotResources = ResourceCollection.NestedResources.Where(r => r.Pivot != null).ToList();
             var pivotClasses = pivotResources.Select(r => r.Pivot).Distinct().ToList();
             var oasGenerator = new OASGenerator(disk);
-            oasGenerator.TemplateRoot = TemplateRoot;
+            oasGenerator.Templates = Templates;
             oasGenerator.Render("", "restapi.yml", "oas3template.sbn", new Dictionary<string, object> {
                 {"resources", ResourceCollection.RootResources},
                 {"classes", DataModel.CommonClasses},

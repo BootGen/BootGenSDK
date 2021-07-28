@@ -23,7 +23,7 @@ namespace BootGen
         private DataModel DataModel => ResourceCollection.DataModel;
         public ResourceCollection ResourceCollection { get; set; }
         public SeedDataStore SeedStore { get; set; }
-        public string TemplateRoot { get; set; }
+        public IDisk Templates { get; set; }
         
         public void GenerateFiles(string namespce, string baseUrl)
         {
@@ -35,7 +35,7 @@ namespace BootGen
             var pivotResources = ResourceCollection.NestedResources.Where(r => r.Pivot != null).ToList();
             var pivotClasses = pivotResources.Select(r => r.Pivot).Distinct().ToList();
             var generator = new TypeScriptGenerator(disk);
-            generator.TemplateRoot = TemplateRoot;
+            generator.Templates = Templates;
             generator.RenderClasses($"{Folder}/{ModelsFolder}", s => $"{s.Name}.{Extension}", "model.sbn", DataModel.CommonClasses);
             generator.RenderClasses($"{Folder}/{ViewsFolder}", s => $"{s.Name}List.{ComponentExtension}", "model_list.sbn", DataModel.CommonClasses);
             generator.RenderClasses($"{Folder}/{ComponentsFolder}", s => $"{s.Name}View.{ComponentExtension}", "model_view.sbn", DataModel.CommonClasses);

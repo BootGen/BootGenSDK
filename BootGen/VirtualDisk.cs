@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 
 namespace BootGen
 {
@@ -11,6 +12,17 @@ namespace BootGen
     public class VirtualDisk : IDisk
     {
         public List<VirtualFile> Files = new List<VirtualFile>();
+
+        IEnumerable<VirtualFile> IDisk.Files => Files;
+
+        public string GetFileContent(string path)
+        {
+            foreach(var file in Files) {
+                if (file.Path == Path.GetDirectoryName(path) && file.Name == Path.GetFileName(path))
+                    return file.Content;
+            }
+            return null;
+        }
 
         public void WriteText(string folder, string fileName, string content)
         {
