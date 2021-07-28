@@ -37,11 +37,11 @@ namespace BootGen
             });
             generator.Render($"{Config.ApiFolder}", $"index.{Config.Extension}", "api_client.sbn", new Dictionary<string, object> {
                 {"resources", ResourceCollection.RootResources},
-                {"classes", DataModel.CommonClasses}
-            });
-            generator.Render($"{Config.StoreFolder}", $"index.{Config.Extension}", "store.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses},
                 {"base_url", baseUrl}
+            });
+            generator.Render($"{Config.StoreFolder}", $"index.{Config.Extension}", "store.sbn", new Dictionary<string, object> {
+                {"classes", DataModel.CommonClasses}
             });
         }
 
