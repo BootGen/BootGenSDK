@@ -1,24 +1,12 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using BootGen;
 
 namespace BootGen
 {
     public class ClientProject
     {
-        public string Folder { get; set; }
-        public string Extension { get; set; }
-        public string RouterFileName { get; set; }
-        public string ComponentExtension { get; set; }
-        public string ModelsFolder { get; set; } = "models";
-        public string ViewsFolder { get; set; } = "views";
-        public string ComponentsFolder { get; set; } = "components";
-        public string StoreFolder { get; set; } = "store";
-        public string RouterFolder { get; set; } = "router";
-        public string ApiFolder { get; set; } = "api";
+        public ClientConfig Config { get; set; } 
         public IDisk Disk { get; set; }
         private DataModel DataModel => ResourceCollection.DataModel;
         public ResourceCollection ResourceCollection { get; set; }
@@ -36,22 +24,22 @@ namespace BootGen
             var pivotClasses = pivotResources.Select(r => r.Pivot).Distinct().ToList();
             var generator = new TypeScriptGenerator(disk);
             generator.Templates = Templates;
-            generator.RenderClasses($"{Folder}/{ModelsFolder}", s => $"{s.Name}.{Extension}", "model.sbn", DataModel.CommonClasses);
-            generator.RenderClasses($"{Folder}/{ViewsFolder}", s => $"{s.Name}List.{ComponentExtension}", "model_list.sbn", DataModel.CommonClasses);
-            generator.RenderClasses($"{Folder}/{ComponentsFolder}", s => $"{s.Name}View.{ComponentExtension}", "model_view.sbn", DataModel.CommonClasses);
-            generator.RenderClasses($"{Folder}/{ComponentsFolder}", s => $"{s.Name}Edit.{ComponentExtension}", "model_edit.sbn", DataModel.CommonClasses);
-            generator.RenderResources($"{Folder}/{StoreFolder}", s => $"{s.Name}Module.{Extension}", "store_module.sbn", ResourceCollection.RootResources);
-            generator.Render($"{Folder}/{RouterFolder}", RouterFileName, "router.sbn", new Dictionary<string, object> {
+            generator.RenderClasses($"{Config.ModelsFolder}", s => $"{s.Name}.{Config.Extension}", "model.sbn", DataModel.CommonClasses);
+            generator.RenderClasses($"{Config.ViewsFolder}", s => $"{s.Name}List.{Config.ComponentExtension}", "model_list.sbn", DataModel.CommonClasses);
+            generator.RenderClasses($"{Config.ComponentsFolder}", s => $"{s.Name}View.{Config.ComponentExtension}", "model_view.sbn", DataModel.CommonClasses);
+            generator.RenderClasses($"{Config.ComponentsFolder}", s => $"{s.Name}Edit.{Config.ComponentExtension}", "model_edit.sbn", DataModel.CommonClasses);
+            generator.RenderResources($"{Config.StoreFolder}", s => $"{s.Name}Module.{Config.Extension}", "store_module.sbn", ResourceCollection.RootResources);
+            generator.Render($"{Config.RouterFolder}", Config.RouterFileName, "router.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses}
             });
-            generator.Render(Folder, $"App.{ComponentExtension}", "app.sbn", new Dictionary<string, object> {
+            generator.Render("", $"App.{Config.ComponentExtension}", "app.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses}
             });
-            generator.Render($"{Folder}/{ApiFolder}", $"index.{Extension}", "api_client.sbn", new Dictionary<string, object> {
+            generator.Render($"{Config.ApiFolder}", $"index.{Config.Extension}", "api_client.sbn", new Dictionary<string, object> {
                 {"resources", ResourceCollection.RootResources},
                 {"classes", DataModel.CommonClasses}
             });
-            generator.Render($"{Folder}/{StoreFolder}", $"index.{Extension}", "store.sbn", new Dictionary<string, object> {
+            generator.Render($"{Config.StoreFolder}", $"index.{Config.Extension}", "store.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.CommonClasses},
                 {"base_url", baseUrl}
             });

@@ -33,5 +33,16 @@ namespace BootGen
                 Content = content
             });
         }
+
+
+        public void Mount(VirtualDisk disk, string path) {
+            foreach (var file in disk.Files) {
+                Files.Add (new VirtualFile {
+                    Path = Path.Combine(path, file.Path),
+                    Name = file.Name,
+                    Content = file.Content
+                });
+            }
+        }
     }
 }

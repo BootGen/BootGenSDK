@@ -9,9 +9,7 @@ namespace BootGen
 {
     public class ServerProject
     {
-        public string ControllerFolder { get; set; }
-        public string ServiceFolder { get; set; }
-        public string EntityFolder { get; set; }
+        public ServerConfig Config { get; set; }
         public IDisk Disk { get; set; }
         private DataModel DataModel => ResourceCollection.DataModel;
         public ResourceCollection ResourceCollection { get; set; }
@@ -38,14 +36,14 @@ namespace BootGen
                 {"project_title", namespce},
                 {"base_url", baseUrl}
             });
-            aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{FullName(r)}Controller.cs", "resourceController.sbn", ResourceCollection.RootResources.ToList());
-            aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{FullName(r)}Controller.cs", "nestedResourceController.sbn", ResourceCollection.NestedResources.Where(r => r.Pivot == null).ToList());
-            aspNetCoreGenerator.RenderResources($"{ServiceFolder}/Interfaces", r => $"I{FullName(r)}Service.cs", "resourceServiceInterface.sbn", ResourceCollection.RootResources.ToList());
-            aspNetCoreGenerator.RenderResources(ServiceFolder, r => $"{FullName(r)}Service.cs", "resourceService.sbn", ResourceCollection.RootResources.ToList());
+            aspNetCoreGenerator.RenderResources(Config.ControllerFolder, r => $"{FullName(r)}Controller.cs", "resourceController.sbn", ResourceCollection.RootResources.ToList());
+            aspNetCoreGenerator.RenderResources(Config.ControllerFolder, r => $"{FullName(r)}Controller.cs", "nestedResourceController.sbn", ResourceCollection.NestedResources.Where(r => r.Pivot == null).ToList());
+            aspNetCoreGenerator.RenderResources($"{Config.ServiceFolder}/Interfaces", r => $"I{FullName(r)}Service.cs", "resourceServiceInterface.sbn", ResourceCollection.RootResources.ToList());
+            aspNetCoreGenerator.RenderResources(Config.ServiceFolder, r => $"{FullName(r)}Service.cs", "resourceService.sbn", ResourceCollection.RootResources.ToList());
 
-            aspNetCoreGenerator.RenderResources(ControllerFolder, r => $"{FullName(r)}Controller.cs", "pivotController.sbn", pivotResources);
+            aspNetCoreGenerator.RenderResources(Config.ControllerFolder, r => $"{FullName(r)}Controller.cs", "pivotController.sbn", pivotResources);
 
-            aspNetCoreGenerator.RenderClasses(EntityFolder, s => $"{s.Name}.cs", "entity.sbn", DataModel.Classes.Where(c => !c.IsPivot));
+            aspNetCoreGenerator.RenderClasses(Config.EntityFolder, s => $"{s.Name}.cs", "entity.sbn", DataModel.Classes.Where(c => !c.IsPivot));
             aspNetCoreGenerator.Render("", "ApplicationDbContext.cs", "applicationDbContext.sbn", new Dictionary<string, object> {
                 {"classes", DataModel.Classes},
                 {"seedList", SeedStore.All()},

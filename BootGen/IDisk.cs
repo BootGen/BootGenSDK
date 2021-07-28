@@ -6,7 +6,6 @@ namespace BootGen
     {
         void WriteText(string folder, string fileName, string content);
         IEnumerable<VirtualFile> Files { get; }
-
         string GetFileContent(string path);
     }
 }

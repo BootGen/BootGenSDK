@@ -1,7 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BootGen;
 using Newtonsoft.Json.Linq;
-using System.Diagnostics;
 using System.IO.Compression;
 using System.IO;
 using System;
@@ -33,7 +32,9 @@ namespace BootGenTest
             {
                 GenerateWithTemplates("templates", "example_input_wrong_annotation.json");
                 Assert.Fail();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Assert.IsTrue(e.Message.StartsWith("Unrecognised annotation:"));
             }
         }
@@ -45,7 +46,9 @@ namespace BootGenTest
             {
                 GenerateWithTemplates("templates", "example_input_invalid_class_name.json");
                 Assert.Fail();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Assert.IsTrue(e.Message.StartsWith("Invalid class name:"));
             }
         }
@@ -61,7 +64,7 @@ namespace BootGenTest
             VirtualDisk disk = GenerateWithTemplates(templateRoot, fileName);
             if (Directory.Exists(outputFolder))
                 Directory.Delete(outputFolder, true);
-            
+
             ZipFile.ExtractToDirectory($"{outputFolder}.zip", ".");
             foreach (var file in disk.Files)
             {
@@ -93,27 +96,35 @@ namespace BootGenTest
             var disk = new VirtualDisk();
             var project = new ServerProject
             {
-                ControllerFolder = "Controllers",
-                ServiceFolder = "Services",
-                EntityFolder = "Models",
+                Config = new ServerConfig
+                {
+                    ControllerFolder = "Controllers",
+                    ServiceFolder = "Services",
+                    EntityFolder = "Models"
+                },
                 Disk = disk,
                 ResourceCollection = resourceCollection,
                 SeedStore = seedStore,
                 Templates = new Disk(Path.Combine(templateRoot, "server"))
             };
             project.GenerateFiles("TestProject", "http://localhost:5000");
+
+            var clientDisk = new VirtualDisk();
             var clientProject = new ClientProject
             {
-                Folder = "ClientApp/src",
-                Extension = "ts",
-                ComponentExtension = "vue",
-                RouterFileName = "index.ts",
-                Disk = disk,
+                Config = new ClientConfig
+                {
+                    Extension = "ts",
+                    ComponentExtension = "vue",
+                    RouterFileName = "index.ts",
+                },
+                Disk = clientDisk,
                 ResourceCollection = resourceCollection,
                 SeedStore = seedStore,
                 Templates = new Disk(Path.Combine(templateRoot, "client"))
             };
             clientProject.GenerateFiles("TestProject", "http://localhost:5000");
+            disk.Mount(clientDisk, "ClientApp/src");
             return disk;
         }
     }
