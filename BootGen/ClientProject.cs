@@ -33,7 +33,6 @@ namespace BootGen
                 {"classes", DataModel.CommonClasses}
             });
             generator.Render("", $"App.{Config.ComponentExtension}", "app.sbn", new Dictionary<string, object> {
-                {"resources", ResourceCollection.RootResources},
                 {"classes", DataModel.CommonClasses}
             });
             generator.Render($"{Config.ApiFolder}", $"index.{Config.Extension}", "api_client.sbn", new Dictionary<string, object> {

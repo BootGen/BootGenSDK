@@ -21,7 +21,8 @@ namespace BootGen
         {
             foreach (var property in jObject.Properties())
             {
-                Parse(property, out var _);
+                var model = Parse(property, out var _);
+                model.IsRoot = true;
             }
 
             foreach (var c in Classes)
