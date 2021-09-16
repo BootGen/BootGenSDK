@@ -223,7 +223,8 @@ namespace BootGen
                     c.Properties.Insert(propertyIdx + 1, new Property
                     {
                         Name = property.Name + "Id",
-                        BuiltInType = BuiltInType.Int
+                        BuiltInType = BuiltInType.Int,
+                        IsKey = true
                     });
                     property.IsServerOnly = true;
                     propertyIdx += 1;
@@ -252,7 +253,8 @@ namespace BootGen
                 var idProperty = new Property
                 {
                     Name = parent.Name + "Id",
-                    BuiltInType = BuiltInType.Int
+                    BuiltInType = BuiltInType.Int,
+                    IsKey = true
                 };
                 child.Properties.Add(idProperty);
             }

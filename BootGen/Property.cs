@@ -18,6 +18,7 @@ namespace BootGen
         public bool IsParentReference { get; set; }
         public bool IsManyToMany { get; set; }
         public bool IsClientReadonly { get; set; }
+        public bool IsKey { get; set; }
     }
     
 

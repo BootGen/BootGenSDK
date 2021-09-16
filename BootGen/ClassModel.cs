@@ -26,7 +26,8 @@ namespace BootGen
                 {
                     Name = "Id",
                     BuiltInType = BuiltInType.Int,
-                    IsClientReadonly = true
+                    IsClientReadonly = true,
+                    IsKey = true
                 }
             };
         }
