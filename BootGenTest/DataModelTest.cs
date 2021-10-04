@@ -96,6 +96,16 @@ namespace BootGenTest
             AssertHasProperty(pivotClass, "Friend", BuiltInType.Object);
             AssertHasProperty(pivotClass, "FriendsId", BuiltInType.Int);
         }
+        [TestMethod]
+        public void TestLoadRootObject()
+        {
+
+            var data = JObject.Parse(File.ReadAllText("example_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var dataModel = new DataModel();
+            dataModel.LoadRootObject("App", data);
+            var appClass = dataModel.Classes.First(c => c.Name.Singular == "App");
+            AssertHasOneToManyProperty(appClass, "Users");
+        }
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
             Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{classModel.Name}.{propertyName} -> {type} is missing.");

@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>BootGen</PackageId>
-    <Version>1.1.4</Version>
+    <Version>1.1.5</Version>
     <Authors>Gabor Angyal</Authors>
     <Company>Code Sharp Kft.</Company>
     <Owner>Code Sharp Kft.</Owner>
-    <Description>Code Generator Toolkit for ASP.Net Core and Vue.js</Description>
+    <Description>Code Generator Toolkit for C# and TypeScript</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>BootGenLogo.png</PackageIcon>
     <Copyright>Copyright 2020 Code Sharp Kft.</Copyright>

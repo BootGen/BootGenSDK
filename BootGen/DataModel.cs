@@ -24,7 +24,18 @@ namespace BootGen
                 var model = Parse(property, out var _);
                 model.IsRoot = true;
             }
+            AddRelationships();
+        }
+        public void LoadRootObject(string name, JObject jObject)
+        {
+            var property = new JProperty(name, jObject);
+            var model = Parse(property, out var _);
+            model.IsRoot = true;
+            AddRelationships();
+        }
 
+        private void AddRelationships()
+        {
             foreach (var c in Classes)
             {
                 var properties = new List<Property>(c.Properties);
