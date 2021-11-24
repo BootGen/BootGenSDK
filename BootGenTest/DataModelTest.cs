@@ -119,6 +119,18 @@ namespace BootGenTest
                 Assert.IsFalse(string.IsNullOrWhiteSpace(e.Message));
             }
         }
+        [TestMethod]
+        public void TestInconsistentTypes()
+        {
+            try {
+                var data = JObject.Parse(File.ReadAllText("example_input_inconsistent_types.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+                var dataModel = new DataModel();
+                dataModel.Load(data);
+                Assert.Fail();
+            } catch  (FormatException e) {
+                Assert.IsFalse(string.IsNullOrWhiteSpace(e.Message));
+            }
+        }
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
             Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{classModel.Name}.{propertyName} -> {type} is missing.");

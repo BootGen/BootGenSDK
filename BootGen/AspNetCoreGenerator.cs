@@ -22,7 +22,16 @@ namespace BootGen
 
         public static string GetBaseType(Property property)
         {
-            switch (property.BuiltInType)
+
+            BuiltInType builtInType = property.BuiltInType;
+            if (builtInType == BuiltInType.Object)
+                return property.Class.Name;
+            return ToCSharpType(builtInType);
+        }
+
+        public static string ToCSharpType(BuiltInType builtInType)
+        {
+            switch (builtInType)
             {
                 case BuiltInType.Bool:
                     return "bool";
@@ -33,7 +42,7 @@ namespace BootGen
                 case BuiltInType.DateTime:
                     return "DateTime";
                 case BuiltInType.Object:
-                    return property.Class.Name;
+                    return "object";
                 default:
                     return "int";
             }

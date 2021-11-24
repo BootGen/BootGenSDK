@@ -12,7 +12,12 @@ namespace BootGen
 
         public static string GetType(Property property)
         {
-            switch (property.BuiltInType)
+            return ToTypeScriptType(property.BuiltInType);
+        }
+
+        public static string ToTypeScriptType(BuiltInType builtInType)
+        {
+            switch (builtInType)
             {
                 case BuiltInType.Bool:
                     return "boolean";
@@ -20,6 +25,8 @@ namespace BootGen
                     return "string";
                 case BuiltInType.DateTime:
                     return "Date";
+                case BuiltInType.Object:
+                    return "object";
                 default:
                     return "number";
             }

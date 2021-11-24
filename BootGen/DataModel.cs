@@ -12,6 +12,8 @@ namespace BootGen
         public List<ClassModel> Classes { get; } = new List<ClassModel>();
         public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
 
+        public Func<BuiltInType, string> TypeToString { get; init; } = AspNetCoreGenerator.ToCSharpType;
+
         public void AddClass(ClassModel c)
         {
             c.Id = Classes.Count;
@@ -152,28 +154,50 @@ namespace BootGen
             foreach (var property in item.Properties())
             {
                 var propertyName = property.Name.Capitalize();
-                if (model.Properties.All(p => p.Name != propertyName))
+                var prop = model.Properties.FirstOrDefault(p => p.Name == propertyName);
+
+                BuiltInType builtInType = ConvertType(property.Value.Type);
+                bool isCollection = property.Value.Type == JTokenType.Array;
+                if (prop != null)
                 {
-                    var prop = new Property
-                    {
-                        Name = propertyName,
-                        BuiltInType = ConvertType(property.Value.Type),
-                        IsCollection = property.Value.Type == JTokenType.Array
-                    };
-                    if (prop.IsCollection)
-                    {
-                        prop.Noun = pluralizer.Singularize(propertyName);
-                        prop.Noun.Plural = propertyName;
+                    if (isCollection &&  prop.IsCollection) {
+                        throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: {TypeToString(prop.BuiltInType)} and array is both used.");
                     }
-                    if (prop.BuiltInType == BuiltInType.Object)
-                    {
-                        prop.Class = Parse(property, out bool m2m);
-                        prop.IsManyToMany = m2m;
-                        if (prop.IsCollection)
-                            prop.IsServerOnly = true;
+                    if (!isCollection && prop.IsCollection) {
+                        throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: array and  {TypeToString(builtInType)} is both used.");
                     }
-                    model.Properties.Add(prop);
+                    if (prop.BuiltInType != builtInType) {
+                        if (prop.BuiltInType == BuiltInType.Float && builtInType == BuiltInType.Int) {
+                            continue;
+                        }
+                        if (prop.BuiltInType == BuiltInType.Int && builtInType == BuiltInType.Float) {
+                            prop.BuiltInType = BuiltInType.Float;
+                            continue;
+                        }
+                        throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: {TypeToString(prop.BuiltInType)} and {TypeToString(builtInType)} is both used.");
+                    }
+                    continue;
                 }
+
+                prop = new Property
+                {
+                    Name = propertyName,
+                    BuiltInType = builtInType,
+                    IsCollection = isCollection
+                };
+                if (prop.IsCollection)
+                {
+                    prop.Noun = pluralizer.Singularize(propertyName);
+                    prop.Noun.Plural = propertyName;
+                }
+                if (prop.BuiltInType == BuiltInType.Object)
+                {
+                    prop.Class = Parse(property, out bool m2m);
+                    prop.IsManyToMany = m2m;
+                    if (prop.IsCollection)
+                        prop.IsServerOnly = true;
+                }
+                model.Properties.Add(prop);
             }
         }
 
