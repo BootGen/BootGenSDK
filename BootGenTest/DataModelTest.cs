@@ -107,6 +107,19 @@ namespace BootGenTest
             AssertHasOneToManyProperty(appClass, "Users");
         }
 
+        [TestMethod]
+        public void TestWrongPluralization()
+        {
+            try {
+                var data = JObject.Parse(File.ReadAllText("example_input_plural.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+                var dataModel = new DataModel();
+                dataModel.Load(data);
+                Assert.Fail();
+            } catch  (FormatException e) {
+                Assert.IsFalse(string.IsNullOrWhiteSpace(e.Message));
+            }
+        }
+
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
             Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{classModel.Name}.{propertyName} -> {type} is missing.");
         }

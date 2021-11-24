@@ -59,6 +59,9 @@ namespace BootGen
             manyToMany = false;
             if (property.Value.Type == JTokenType.Array)
             {
+                var suggestedName = pluralizer.Pluralize(pluralizer.Singularize(property.Name));
+                if (property.Name.ToLower() != suggestedName.ToLower())
+                    throw new FormatException($"Array names must be plural nouns. The property name \"{property.Name}\" does not seam to be plural. Did you mean \"{suggestedName}\"?");
                 className = pluralizer.Singularize(property.Name).Capitalize();
                 className.Plural = property.Name.Capitalize();
                 var data = property.Value as JArray;
