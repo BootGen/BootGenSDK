@@ -5,300 +5,297 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using Pluralize.NET;
 
-namespace BootGen
+namespace BootGen;
+
+public class DataModel
 {
-    public class DataModel
+    public List<ClassModel> Classes { get; } = new List<ClassModel>();
+    public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
+
+    public Func<BuiltInType, string> TypeToString { get; init; } = AspNetCoreGenerator.ToCSharpType;
+
+    public void AddClass(ClassModel c)
     {
-        public List<ClassModel> Classes { get; } = new List<ClassModel>();
-        public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
-
-        public Func<BuiltInType, string> TypeToString { get; init; } = AspNetCoreGenerator.ToCSharpType;
-
-        public void AddClass(ClassModel c)
+        c.Id = Classes.Count;
+        Classes.Add(c);
+    }
+    public void Load(JObject jObject)
+    {
+        foreach (var property in jObject.Properties())
         {
-            c.Id = Classes.Count;
-            Classes.Add(c);
-        }
-        public void Load(JObject jObject)
-        {
-            foreach (var property in jObject.Properties())
-            {
-                var model = Parse(property, out var _);
-                model.IsRoot = true;
-            }
-            AddRelationships();
-        }
-        public void LoadRootObject(string name, JObject jObject)
-        {
-            var property = new JProperty(name, jObject);
             var model = Parse(property, out var _);
             model.IsRoot = true;
-            AddRelationships();
+        }
+        AddRelationships();
+    }
+    public void LoadRootObject(string name, JObject jObject)
+    {
+        var property = new JProperty(name, jObject);
+        var model = Parse(property, out var _);
+        model.IsRoot = true;
+        AddRelationships();
+    }
+
+    private void AddRelationships()
+    {
+        foreach (var c in Classes)
+        {
+            var properties = new List<Property>(c.Properties);
+            foreach (var p in properties)
+                if (p.IsCollection && p.BuiltInType == BuiltInType.Object && !p.IsManyToMany)
+                    AddOneToManyParentReference(c, p);
         }
 
-        private void AddRelationships()
+        foreach (var c in Classes)
         {
-            foreach (var c in Classes)
-            {
-                var properties = new List<Property>(c.Properties);
-                foreach (var p in properties)
-                    if (p.IsCollection && p.BuiltInType == BuiltInType.Object && !p.IsManyToMany)
-                        AddOneToManyParentReference(c, p);
-            }
+            AddManyToManyMirrorProperties(c);
+            AddManyToOneParentReference(c);
+        }
+    }
 
-            foreach (var c in Classes)
+    private ClassModel Parse(JProperty property, out bool manyToMany)
+    {
+        var pluralizer = new Pluralizer();
+        Noun className;
+        bool hasTimestamps = false;
+        manyToMany = false;
+        if (property.Value.Type == JTokenType.Array)
+        {
+            var suggestedName = pluralizer.Pluralize(pluralizer.Singularize(property.Name));
+            if (property.Name.ToLower() != suggestedName.ToLower())
+                throw new NamingException($"Array names must be plural nouns. The property name \"{property.Name}\" does not seam to be plural. Did you mean \"{suggestedName}\"?", suggestedName, property.Name);
+            className = pluralizer.Singularize(property.Name).Capitalize();
+            className.Plural = property.Name.Capitalize();
+            var data = property.Value as JArray;
+            foreach (JToken item in data)
             {
-                AddManyToManyMirrorProperties(c);
-                AddManyToOneParentReference(c);
+                if (item.Type != JTokenType.Comment)
+                    continue;
+                string comment = item.Value<string>().Trim();
+                if (comment == "manyToMany")
+                {
+                    manyToMany = true;
+                    continue;
+                }
+                if (comment == "timestamps")
+                {
+                    hasTimestamps = true;
+                    continue;
+                }
+                if (comment.StartsWith("class:"))
+                {
+                    string name = comment.Split(":").Last().Trim();
+                    var provider = CodeDomProvider.CreateProvider("C#");
+                    if (!provider.IsValidIdentifier(name))
+                    {
+                        throw new Exception($"Invalid class name: {name}");
+                    }
+                    className = name.Capitalize();
+                    className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
+                    continue;
+                }
+                throw new Exception($"Unrecognised annotation: {comment}");
             }
         }
-
-        private ClassModel Parse(JProperty property, out bool manyToMany)
+        else
         {
-            var pluralizer = new Pluralizer();
-            Noun className;
-            bool hasTimestamps = false;
-            manyToMany = false;
-            if (property.Value.Type == JTokenType.Array)
+            className = property.Name.Capitalize();
+            className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
+        }
+        ClassModel result = GetClassModel(className);
+        if (hasTimestamps && !result.HasTimestamps)
+        {
+            result.HasTimestamps = true;
+            result.Properties.Add(new Property
             {
-                var suggestedName = pluralizer.Pluralize(pluralizer.Singularize(property.Name));
-                if (property.Name.ToLower() != suggestedName.ToLower())
-                    throw new FormatException($"Array names must be plural nouns. The property name \"{property.Name}\" does not seam to be plural. Did you mean \"{suggestedName}\"?");
-                className = pluralizer.Singularize(property.Name).Capitalize();
-                className.Plural = property.Name.Capitalize();
+                Name = "Created",
+                BuiltInType = BuiltInType.DateTime
+            });
+            result.Properties.Add(new Property
+            {
+                Name = "Updated",
+                BuiltInType = BuiltInType.DateTime
+            });
+        }
+        switch (property.Value.Type)
+        {
+            case JTokenType.Array:
                 var data = property.Value as JArray;
+                var comments = new List<JToken>();
                 foreach (JToken item in data)
                 {
-                    if (item.Type != JTokenType.Comment)
+                    if (item.Type == JTokenType.Object)
+                    {
+                        ExtendModel(result, (JObject)item);
+                    }
+                }
+                break;
+            case JTokenType.Object:
+                ExtendModel(result, property.Value as JObject);
+                break;
+        }
+        return result;
+    }
+
+    private ClassModel GetClassModel(Noun className)
+    {
+        var c = Classes.FirstOrDefault(c => c.Name.Singular == className);
+        if (c == null)
+        {
+            c = new ClassModel(className);
+            AddClass(c);
+        }
+        return c;
+    }
+
+    private void ExtendModel(ClassModel model, JObject item)
+    {
+        var pluralizer = new Pluralizer();
+        foreach (var property in item.Properties())
+        {
+            var propertyName = property.Name.Capitalize();
+            var prop = model.Properties.FirstOrDefault(p => p.Name == propertyName);
+
+            BuiltInType builtInType = ConvertType(property.Value.Type);
+            bool isCollection = property.Value.Type == JTokenType.Array;
+            if (prop != null)
+            {
+                if (isCollection &&  prop.IsCollection) {
+                    throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: {TypeToString(prop.BuiltInType)} and array is both used.");
+                }
+                if (!isCollection && prop.IsCollection) {
+                    throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: array and  {TypeToString(builtInType)} is both used.");
+                }
+                if (prop.BuiltInType != builtInType) {
+                    if (prop.BuiltInType == BuiltInType.Float && builtInType == BuiltInType.Int) {
                         continue;
-                    string comment = item.Value<string>().Trim();
-                    if (comment == "manyToMany")
-                    {
-                        manyToMany = true;
+                    }
+                    if (prop.BuiltInType == BuiltInType.Int && builtInType == BuiltInType.Float) {
+                        prop.BuiltInType = BuiltInType.Float;
                         continue;
                     }
-                    if (comment == "timestamps")
-                    {
-                        hasTimestamps = true;
-                        continue;
-                    }
-                    if (comment.StartsWith("class:"))
-                    {
-                        string name = comment.Split(":").Last().Trim();
-                        var provider = CodeDomProvider.CreateProvider("C#");
-                        if (!provider.IsValidIdentifier(name))
-                        {
-                            throw new Exception($"Invalid class name: {name}");
-                        }
-                        className = name.Capitalize();
-                        className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
-                        continue;
-                    }
-                    throw new Exception($"Unrecognised annotation: {comment}");
+                    throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: {TypeToString(prop.BuiltInType)} and {TypeToString(builtInType)} is both used.");
                 }
+                continue;
             }
-            else
-            {
-                className = property.Name.Capitalize();
-                className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
-            }
-            ClassModel result = GetClassModel(className);
-            if (hasTimestamps && !result.HasTimestamps)
-            {
-                result.HasTimestamps = true;
-                result.Properties.Add(new Property
-                {
-                    Name = "Created",
-                    BuiltInType = BuiltInType.DateTime
-                });
-                result.Properties.Add(new Property
-                {
-                    Name = "Updated",
-                    BuiltInType = BuiltInType.DateTime
-                });
-            }
-            switch (property.Value.Type)
-            {
-                case JTokenType.Array:
-                    var data = property.Value as JArray;
-                    var comments = new List<JToken>();
-                    foreach (JToken item in data)
-                    {
-                        if (item.Type == JTokenType.Object)
-                        {
-                            ExtendModel(result, (JObject)item);
-                        }
-                    }
-                    break;
-                case JTokenType.Object:
-                    ExtendModel(result, property.Value as JObject);
-                    break;
-            }
-            return result;
-        }
 
-        private ClassModel GetClassModel(Noun className)
-        {
-            var c = Classes.FirstOrDefault(c => c.Name.Singular == className);
-            if (c == null)
+            prop = new Property
             {
-                c = new ClassModel(className);
-                AddClass(c);
-            }
-            return c;
-        }
-
-        private void ExtendModel(ClassModel model, JObject item)
-        {
-            var pluralizer = new Pluralizer();
-            foreach (var property in item.Properties())
-            {
-                var propertyName = property.Name.Capitalize();
-                var prop = model.Properties.FirstOrDefault(p => p.Name == propertyName);
-
-                BuiltInType builtInType = ConvertType(property.Value.Type);
-                bool isCollection = property.Value.Type == JTokenType.Array;
-                if (prop != null)
-                {
-                    if (isCollection &&  prop.IsCollection) {
-                        throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: {TypeToString(prop.BuiltInType)} and array is both used.");
-                    }
-                    if (!isCollection && prop.IsCollection) {
-                        throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: array and  {TypeToString(builtInType)} is both used.");
-                    }
-                    if (prop.BuiltInType != builtInType) {
-                        if (prop.BuiltInType == BuiltInType.Float && builtInType == BuiltInType.Int) {
-                            continue;
-                        }
-                        if (prop.BuiltInType == BuiltInType.Int && builtInType == BuiltInType.Float) {
-                            prop.BuiltInType = BuiltInType.Float;
-                            continue;
-                        }
-                        throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: {TypeToString(prop.BuiltInType)} and {TypeToString(builtInType)} is both used.");
-                    }
-                    continue;
-                }
-
-                prop = new Property
-                {
-                    Name = propertyName,
-                    BuiltInType = builtInType,
-                    IsCollection = isCollection
-                };
-                if (prop.IsCollection)
-                {
-                    prop.Noun = pluralizer.Singularize(propertyName);
-                    prop.Noun.Plural = propertyName;
-                }
-                if (prop.BuiltInType == BuiltInType.Object)
-                {
-                    prop.Class = Parse(property, out bool m2m);
-                    prop.IsManyToMany = m2m;
-                    if (prop.IsCollection)
-                        prop.IsServerOnly = true;
-                }
-                model.Properties.Add(prop);
-            }
-        }
-
-        private BuiltInType ConvertType(JTokenType type)
-        {
-            switch (type)
-            {
-                case JTokenType.Boolean:
-                    return BuiltInType.Bool;
-                case JTokenType.String:
-                    return BuiltInType.String;
-                case JTokenType.Date:
-                    return BuiltInType.DateTime;
-                case JTokenType.Integer:
-                    return BuiltInType.Int;
-                case JTokenType.Float:
-                    return BuiltInType.Float;
-                default:
-                    return BuiltInType.Object;
-            }
-        }
-        private void AddManyToManyMirrorProperties(ClassModel c)
-        {
-            var pluralizer = new Pluralizer();
-            var properties = new List<Property>(c.Properties);
-            foreach (var property in properties)
-            {
-                if (!property.IsManyToMany)
-                    continue;
-
-                Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Class == c);
-                if (referenceProperty == null)
-                {
-                    referenceProperty = new Property
-                    {
-                        Name = c.Name.Plural,
-                        BuiltInType = BuiltInType.Object,
-                        Class = c,
-                        IsCollection = true,
-                        IsManyToMany = true,
-                        IsServerOnly = true,
-                        Noun = c.Name
-                    };
-                    property.Class.Properties.Add(referenceProperty);
-                }
-                referenceProperty.MirrorProperty = property;
-                property.MirrorProperty = referenceProperty;
-            }
-        }
-
-        public void AddManyToOneParentReference(ClassModel c)
-        {
-            var properties = new List<Property>(c.Properties);
-            var propertyIdx = -1;
-            foreach (var property in properties)
-            {
-                propertyIdx += 1;
-                if (property.Class == null || property.IsCollection)
-                    continue;
-                if (!c.Properties.Any(p => p.Name == property.Name + "Id"))
-                {
-                    c.Properties.Insert(propertyIdx + 1, new Property
-                    {
-                        Name = property.Name + "Id",
-                        BuiltInType = BuiltInType.Int,
-                        IsKey = true
-                    });
-                    property.IsServerOnly = true;
-                    propertyIdx += 1;
-                }
-            }
-        }
-
-
-        private static void AddOneToManyParentReference(ClassModel parent, Property property)
-        {
-            var referenceProperty = new Property
-            {
-                Name = parent.Name,
-                BuiltInType = BuiltInType.Object,
-                Class = parent,
-                IsServerOnly = true,
-                IsParentReference = true,
-                MirrorProperty = property
+                Name = propertyName,
+                BuiltInType = builtInType,
+                IsCollection = isCollection
             };
-            var child = property.Class;
-            child.Properties.Add(referenceProperty);
-
-            if (!child.Properties.Any(p => p.Name == parent.Name + "Id"))
+            if (prop.IsCollection)
             {
+                prop.Noun = pluralizer.Singularize(propertyName);
+                prop.Noun.Plural = propertyName;
+            }
+            if (prop.BuiltInType == BuiltInType.Object)
+            {
+                prop.Class = Parse(property, out bool m2m);
+                prop.IsManyToMany = m2m;
+                if (prop.IsCollection)
+                    prop.IsServerOnly = true;
+            }
+            model.Properties.Add(prop);
+        }
+    }
 
-                var idProperty = new Property
+    private BuiltInType ConvertType(JTokenType type)
+    {
+        switch (type)
+        {
+            case JTokenType.Boolean:
+                return BuiltInType.Bool;
+            case JTokenType.String:
+                return BuiltInType.String;
+            case JTokenType.Date:
+                return BuiltInType.DateTime;
+            case JTokenType.Integer:
+                return BuiltInType.Int;
+            case JTokenType.Float:
+                return BuiltInType.Float;
+            default:
+                return BuiltInType.Object;
+        }
+    }
+    private void AddManyToManyMirrorProperties(ClassModel c)
+    {
+        var pluralizer = new Pluralizer();
+        var properties = new List<Property>(c.Properties);
+        foreach (var property in properties)
+        {
+            if (!property.IsManyToMany)
+                continue;
+
+            Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Class == c);
+            if (referenceProperty == null)
+            {
+                referenceProperty = new Property
                 {
-                    Name = parent.Name + "Id",
+                    Name = c.Name.Plural,
+                    BuiltInType = BuiltInType.Object,
+                    Class = c,
+                    IsCollection = true,
+                    IsManyToMany = true,
+                    IsServerOnly = true,
+                    Noun = c.Name
+                };
+                property.Class.Properties.Add(referenceProperty);
+            }
+            referenceProperty.MirrorProperty = property;
+            property.MirrorProperty = referenceProperty;
+        }
+    }
+
+    public void AddManyToOneParentReference(ClassModel c)
+    {
+        var properties = new List<Property>(c.Properties);
+        var propertyIdx = -1;
+        foreach (var property in properties)
+        {
+            propertyIdx += 1;
+            if (property.Class == null || property.IsCollection)
+                continue;
+            if (!c.Properties.Any(p => p.Name == property.Name + "Id"))
+            {
+                c.Properties.Insert(propertyIdx + 1, new Property
+                {
+                    Name = property.Name + "Id",
                     BuiltInType = BuiltInType.Int,
                     IsKey = true
-                };
-                child.Properties.Add(idProperty);
+                });
+                property.IsServerOnly = true;
+                propertyIdx += 1;
             }
         }
+    }
 
 
+    private static void AddOneToManyParentReference(ClassModel parent, Property property)
+    {
+        var referenceProperty = new Property
+        {
+            Name = parent.Name,
+            BuiltInType = BuiltInType.Object,
+            Class = parent,
+            IsServerOnly = true,
+            IsParentReference = true,
+            MirrorProperty = property
+        };
+        var child = property.Class;
+        child.Properties.Add(referenceProperty);
+
+        if (!child.Properties.Any(p => p.Name == parent.Name + "Id"))
+        {
+
+            var idProperty = new Property
+            {
+                Name = parent.Name + "Id",
+                BuiltInType = BuiltInType.Int,
+                IsKey = true
+            };
+            child.Properties.Add(idProperty);
+        }
     }
 }

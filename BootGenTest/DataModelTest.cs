@@ -110,13 +110,20 @@ namespace BootGenTest
         [TestMethod]
         public void TestWrongPluralization()
         {
+            var data = JObject.Parse(File.ReadAllText("example_input_plural.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
             try {
-                var data = JObject.Parse(File.ReadAllText("example_input_plural.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
                 var dataModel = new DataModel();
                 dataModel.Load(data);
                 Assert.Fail();
-            } catch  (FormatException e) {
+            } catch  (NamingException e) {
                 Assert.IsFalse(string.IsNullOrWhiteSpace(e.Message));
+                Assert.AreEqual("users", e.SuggestedName);
+                Assert.AreEqual("user", e.ActualName);
+                data = data.RenamingArrays(e.ActualName, e.SuggestedName);
+                var dataModel = new DataModel();
+                dataModel.Load(data);
+                var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
+                Assert.IsNotNull(userClass);
             }
         }
         [TestMethod]
