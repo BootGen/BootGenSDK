@@ -160,11 +160,21 @@ public class DataModel
             bool isCollection = property.Value.Type == JTokenType.Array;
             if (prop != null)
             {
-                if (isCollection &&  prop.IsCollection) {
-                    throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: {TypeToString(prop.BuiltInType)} and array is both used.");
-                }
-                if (!isCollection && prop.IsCollection) {
-                    throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: array and  {TypeToString(builtInType)} is both used.");
+                if (isCollection != prop.IsCollection)
+                {
+                    string type1;
+                    string type2;
+                    if (isCollection && !prop.IsCollection)
+                    {
+                        type1 = TypeToString(prop.BuiltInType);
+                        type2 = "array";
+                    }
+                    else
+                    {
+                        type1 = "array";
+                        type2 = TypeToString(prop.BuiltInType);
+                    }
+                    throw GetFormatException(model, propertyName, type1, type2);
                 }
                 if (prop.BuiltInType != builtInType) {
                     if (prop.BuiltInType == BuiltInType.Float && builtInType == BuiltInType.Int) {
@@ -174,7 +184,7 @@ public class DataModel
                         prop.BuiltInType = BuiltInType.Float;
                         continue;
                     }
-                    throw new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: {TypeToString(prop.BuiltInType)} and {TypeToString(builtInType)} is both used.");
+                    throw GetFormatException(model, propertyName, TypeToString(prop.BuiltInType), TypeToString(builtInType));
                 }
                 continue;
             }
@@ -199,6 +209,11 @@ public class DataModel
             }
             model.Properties.Add(prop);
         }
+    }
+
+    private static FormatException GetFormatException(ClassModel model, string propertyName, string type1, string type2)
+    {
+        return new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: {type1} and  {type2} is both used.");
     }
 
     private BuiltInType ConvertType(JTokenType type)

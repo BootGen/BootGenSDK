@@ -1,0 +1,24 @@
+{
+	"users": [
+		{
+			"userName": "Jon",
+			"email": "jon@arbuckle.com",
+			"pets": [
+				{
+					"name": "Garfield",
+					"species": "cat"
+				},
+				{
+					"name": "Odie",
+					"species": "dog"
+				}
+			]
+		},
+		{
+			"userName": "Lisie",
+			"email": "lisie@liesie.com",
+			"pets": [
+			]
+		}
+	]
+}
