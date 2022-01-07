@@ -26,13 +26,24 @@ public class DataModel
             var model = Parse(property, out var _);
             model.IsRoot = true;
         }
+
+        CheckForEmptyClasses();
         AddRelationships();
     }
+
+    private void CheckForEmptyClasses()
+    {
+        foreach (var c in Classes)
+            if (c.Properties.Count == 1)
+                throw new FormatException($"Empty types are not supported. The folowing class has no properties: \"{c.Name}\"");
+    }
+
     public void LoadRootObject(string name, JObject jObject)
     {
         var property = new JProperty(name, jObject);
         var model = Parse(property, out var _);
         model.IsRoot = true;
+        CheckForEmptyClasses();
         AddRelationships();
     }
 

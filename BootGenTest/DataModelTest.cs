@@ -147,6 +147,20 @@ namespace BootGenTest
             dataModel.Load(data);
         }
 
+        
+        [TestMethod]
+        public void TestEmptyType()
+        { 
+            try {
+                var data = JObject.Parse(File.ReadAllText("example_input_empty_type.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+                var dataModel = new DataModel();
+                dataModel.Load(data);
+                Assert.Fail();
+            } catch (FormatException e) {
+                Assert.IsNotNull(e.Message);
+            }
+        }
+
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
             Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{classModel.Name}.{propertyName} -> {type} is missing.");
         }
