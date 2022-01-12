@@ -173,6 +173,8 @@ public class DataModel
         var pluralizer = new Pluralizer();
         foreach (var property in item.Properties())
         {
+            if (!provider.IsValidIdentifier(property.Name))
+                throw new FormatException($"\"{property.Name}\" is not a valid identifier.");
             var propertyName = property.Name.Capitalize();
             var prop = model.Properties.FirstOrDefault(p => p.Name == propertyName);
 

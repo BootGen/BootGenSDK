@@ -1,7 +1,7 @@
 {
-	"us ers": [
+	"users": [
 		{
-			"userName": "Jon",
+			"user Name": "Jon",
 			"email": "jon@arbuckle.com",
 			"pets": [
 				{
