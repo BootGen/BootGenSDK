@@ -173,6 +173,19 @@ namespace BootGenTest
             }
         }
         
+        [TestMethod]
+        public void TestInvalidPropertyName()
+        {
+            try {
+                var data = JObject.Parse(File.ReadAllText("example_input_invalid_property_name.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+                var dataModel = new DataModel();
+                dataModel.Load(data);
+                Assert.Fail();
+            } catch  (FormatException e) {
+                Assert.IsFalse(string.IsNullOrWhiteSpace(e.Message));
+            }
+        }
+        
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
             Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{classModel.Name}.{propertyName} -> {type} is missing.");

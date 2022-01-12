@@ -14,6 +14,8 @@ public class DataModel
 
     public Func<BuiltInType, string> TypeToString { get; init; } = AspNetCoreGenerator.ToCSharpType;
 
+    private CodeDomProvider provider = CodeDomProvider.CreateProvider("C#");
+
     public void AddClass(ClassModel c)
     {
         c.Id = Classes.Count;
@@ -66,6 +68,8 @@ public class DataModel
 
     private ClassModel Parse(JProperty property, out bool manyToMany)
     {
+        if (!provider.IsValidIdentifier(property.Name))
+            throw new FormatException($"\"{property.Name}\" is not a valid identifier.");
         var pluralizer = new Pluralizer();
         Noun className;
         bool hasTimestamps = false;
@@ -96,7 +100,6 @@ public class DataModel
                 if (comment.StartsWith("class:"))
                 {
                     string name = comment.Split(":").Last().Trim();
-                    var provider = CodeDomProvider.CreateProvider("C#");
                     if (!provider.IsValidIdentifier(name))
                     {
                         throw new Exception($"Invalid class name: {name}");
@@ -143,7 +146,7 @@ public class DataModel
                     } else if (item.Type == JTokenType.Array) {
                         throw new FormatException("Nested arrays are not supported.");
                     } else {
-                        throw new FormatException("primitive types as array elements are not supported.");
+                        throw new FormatException("Primitive types as array elements are not supported.");
                     }
                 }
                 break;
