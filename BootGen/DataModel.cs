@@ -138,6 +138,12 @@ public class DataModel
                     if (item.Type == JTokenType.Object)
                     {
                         ExtendModel(result, (JObject)item);
+                    } else if (item.Type == JTokenType.Comment) {
+                        continue;
+                    } else if (item.Type == JTokenType.Array) {
+                        throw new FormatException("Nested arrays are not supported.");
+                    } else {
+                        throw new FormatException("primitive types as array elements are not supported.");
                     }
                 }
                 break;
