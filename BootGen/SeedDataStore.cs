@@ -204,10 +204,16 @@ namespace BootGen
             foreach (var property in jObject.Properties())
             {
                 var resource = resourceCollection.RootResources.First(r => r.Name.Plural.ToLower() == property.Name.ToLower());
-                var data = (property.Value as JArray).Select(t => t as JObject).Where(t => t != null).ToList();
-                foreach (var item in data)
-                    item.Capitalize();
-                Add(resource, data);
+                if (property.Value.Type == JTokenType.Array) {
+                    var data = (property.Value as JArray).Select(t => t as JObject).Where(t => t != null).ToList();
+                    foreach (var item in data)
+                        item.Capitalize();
+                    Add(resource, data);
+                } else {
+                    var data = property.Value as JObject;
+                    data.Capitalize();
+                    Add(resource, new List<JObject>{ data });
+                }
             }
         }
     }

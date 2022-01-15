@@ -93,5 +93,16 @@ namespace BootGenTest
             var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Load(data);
         }
+
+        [TestMethod]
+        public void TestLoad2()
+        {
+            var data = JObject.Parse(File.ReadAllText("example_input_single.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var dataModel = new DataModel();
+            dataModel.Load(data);
+            var resourceCollection = new ResourceCollection(dataModel);
+            var seedStore = new SeedDataStore(resourceCollection);
+            seedStore.Load(data);
+        }
     }
 }
