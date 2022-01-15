@@ -8,7 +8,7 @@
     <Description>Code Generator Toolkit for C# and TypeScript</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>BootGenLogo.png</PackageIcon>
-    <Copyright>Copyright 2020 Code Sharp Kft.</Copyright>
+    <Copyright>Copyright 2022 Code Sharp Kft.</Copyright>
     <RepositoryUrl>https://github.com/BootGen/BootGen.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType> 
     <PackageProjectUrl>https://bootgen.com</PackageProjectUrl>
