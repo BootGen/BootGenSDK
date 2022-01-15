@@ -123,7 +123,27 @@ namespace BootGenTest
                 var dataModel = new DataModel();
                 dataModel.Load(data);
                 var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
-                Assert.IsNotNull(userClass);
+                Assert.AreEqual("User", userClass.Name.Singular);
+            }
+        }
+        
+        [TestMethod]
+        public void TestWrongPluralization2()
+        {
+            var data = JObject.Parse(File.ReadAllText("example_input_singular.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            try {
+                var dataModel = new DataModel();
+                dataModel.Load(data);
+                Assert.Fail();
+            } catch  (NamingException e) {
+                Assert.IsFalse(string.IsNullOrWhiteSpace(e.Message));
+                Assert.AreEqual("user", e.SuggestedName);
+                Assert.AreEqual("users", e.ActualName);
+                data = data.RenamingObjects(e.ActualName, e.SuggestedName);
+                var dataModel = new DataModel();
+                dataModel.Load(data);
+                var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
+                Assert.AreEqual("Users", userClass.Name.Plural);
             }
         }
         [TestMethod]

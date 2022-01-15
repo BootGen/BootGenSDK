@@ -78,7 +78,7 @@ public class DataModel
         {
             var suggestedName = pluralizer.Pluralize(pluralizer.Singularize(property.Name));
             if (property.Name.ToLower() != suggestedName.ToLower())
-                throw new NamingException($"Array names must be plural nouns. The property name \"{property.Name}\" does not seam to be plural. Did you mean \"{suggestedName}\"?", suggestedName, property.Name);
+                throw new NamingException($"Array names must be plural nouns. The property name \"{property.Name}\" does not seam to be plural. Did you mean \"{suggestedName}\"?", suggestedName, property.Name, true);
             className = pluralizer.Singularize(property.Name).Capitalize();
             className.Plural = property.Name.Capitalize();
             var data = property.Value as JArray;
@@ -113,6 +113,9 @@ public class DataModel
         }
         else
         {
+            var suggestedName = pluralizer.Singularize(pluralizer.Pluralize(property.Name));
+            if (property.Name.ToLower() != suggestedName.ToLower())
+                throw new NamingException($"Object names must be singular nouns. The property name \"{property.Name}\" does not seam to be singular. Did you mean \"{suggestedName}\"?", suggestedName, property.Name, false);
             className = property.Name.Capitalize();
             className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
         }
