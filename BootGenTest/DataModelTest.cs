@@ -96,6 +96,26 @@ namespace BootGenTest
             AssertHasProperty(pivotClass, "Friend", BuiltInType.Object);
             AssertHasProperty(pivotClass, "FriendsId", BuiltInType.Int);
         }
+
+
+        [TestMethod]
+        public void TestLoadRecursiveModel2()
+        {
+            var data = JObject.Parse(File.ReadAllText("example_input_recursive2.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var dataModel = new DataModel();
+            dataModel.Load(data);
+            var userClass = dataModel.Classes.First(c => c.Name.Singular == "Pet");
+            Assert.AreEqual(8, userClass.Properties.Count);
+            AssertHasProperty(userClass, "Id", BuiltInType.Int);
+            AssertHasProperty(userClass, "UserId", BuiltInType.Int);
+            AssertHasProperty(userClass, "User", BuiltInType.Object);
+            AssertHasProperty(userClass, "Name", BuiltInType.String);
+            AssertHasProperty(userClass, "Species", BuiltInType.String);
+            AssertHasProperty(userClass, "Pets", BuiltInType.Object);
+            AssertHasProperty(userClass, "PetId", BuiltInType.Int);
+            AssertHasProperty(userClass, "Pet", BuiltInType.Object);
+        }
+
         [TestMethod]
         public void TestLoadRootObject()
         {

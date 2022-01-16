@@ -220,6 +220,7 @@ public class DataModel
                 BuiltInType = builtInType,
                 IsCollection = isCollection
             };
+            model.Properties.Add(prop);
             if (prop.IsCollection)
             {
                 prop.Noun = pluralizer.Singularize(propertyName);
@@ -232,7 +233,6 @@ public class DataModel
                 if (prop.IsCollection)
                     prop.IsServerOnly = true;
             }
-            model.Properties.Add(prop);
         }
     }
 
