@@ -18,7 +18,8 @@ namespace BootGen
         }
         public static string ToWords(this string str)
         {
-            return string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? " " + x.ToString() : x.ToString())).ToLower();
+            string tmp = string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? " " + x.ToString() : x.ToString()));
+            return char.ToLower(tmp[0]) + tmp.Substring(1);
         }
     }
 }
