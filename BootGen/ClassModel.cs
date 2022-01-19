@@ -17,6 +17,7 @@ namespace BootGen
         public bool IsRoot { get; set; }
         public Property IdProperty => PropertyWithName("Id");
         public List<Property> CommonProperties => Properties.Where(p => !p.IsServerOnly).ToList();
+        public List<Property> JsonProperties => Properties.Where(p => !p.IsKey && !p.IsParentReference).ToList();
 
 
         public ClassModel(string name)
