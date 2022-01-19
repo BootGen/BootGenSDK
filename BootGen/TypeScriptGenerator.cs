@@ -31,5 +31,24 @@ namespace BootGen
                     return "number";
             }
         }
+
+        public static string GetDefaultValue(Property property)
+        {
+            if (property.IsCollection)
+                return "[]";
+            switch (property.BuiltInType)
+            {
+                case BuiltInType.Bool:
+                    return "false";
+                case BuiltInType.String:
+                    return "''";
+                case BuiltInType.DateTime:
+                    return "Date";
+                case BuiltInType.Object:
+                    return "{}";
+                default:
+                    return "0";
+            }
+        }
     }
 }

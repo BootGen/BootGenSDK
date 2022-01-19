@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BootGen;
+﻿using System.Linq;
 
 namespace BootGen
 {
@@ -48,6 +45,25 @@ namespace BootGen
             }
         }
 
+        public static string GetDefaultValue(Property property)
+        {
+            if (property.IsCollection)
+            return $"new List<{ GetBaseType(property)}>()";
+            switch (property.BuiltInType)
+            {
+                case BuiltInType.Bool:
+                    return "false";
+                case BuiltInType.String:
+                    return "\"\"";
+                case BuiltInType.DateTime:
+                    return "DateTime.Now";
+                case BuiltInType.Object:
+                    return $"new {property.Class.Name}()";
+                default:
+                    return "0";
+            }
+        }
+
         public static Property FirstReference(ClassModel pivot)
         {
             return pivot.Properties.First(p => p.Class != null);
@@ -57,7 +73,4 @@ namespace BootGen
             return pivot.Properties.Last(p => p.Class != null);
         }
     }
-
-
-
 }
