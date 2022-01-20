@@ -43,7 +43,7 @@ namespace BootGen
                 case BuiltInType.String:
                     return "''";
                 case BuiltInType.DateTime:
-                    return "Date";
+                    return "new Date()";
                 case BuiltInType.Object:
                     return "{}";
                 default:

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>BootGen</PackageId>
-    <Version>1.2.10</Version>
+    <Version>1.3.0</Version>
     <Authors>Gabor Angyal</Authors>
     <Company>Code Sharp Kft.</Company>
     <Owner>Code Sharp Kft.</Owner>
@@ -12,7 +12,8 @@
     <RepositoryUrl>https://github.com/BootGen/BootGen.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType> 
     <PackageProjectUrl>https://bootgen.com</PackageProjectUrl>
-    <PackageTags>ASP.Net Core;Vue.js;Generator</PackageTags>
+    <PackageTags>ASP.Net Core;TypeScript;Generator</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -28,5 +29,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="BootGenLogo.png" Pack="true" PackagePath="" />
+    <None Include="../README.md" Pack="true" PackagePath=""/>
   </ItemGroup>
 </Project>
