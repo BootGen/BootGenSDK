@@ -211,6 +211,9 @@ public class DataModel
                     }
                     throw GetFormatException(model, propertyName, TypeToString(prop.BuiltInType), TypeToString(builtInType));
                 }
+                if (builtInType == BuiltInType.Object) {
+                    Parse(property, out var manyToMany);
+                }
                 continue;
             }
 

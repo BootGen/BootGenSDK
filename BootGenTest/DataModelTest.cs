@@ -178,6 +178,18 @@ namespace BootGenTest
                 Assert.IsFalse(string.IsNullOrWhiteSpace(e.Message));
             }
         }
+        [TestMethod]
+        public void TestInconsistentTypes2()
+        {
+            try {
+                var data = JObject.Parse(File.ReadAllText("example_input_inconsistent_types_2.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+                var dataModel = new DataModel();
+                dataModel.Load(data);
+                Assert.Fail();
+            } catch  (FormatException e) {
+                Assert.IsFalse(string.IsNullOrWhiteSpace(e.Message));
+            }
+        }
         
         [TestMethod]
         public void TestEmptyArray()
