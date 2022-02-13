@@ -48,7 +48,7 @@ namespace BootGen
                 IsPivot = true
             };
             pivotClass.Properties.Add(new Property {
-                            Name = parent.Name.Plural + "Id",
+                            Name = parent.Name.Plural + ClassModel.IdName,
                             BuiltInType = BuiltInType.Int,
                             IsKey = true
                         });
@@ -59,7 +59,7 @@ namespace BootGen
                             Class = parent.Class
                         });
             pivotClass.Properties.Add(new Property {
-                            Name = resource.Name.Plural + "Id",
+                            Name = resource.Name.Plural + ClassModel.IdName,
                             BuiltInType = BuiltInType.Int,
                             IsKey = true
                         });

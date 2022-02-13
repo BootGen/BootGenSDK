@@ -69,7 +69,7 @@ namespace BootGen
                 record.Set("Created", "DateTime.Now");
                 record.Set("Updated", "DateTime.Now");
             }
-            record.Values.Insert(0, KeyValuePair.Create("Id", GetNextId(c)));
+            record.Values.Insert(0, KeyValuePair.Create(ClassModel.IdName, GetNextId(c)));
             return record;
         }
 
@@ -124,7 +124,7 @@ namespace BootGen
             {
                 SeedRecord record = ToSeedRecord(property.Class, obj);
                 dataList.Add(new SeedData(obj, record));
-                item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + "Id", record.GetId()));
+                item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + ClassModel.IdName, record.GetId()));
                 return true;
             }
             return false;
@@ -156,15 +156,15 @@ namespace BootGen
                             Name = nestedResource.Pivot.Name,
                             IsPivot = true,
                             Values = new List<KeyValuePair<string, string>> { 
-                                new KeyValuePair<string, string>(item.SeedRecord.Name.Plural + "Id", item.SeedRecord.GetId()),
-                                new KeyValuePair<string, string>(nestedResource.Name.Plural + "Id", record.GetId())
+                                new KeyValuePair<string, string>(item.SeedRecord.Name.Plural + ClassModel.IdName, item.SeedRecord.GetId()),
+                                new KeyValuePair<string, string>(nestedResource.Name.Plural + ClassModel.IdName, record.GetId())
                              }
                         };
                         pivotDataList.Add(new SeedData(null, pivotRecord));
                     }
                     else
                     {
-                        record.Values.Add(new KeyValuePair<string, string>(nestedResource.ParentRelation.Name + "Id", item.SeedRecord.GetId()));
+                        record.Values.Add(new KeyValuePair<string, string>(nestedResource.ParentRelation.Name + ClassModel.IdName, item.SeedRecord.GetId()));
                     }
 
                 }
@@ -228,7 +228,7 @@ namespace BootGen
 
         internal string GetId()
         {
-            return Values.FirstOrDefault(kvp => kvp.Key == "Id").Value;
+            return Values.FirstOrDefault(kvp => kvp.Key == ClassModel.IdName).Value;
         }
 
         public string Get(string key)

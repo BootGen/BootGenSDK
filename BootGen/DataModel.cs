@@ -300,11 +300,11 @@ public class DataModel
             propertyIdx += 1;
             if (property.Class == null || property.IsCollection)
                 continue;
-            if (!c.Properties.Any(p => p.Name == property.Name + "Id"))
+            if (!c.Properties.Any(p => p.Name == property.Name + ClassModel.IdName))
             {
                 c.Properties.Insert(propertyIdx + 1, new Property
                 {
-                    Name = property.Name + "Id",
+                    Name = property.Name + ClassModel.IdName,
                     BuiltInType = BuiltInType.Int,
                     IsKey = true
                 });
@@ -329,12 +329,12 @@ public class DataModel
         var child = property.Class;
         child.Properties.Add(referenceProperty);
 
-        if (!child.Properties.Any(p => p.Name == parent.Name + "Id"))
+        if (!child.Properties.Any(p => p.Name == parent.Name + ClassModel.IdName))
         {
 
             var idProperty = new Property
             {
-                Name = parent.Name + "Id",
+                Name = parent.Name + ClassModel.IdName,
                 BuiltInType = BuiltInType.Int,
                 IsKey = true
             };
