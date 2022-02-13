@@ -99,7 +99,8 @@ namespace BootGen
             {
                 if (property.Class == null)
                     continue;
-                foreach (var item in Data[c.Id])
+                var seedDataList = new List<SeedData>(Data[c.Id]);
+                foreach (var item in seedDataList)
                 {
                     if (SplitData(item, property))
                     {

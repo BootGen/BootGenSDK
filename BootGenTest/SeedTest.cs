@@ -104,5 +104,17 @@ namespace BootGenTest
             var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Load(data);
         }
+
+        [TestMethod]
+        public void TestRecursion()
+        {
+            var data = JObject.Parse(File.ReadAllText("example_input_direct_recursion.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var dataModel = new DataModel();
+            dataModel.Load(data);
+            var resourceCollection = new ResourceCollection(dataModel);
+            var seedStore = new SeedDataStore(resourceCollection);
+            seedStore.Load(data);
+        }
+        
     }
 }
