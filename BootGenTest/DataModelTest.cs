@@ -202,27 +202,21 @@ namespace BootGenTest
         [TestMethod]
         public void TestEmptyType()
         { 
-            try {
-                var data = JObject.Parse(File.ReadAllText("example_input_empty_type.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
-                var dataModel = new DataModel();
-                dataModel.Load(data);
-                Assert.Fail();
-            } catch (FormatException e) {
-                Assert.IsNotNull(e.Message);
-            }
+            var data = JObject.Parse(File.ReadAllText("example_input_empty_type.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var dataModel = new DataModel();
+            dataModel.Load(data);
+            Assert.AreEqual(1, dataModel.Warnings.Count);
+            Assert.AreEqual("Empty types are not supported. The folowing class has no properties: \"Pet\"", dataModel.Warnings.First());
         }
         
         [TestMethod]
         public void TestInvalidArray()
         {
-            try {
-                var data = JObject.Parse(File.ReadAllText("example_input_invalid_array.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
-                var dataModel = new DataModel();
-                dataModel.Load(data);
-                Assert.Fail();
-            } catch  (FormatException e) {
-                Assert.IsFalse(string.IsNullOrWhiteSpace(e.Message));
-            }
+            var data = JObject.Parse(File.ReadAllText("example_input_invalid_array.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var dataModel = new DataModel();
+            dataModel.Load(data);
+            Assert.AreEqual(1, dataModel.Warnings.Count);
+            Assert.AreEqual("Primitive types as array elements are not supported.", dataModel.Warnings.First());
         }
         
         [TestMethod]
@@ -236,6 +230,14 @@ namespace BootGenTest
             } catch  (FormatException e) {
                 Assert.IsFalse(string.IsNullOrWhiteSpace(e.Message));
             }
+        }
+
+        [TestMethod]
+        public void TestPokemon() {
+            var data = JObject.Parse(File.ReadAllText("pokedex.json"));
+            var dataModel = new DataModel();
+            dataModel.Load(data);
+            Console.WriteLine(dataModel.Warnings);
         }
         
 

@@ -13,6 +13,7 @@ public class DataModel
     public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
 
     public Func<BuiltInType, string> TypeToString { get; init; } = AspNetCoreGenerator.ToCSharpType;
+    public HashSet<string> Warnings { get; } = new HashSet<string>();
 
     private CodeDomProvider provider = CodeDomProvider.CreateProvider("C#");
 
@@ -26,7 +27,8 @@ public class DataModel
         foreach (var property in jObject.Properties())
         {
             var model = Parse(property, out var _);
-            model.IsRoot = true;
+            if (model != null)
+                model.IsRoot = true;
         }
 
         CheckForEmptyClasses();
@@ -37,14 +39,16 @@ public class DataModel
     {
         foreach (var c in Classes)
             if (c.Properties.Count == 1)
-                throw new FormatException($"Empty types are not supported. The folowing class has no properties: \"{c.Name}\"");
+                Warnings.Add($"Empty types are not supported. The folowing class has no properties: \"{c.Name}\"");
+        Classes.RemoveAll(c => c.Properties.Count == 1);
     }
 
     public void LoadRootObject(string name, JObject jObject)
     {
         var property = new JProperty(name, jObject);
         var model = Parse(property, out var _);
-        model.IsRoot = true;
+        if (model != null)
+            model.IsRoot = true;
         CheckForEmptyClasses();
         AddRelationships();
     }
@@ -78,7 +82,7 @@ public class DataModel
         {
             var suggestedName = pluralizer.Pluralize(pluralizer.Singularize(property.Name));
             if (property.Name.ToLower() != suggestedName.ToLower())
-                throw new NamingException($"Array names must be plural nouns. The property name \"{property.Name}\" does not seam to be plural. Did you mean \"{suggestedName}\"?", suggestedName, property.Name, true);
+                throw new NamingException($"Array names must be plural nouns. Did you mean \"{suggestedName}\"?", suggestedName, property.Name, true);
             className = pluralizer.Singularize(property.Name).Capitalize();
             className.Plural = property.Name.Capitalize();
             var data = property.Value as JArray;
@@ -119,6 +123,20 @@ public class DataModel
             className = property.Name.Capitalize();
             className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
         }
+        
+        if (property.Value.Type == JTokenType.Array) {
+                var data = property.Value as JArray;
+                foreach (JToken item in data)
+                {
+                    if (item.Type == JTokenType.Array) {
+                        Warnings.Add("Nested arrays are not supported.");
+                        return null;
+                    } else if (item.Type != JTokenType.Object && item.Type != JTokenType.Comment) {
+                        Warnings.Add("Primitive types as array elements are not supported.");
+                        return null;
+                    }
+                }
+        }
         ClassModel result = GetClassModel(className);
         if (hasTimestamps && !result.HasTimestamps)
         {
@@ -144,12 +162,6 @@ public class DataModel
                     if (item.Type == JTokenType.Object)
                     {
                         ExtendModel(result, (JObject)item);
-                    } else if (item.Type == JTokenType.Comment) {
-                        continue;
-                    } else if (item.Type == JTokenType.Array) {
-                        throw new FormatException("Nested arrays are not supported.");
-                    } else {
-                        throw new FormatException("Primitive types as array elements are not supported.");
                     }
                 }
                 break;
@@ -180,6 +192,9 @@ public class DataModel
                 throw new FormatException($"\"{property.Name}\" is not a valid identifier.");
             var propertyName = property.Name.Capitalize();
             var prop = model.Properties.FirstOrDefault(p => p.Name == propertyName);
+
+            if (property.Value.Type == JTokenType.Null)
+                continue;
 
             BuiltInType builtInType = ConvertType(property.Value.Type);
             bool isCollection = property.Value.Type == JTokenType.Array;
@@ -232,6 +247,10 @@ public class DataModel
             if (prop.BuiltInType == BuiltInType.Object)
             {
                 prop.Class = Parse(property, out bool m2m);
+                if (prop.Class == null) {
+                    model.Properties.Remove(prop);
+                    continue;
+                }
                 prop.IsManyToMany = m2m;
                 if (prop.IsCollection)
                     prop.IsServerOnly = true;
