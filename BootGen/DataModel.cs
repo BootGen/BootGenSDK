@@ -47,8 +47,14 @@ public class DataModel
     {
         var property = new JProperty(name, jObject);
         var model = Parse(property, out var _);
-        if (model != null)
+        if (model != null) {
             model.IsRoot = true;
+            foreach (var prop in model.Properties) {
+                if (!prop.IsKey && prop.BuiltInType != BuiltInType.Object) {
+                    Warnings.Add($"Root properties must be objects or arrays. Property \"{prop.Name.ToCamelCase()}\" is omitted.");
+                }
+            }
+        }
         CheckForEmptyClasses();
         AddRelationships();
     }

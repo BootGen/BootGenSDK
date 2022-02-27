@@ -237,9 +237,19 @@ namespace BootGenTest
             var data = JObject.Parse(File.ReadAllText("pokedex.json"));
             var dataModel = new DataModel();
             dataModel.Load(data);
-            Console.WriteLine(dataModel.Warnings);
+            Assert.AreEqual(1, dataModel.Warnings.Count);
+            Assert.AreEqual("Primitive types as array elements are not supported.", dataModel.Warnings.First());
         }
         
+
+        [TestMethod]
+        public void TestPrimitiveRoot() {
+            var data = JObject.Parse(File.ReadAllText("example_input_primitive_root.json"));
+            var dataModel = new DataModel();
+            dataModel.LoadRootObject("app", data);
+            Assert.AreEqual(1, dataModel.Warnings.Count);
+            Assert.AreEqual("Root properties must be objects or arrays. Property \"number\" is omitted.", dataModel.Warnings.First());
+        }
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
             Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{classModel.Name}.{propertyName} -> {type} is missing.");
