@@ -13,7 +13,7 @@ public class DataModel
     public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
 
     public Func<BuiltInType, string> TypeToString { get; init; } = AspNetCoreGenerator.ToCSharpType;
-    public HashSet<string> Warnings { get; } = new HashSet<string>();
+    public Dictionary<WarningType, HashSet<string>> Warnings { get; } = new Dictionary<WarningType, HashSet<string>>();
 
     private CodeDomProvider provider = CodeDomProvider.CreateProvider("C#");
 
@@ -38,9 +38,20 @@ public class DataModel
     private void CheckForEmptyClasses()
     {
         foreach (var c in Classes)
-            if (c.Properties.Count == 1)
-                Warnings.Add($"Empty types are not supported. The folowing class has no properties: \"{c.Name}\"");
+            if (c.Properties.Count == 1) {
+                AddWarning(WarningType.EmptyType, c.Name);
+            }
         Classes.RemoveAll(c => c.Properties.Count == 1);
+    }
+
+    private void AddWarning(WarningType warningType, string name)
+    {
+        HashSet<string> names;
+        if (!Warnings.TryGetValue(warningType, out names)) {
+            names = new HashSet<string>();
+            Warnings.Add(warningType, names);
+        }
+        names.Add(name);
     }
 
     public void LoadRootObject(string name, JObject jObject)
@@ -51,7 +62,7 @@ public class DataModel
             model.IsRoot = true;
             foreach (var prop in model.Properties) {
                 if (!prop.IsKey && prop.BuiltInType != BuiltInType.Object) {
-                    Warnings.Add($"Root properties must be objects or arrays. Property \"{prop.Name.ToCamelCase()}\" is omitted.");
+                    AddWarning(WarningType.PrimitiveRoot, prop.Name);
                 }
             }
         }
@@ -135,10 +146,10 @@ public class DataModel
                 foreach (JToken item in data)
                 {
                     if (item.Type == JTokenType.Array) {
-                        Warnings.Add("Nested arrays are not supported.");
+                        AddWarning(WarningType.NestedArray, property.Name);
                         return null;
                     } else if (item.Type != JTokenType.Object && item.Type != JTokenType.Comment) {
-                        Warnings.Add("Primitive types as array elements are not supported.");
+                        AddWarning(WarningType.PrimitiveArrayElement, property.Name);
                         return null;
                     }
                 }

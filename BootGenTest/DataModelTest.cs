@@ -206,7 +206,9 @@ namespace BootGenTest
             var dataModel = new DataModel();
             dataModel.Load(data);
             Assert.AreEqual(1, dataModel.Warnings.Count);
-            Assert.AreEqual("Empty types are not supported. The folowing class has no properties: \"Pet\"", dataModel.Warnings.First());
+            var names = dataModel.Warnings[WarningType.EmptyType];
+            Assert.AreEqual(1, names.Count);
+            Assert.AreEqual("Pet", names.First());
         }
         
         [TestMethod]
@@ -216,7 +218,9 @@ namespace BootGenTest
             var dataModel = new DataModel();
             dataModel.Load(data);
             Assert.AreEqual(1, dataModel.Warnings.Count);
-            Assert.AreEqual("Primitive types as array elements are not supported.", dataModel.Warnings.First());
+            var names = dataModel.Warnings[WarningType.PrimitiveArrayElement];
+            Assert.AreEqual(1, names.Count);
+            Assert.AreEqual("pets", names.First());
         }
         
         [TestMethod]
@@ -238,7 +242,11 @@ namespace BootGenTest
             var dataModel = new DataModel();
             dataModel.Load(data);
             Assert.AreEqual(1, dataModel.Warnings.Count);
-            Assert.AreEqual("Primitive types as array elements are not supported.", dataModel.Warnings.First());
+            var names = dataModel.Warnings[WarningType.PrimitiveArrayElement];
+            Assert.AreEqual(3, names.Count);
+            Assert.IsTrue(names.Contains("types"));
+            Assert.IsTrue(names.Contains("multipliers"));
+            Assert.IsTrue(names.Contains("weaknesses"));
         }
         
 
@@ -248,7 +256,8 @@ namespace BootGenTest
             var dataModel = new DataModel();
             dataModel.LoadRootObject("app", data);
             Assert.AreEqual(1, dataModel.Warnings.Count);
-            Assert.AreEqual("Root properties must be objects or arrays. Property \"number\" is omitted.", dataModel.Warnings.First());
+            Assert.AreEqual(1, dataModel.Warnings[WarningType.PrimitiveRoot].Count);
+            Assert.AreEqual("Number", dataModel.Warnings[WarningType.PrimitiveRoot].First());
         }
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
