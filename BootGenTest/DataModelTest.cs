@@ -209,6 +209,8 @@ namespace BootGenTest
             var names = dataModel.Warnings[WarningType.EmptyType];
             Assert.AreEqual(1, names.Count);
             Assert.AreEqual("Pet", names.First());
+            Assert.IsTrue(dataModel.Classes.All(c => c.Name.Singular != "Pet"));
+            Assert.IsTrue(dataModel.Classes.First(c => c.Name.Singular == "User").Properties.All(p => p.Class?.Name.Singular != "Pet"));
         }
         
         [TestMethod]

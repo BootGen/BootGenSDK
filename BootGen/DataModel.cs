@@ -42,6 +42,8 @@ public class DataModel
                 AddWarning(WarningType.EmptyType, c.Name);
             }
         Classes.RemoveAll(c => c.Properties.Count == 1);
+        foreach (var c in Classes)
+            c.Properties.RemoveAll(p =>p.Class?.Properties.Count == 1);
     }
 
     private void AddWarning(WarningType warningType, string name)
