@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>BootGen</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <Authors>Gabor Angyal</Authors>
     <Company>Code Sharp Kft.</Company>
     <Owner>Code Sharp Kft.</Owner>
@@ -21,7 +21,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Pluralize.NET" Version="1.0.2" />
-    <PackageReference Include="Scriban" Version="5.0.0" />
+    <PackageReference Include="Scriban" Version="5.4.0" />
     <PackageReference Include="System.CodeDom" Version="6.0.0" />
   </ItemGroup>
   <PropertyGroup>
@@ -29,6 +29,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="BootGenLogo.png" Pack="true" PackagePath="" />
-    <None Include="../README.md" Pack="true" PackagePath=""/>
+    <None Include="../README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

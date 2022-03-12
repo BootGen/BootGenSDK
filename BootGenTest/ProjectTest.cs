@@ -73,7 +73,7 @@ namespace BootGenTest
                 var actualLines = file.Content.Split(Environment.NewLine);
                 for (int i = 0; i < expectedLines.Length; ++i)
                 {
-                    Assert.AreEqual(expectedLines[i], actualLines[i], false, $"{file.Name} line {i}.");
+                    Assert.AreEqual(expectedLines[i].Trim(), actualLines[i].Trim(), false, $"{file.Name} line {i}.");
                 }
                 if (expectedLines.Length + 1 == actualLines.Length)
                 {
