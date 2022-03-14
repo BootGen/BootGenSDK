@@ -21,6 +21,7 @@ namespace BootGen
         public List<Property> BaseProperties => CommonProperties.Where(p => !p.IsKey).ToList();
         public List<Property> JsonProperties => Properties.Where(p => !p.IsKey && !p.IsParentReference).ToList();
         public List<Property> ChildReferences => Properties.Where(p => p.BuiltInType == BuiltInType.Object && !p.IsParentReference).ToList();
+        public bool HasChild => ChildReferences.Any();
 
         public ClassModel(string name)
         {
