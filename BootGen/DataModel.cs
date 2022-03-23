@@ -157,6 +157,10 @@ public class DataModel
                 }
         }
         ClassModel result = GetClassModel(className);
+        if (property.Value.Type == JTokenType.Array)
+            result.ReferredPlural = true;
+        if (property.Value.Type == JTokenType.Object)
+            result.ReferredSingle = true;
         if (hasTimestamps && !result.HasTimestamps)
         {
             result.HasTimestamps = true;

@@ -23,6 +23,8 @@ namespace BootGenTest
 
             var tagClass = dataModel.Classes.First(c => c.Name.Singular == "Tag");
             Assert.AreEqual(4, tagClass.Properties.Count);
+            Assert.IsTrue(tagClass.ReferredPlural);
+            Assert.IsFalse(tagClass.ReferredSingle);
             AssertHasProperty(tagClass, "Id", BuiltInType.Int);
             AssertHasProperty(tagClass, "Name", BuiltInType.String);
             AssertHasProperty(tagClass, "Color", BuiltInType.String);
@@ -30,6 +32,8 @@ namespace BootGenTest
 
             var taskClass = dataModel.Classes.First(c => c.Name.Singular == "Task");
             Assert.AreEqual(12, taskClass.Properties.Count);
+            Assert.IsTrue(taskClass.ReferredPlural);
+            Assert.IsFalse(taskClass.ReferredSingle);
             AssertHasProperty(taskClass, "Id", BuiltInType.Int);
             AssertHasProperty(taskClass, "Title", BuiltInType.String);
             AssertHasProperty(taskClass, "Description", BuiltInType.String);
@@ -45,6 +49,8 @@ namespace BootGenTest
 
             var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
             Assert.AreEqual(6, userClass.Properties.Count);
+            Assert.IsTrue(userClass.ReferredPlural);
+            Assert.IsFalse(userClass.ReferredSingle);
             AssertHasProperty(userClass, "Id", BuiltInType.Int);
             AssertHasProperty(userClass, "UserName", BuiltInType.String);
             AssertHasProperty(userClass, "Email", BuiltInType.String);
@@ -55,6 +61,8 @@ namespace BootGenTest
 
             var addressClass = dataModel.Classes.First(c => c.Name.Singular == "Address");
             Assert.AreEqual(5, addressClass.Properties.Count);
+            Assert.IsFalse(addressClass.ReferredPlural);
+            Assert.IsTrue(addressClass.ReferredSingle);
             AssertHasProperty(addressClass, "Id", BuiltInType.Int);
             AssertHasProperty(addressClass, "City", BuiltInType.String);
             AssertHasProperty(addressClass, "Street", BuiltInType.String);

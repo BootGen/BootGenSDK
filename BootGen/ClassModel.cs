@@ -16,6 +16,8 @@ namespace BootGen
         public bool HasTimestamps { get; set; }
         public bool IsPivot { get; set; }
         public bool IsRoot { get; set; }
+        public bool ReferredSingle { get; set; }
+        public bool ReferredPlural { get; set; }
         public Property IdProperty => PropertyWithName(ClassModel.IdName);
         public List<Property> CommonProperties => Properties.Where(p => !p.IsServerOnly).ToList();
         public List<Property> BaseProperties => CommonProperties.Where(p => !p.IsKey).ToList();
