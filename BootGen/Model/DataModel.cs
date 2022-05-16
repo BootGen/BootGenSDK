@@ -10,8 +10,8 @@ namespace BootGen;
 public class DataModel
 {
     public List<ClassModel> Classes { get; } = new List<ClassModel>();
+    public List<ClassSettings> ClassSettings { get; set; } = new List<ClassSettings>();
     public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
-
     public Func<BuiltInType, string> TypeToString { get; init; } = AspNetCoreGenerator.ToCSharpType;
     public Dictionary<WarningType, HashSet<string>> Warnings { get; } = new Dictionary<WarningType, HashSet<string>>();
 
@@ -250,7 +250,7 @@ public class DataModel
                     throw GetFormatException(model, propertyName, TypeToString(prop.BuiltInType), TypeToString(builtInType));
                 }
                 if (builtInType == BuiltInType.Object) {
-                    Parse(property, out var manyToMany);
+                    Parse(property, out var _);
                 }
                 continue;
             }
