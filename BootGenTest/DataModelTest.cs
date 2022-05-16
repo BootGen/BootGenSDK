@@ -16,7 +16,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestLoadModel()
         { 
-            var data = JObject.Parse(File.ReadAllText("example_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input.json"));
             var dataModel = new DataModel();
             dataModel.ClassSettings.Add(new ClassSettings {
                 Name = "Task",
@@ -95,7 +95,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestLoadRecursiveModel()
         {
-            var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"));
             var dataModel = new DataModel();
             dataModel.ClassSettings.Add(new ClassSettings {
                 Name = "User",
@@ -130,7 +130,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestLoadRecursiveModel2()
         {
-            var data = JObject.Parse(File.ReadAllText("example_input_recursive2.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input_recursive2.json"));
             var dataModel = new DataModel();
             dataModel.Load(data);
             var userClass = dataModel.Classes.First(c => c.Name.Singular == "Pet");
@@ -149,7 +149,7 @@ namespace BootGenTest
         public void TestLoadRootObject()
         {
 
-            var data = JObject.Parse(File.ReadAllText("example_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input.json"));
             var dataModel = new DataModel();
             dataModel.LoadRootObject("App", data);
             var appClass = dataModel.Classes.First(c => c.Name.Singular == "App");
@@ -159,7 +159,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestWrongPluralization()
         {
-            var data = JObject.Parse(File.ReadAllText("example_input_plural.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input_plural.json"));
             try {
                 var dataModel = new DataModel();
                 dataModel.Load(data);
@@ -179,7 +179,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestWrongPluralization2()
         {
-            var data = JObject.Parse(File.ReadAllText("example_input_singular.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input_singular.json"));
             try {
                 var dataModel = new DataModel();
                 dataModel.Load(data);
@@ -199,7 +199,7 @@ namespace BootGenTest
         public void TestInconsistentTypes()
         {
             try {
-                var data = JObject.Parse(File.ReadAllText("example_input_inconsistent_types.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+                var data = JObject.Parse(File.ReadAllText("example_input_inconsistent_types.json"));
                 var dataModel = new DataModel();
                 dataModel.Load(data);
                 Assert.Fail();
@@ -211,7 +211,7 @@ namespace BootGenTest
         public void TestInconsistentTypes2()
         {
             try {
-                var data = JObject.Parse(File.ReadAllText("example_input_inconsistent_types_2.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+                var data = JObject.Parse(File.ReadAllText("example_input_inconsistent_types_2.json"));
                 var dataModel = new DataModel();
                 dataModel.Load(data);
                 Assert.Fail();
@@ -223,7 +223,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestEmptyArray()
         { 
-            var data = JObject.Parse(File.ReadAllText("example_input_empty_array.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input_empty_array.json"));
             var dataModel = new DataModel();
             dataModel.Load(data);
         }
@@ -231,7 +231,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestEmptyType()
         { 
-            var data = JObject.Parse(File.ReadAllText("example_input_empty_type.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input_empty_type.json"));
             var dataModel = new DataModel();
             dataModel.Load(data);
             Assert.AreEqual(1, dataModel.Warnings.Count);
@@ -245,7 +245,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestInvalidArray()
         {
-            var data = JObject.Parse(File.ReadAllText("example_input_invalid_array.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input_invalid_array.json"));
             var dataModel = new DataModel();
             dataModel.Load(data);
             Assert.AreEqual(1, dataModel.Warnings.Count);
@@ -258,7 +258,7 @@ namespace BootGenTest
         public void TestInvalidPropertyName()
         {
             try {
-                var data = JObject.Parse(File.ReadAllText("example_input_invalid_property_name.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+                var data = JObject.Parse(File.ReadAllText("example_input_invalid_property_name.json"));
                 var dataModel = new DataModel();
                 dataModel.Load(data);
                 Assert.Fail();

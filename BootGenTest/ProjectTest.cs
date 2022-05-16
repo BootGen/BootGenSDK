@@ -68,7 +68,7 @@ namespace BootGenTest
 
         private static VirtualDisk GenerateWithTemplates(string templateRoot, string fileName, List<ClassSettings> classSettings = null)
         {
-            var data = JObject.Parse(File.ReadAllText(fileName), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText(fileName));
             var dataModel = new DataModel();
             if (classSettings != null)
                 dataModel.ClassSettings = classSettings;

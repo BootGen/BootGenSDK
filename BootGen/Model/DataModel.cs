@@ -169,7 +169,7 @@ public class DataModel
                     if (item.Type == JTokenType.Array) {
                         AddWarning(WarningType.NestedArray, property.Name);
                         return null;
-                    } else if (item.Type != JTokenType.Object && item.Type != JTokenType.Comment) {
+                    } else if (item.Type != JTokenType.Object) {
                         AddWarning(WarningType.PrimitiveArrayElement, property.Name);
                         return null;
                     }
@@ -184,7 +184,6 @@ public class DataModel
         {
             case JTokenType.Array:
                 var data = property.Value as JArray;
-                var comments = new List<JToken>();
                 foreach (JToken item in data)
                 {
                     if (item.Type == JTokenType.Object)

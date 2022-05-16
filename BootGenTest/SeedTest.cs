@@ -15,7 +15,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestSeed()
         {
-            var data = JObject.Parse(File.ReadAllText("example_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input.json"));
             var dataModel = new DataModel();
             dataModel.ClassSettings.Add(new ClassSettings {
                 Name = "Task",
@@ -69,7 +69,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestSeed2()
         {
-            var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"));
             var dataModel = new DataModel();
             dataModel.ClassSettings.Add(new ClassSettings {
                 Name = "User",
@@ -106,7 +106,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestLoad()
         {
-            var data = JObject.Parse(File.ReadAllText("example_input_3_users.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input_3_users.json"));
             var dataModel = new DataModel();
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
@@ -117,7 +117,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestLoad2()
         {
-            var data = JObject.Parse(File.ReadAllText("example_input_single.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input_single.json"));
             var dataModel = new DataModel();
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
@@ -128,7 +128,7 @@ namespace BootGenTest
         [TestMethod]
         public void TestRecursion()
         {
-            var data = JObject.Parse(File.ReadAllText("example_input_direct_recursion.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
+            var data = JObject.Parse(File.ReadAllText("example_input_direct_recursion.json"));
             var dataModel = new DataModel();
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
