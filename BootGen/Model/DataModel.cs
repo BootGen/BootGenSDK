@@ -26,12 +26,13 @@ public class DataModel
     {
         foreach (var property in jObject.Properties())
         {
-            var model = Parse(property, out var _);
+            var model = Parse(property);
             if (model != null)
                 model.IsRoot = true;
         }
 
         CheckForEmptyClasses();
+        ApplySettings();
         AddRelationships();
     }
 
@@ -59,7 +60,7 @@ public class DataModel
     public void LoadRootObject(string name, JObject jObject)
     {
         var property = new JProperty(name, jObject);
-        var model = Parse(property, out var _);
+        var model = Parse(property);
         if (model != null) {
             model.IsRoot = true;
             foreach (var prop in model.Properties) {
@@ -70,6 +71,22 @@ public class DataModel
         }
         CheckForEmptyClasses();
         AddRelationships();
+    }
+
+    private void ApplySettings()
+    {
+        foreach (var cl in Classes) {
+            var classSettings = ClassSettings.FirstOrDefault(s => s.Name == cl.Name);
+            if (classSettings == null)
+                continue;
+            foreach (var property in cl.Properties)
+            {
+                var propertySettings = classSettings.PropertySettings.FirstOrDefault(p => p.Name == property.Name);
+                if (propertySettings == null)
+                    continue;
+                property.IsManyToMany = propertySettings.IsManyToMany;
+            }
+        }
     }
 
     private void AddRelationships()
@@ -89,14 +106,13 @@ public class DataModel
         }
     }
 
-    private ClassModel Parse(JProperty property, out bool manyToMany)
+    private ClassModel Parse(JProperty property)
     {
         if (!provider.IsValidIdentifier(property.Name))
             throw new FormatException($"\"{property.Name}\" is not a valid identifier.");
         var pluralizer = new Pluralizer();
         Noun className;
         bool hasTimestamps = false;
-        manyToMany = false;
         if (property.Value.Type == JTokenType.Array)
         {
             var suggestedName = pluralizer.Pluralize(pluralizer.Singularize(property.Name));
@@ -110,11 +126,6 @@ public class DataModel
                 if (item.Type != JTokenType.Comment)
                     continue;
                 string comment = item.Value<string>().Trim();
-                if (comment == "manyToMany")
-                {
-                    manyToMany = true;
-                    continue;
-                }
                 if (comment == "timestamps")
                 {
                     hasTimestamps = true;
@@ -250,7 +261,7 @@ public class DataModel
                     throw GetFormatException(model, propertyName, TypeToString(prop.BuiltInType), TypeToString(builtInType));
                 }
                 if (builtInType == BuiltInType.Object) {
-                    Parse(property, out var _);
+                    Parse(property);
                 }
                 continue;
             }
@@ -269,12 +280,11 @@ public class DataModel
             }
             if (prop.BuiltInType == BuiltInType.Object)
             {
-                prop.Class = Parse(property, out bool m2m);
+                prop.Class = Parse(property);
                 if (prop.Class == null) {
                     model.Properties.Remove(prop);
                     continue;
                 }
-                prop.IsManyToMany = m2m;
                 if (prop.IsCollection)
                     prop.IsServerOnly = true;
             }

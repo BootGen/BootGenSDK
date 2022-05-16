@@ -17,6 +17,15 @@ namespace BootGenTest
         {
             var data = JObject.Parse(File.ReadAllText("example_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
             var dataModel = new DataModel();
+            dataModel.ClassSettings.Add(new ClassSettings {
+                Name = "Task",
+                PropertySettings = new List<PropertySettings> {
+                    new PropertySettings {
+                        Name = "Tags",
+                        IsManyToMany = true
+                    }
+                }
+            });
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
             var seedStore = new SeedDataStore(resourceCollection);
@@ -61,6 +70,15 @@ namespace BootGenTest
         {
             var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
             var dataModel = new DataModel();
+            dataModel.ClassSettings.Add(new ClassSettings {
+                Name = "User",
+                PropertySettings = new List<PropertySettings> {
+                    new PropertySettings {
+                        Name = "Friends",
+                        IsManyToMany = true
+                    }
+                }
+            });
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
             var seedStore = new SeedDataStore(resourceCollection);

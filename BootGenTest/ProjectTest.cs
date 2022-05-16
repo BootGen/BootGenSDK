@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.IO;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace BootGenTest
 {
@@ -15,7 +16,15 @@ namespace BootGenTest
         [TestMethod]
         public void TestGenerate()
         {
-            TestWithTemplates("templates", "example_input.json", "SampleOutput");
+            TestWithTemplates("templates", "example_input.json", "SampleOutput", new List<ClassSettings> {new ClassSettings {
+                Name = "Task",
+                PropertySettings = new List<PropertySettings> {
+                    new PropertySettings {
+                        Name = "Tags",
+                        IsManyToMany = true
+                    }
+                }
+            }});
         }
 
         [TestMethod]
@@ -59,9 +68,9 @@ namespace BootGenTest
             GenerateWithTemplates("does_not_exists", "example_input.json");
         }
 
-        private static void TestWithTemplates(string templateRoot, string fileName, string outputFolder)
+        private static void TestWithTemplates(string templateRoot, string fileName, string outputFolder, List<ClassSettings> classSettings = null)
         {
-            VirtualDisk disk = GenerateWithTemplates(templateRoot, fileName);
+            VirtualDisk disk = GenerateWithTemplates(templateRoot, fileName, classSettings);
             if (Directory.Exists(outputFolder))
                 Directory.Delete(outputFolder, true);
 
@@ -85,10 +94,12 @@ namespace BootGenTest
             }
         }
 
-        private static VirtualDisk GenerateWithTemplates(string templateRoot, string fileName)
+        private static VirtualDisk GenerateWithTemplates(string templateRoot, string fileName, List<ClassSettings> classSettings = null)
         {
             var data = JObject.Parse(File.ReadAllText(fileName), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
             var dataModel = new DataModel();
+            if (classSettings != null)
+                dataModel.ClassSettings = classSettings;
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
             var seedStore = new SeedDataStore(resourceCollection);

@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.IO;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace BootGenTest
 {
@@ -17,6 +18,15 @@ namespace BootGenTest
         { 
             var data = JObject.Parse(File.ReadAllText("example_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
             var dataModel = new DataModel();
+            dataModel.ClassSettings.Add(new ClassSettings {
+                Name = "Task",
+                PropertySettings = new List<PropertySettings> {
+                    new PropertySettings {
+                        Name = "Tags",
+                        IsManyToMany = true
+                    }
+                }
+            });
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
             Assert.AreEqual(5, dataModel.Classes.Count);
@@ -86,6 +96,15 @@ namespace BootGenTest
         {
             var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"), new JsonLoadSettings { CommentHandling = CommentHandling.Load });
             var dataModel = new DataModel();
+            dataModel.ClassSettings.Add(new ClassSettings {
+                Name = "User",
+                PropertySettings = new List<PropertySettings> {
+                    new PropertySettings {
+                        Name = "Friends",
+                        IsManyToMany = true
+                    }
+                }
+            });
             dataModel.Load(data);
             var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
             Assert.AreEqual(4, userClass.Properties.Count);
