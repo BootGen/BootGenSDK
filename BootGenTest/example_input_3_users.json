@@ -1,6 +1,5 @@
 {
 	"users": [
-		//timestamps
 		{
 			"userName": "admin",
 			"email": "admin@example.com",

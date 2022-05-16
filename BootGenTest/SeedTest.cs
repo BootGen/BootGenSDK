@@ -19,6 +19,7 @@ namespace BootGenTest
             var dataModel = new DataModel();
             dataModel.ClassSettings.Add(new ClassSettings {
                 Name = "Task",
+                HasTimestamps = true,
                 PropertySettings = new List<PropertySettings> {
                     new PropertySettings {
                         Name = "Tags",

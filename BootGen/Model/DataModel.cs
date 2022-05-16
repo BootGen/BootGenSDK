@@ -79,6 +79,20 @@ public class DataModel
             var classSettings = ClassSettings.FirstOrDefault(s => s.Name == cl.Name);
             if (classSettings == null)
                 continue;
+            if (classSettings.HasTimestamps)
+            {
+                cl.HasTimestamps = true;
+                cl.Properties.Insert(1, new Property
+                {
+                    Name = "Created",
+                    BuiltInType = BuiltInType.DateTime
+                });
+                cl.Properties.Insert(2, new Property
+                {
+                    Name = "Updated",
+                    BuiltInType = BuiltInType.DateTime
+                });
+            }
             foreach (var property in cl.Properties)
             {
                 var propertySettings = classSettings.PropertySettings.FirstOrDefault(p => p.Name == property.Name);
@@ -112,7 +126,6 @@ public class DataModel
             throw new FormatException($"\"{property.Name}\" is not a valid identifier.");
         var pluralizer = new Pluralizer();
         Noun className;
-        bool hasTimestamps = false;
         if (property.Value.Type == JTokenType.Array)
         {
             var suggestedName = pluralizer.Pluralize(pluralizer.Singularize(property.Name));
@@ -126,11 +139,6 @@ public class DataModel
                 if (item.Type != JTokenType.Comment)
                     continue;
                 string comment = item.Value<string>().Trim();
-                if (comment == "timestamps")
-                {
-                    hasTimestamps = true;
-                    continue;
-                }
                 if (comment.StartsWith("class:"))
                 {
                     string name = comment.Split(":").Last().Trim();
@@ -172,20 +180,6 @@ public class DataModel
             result.ReferredPlural = true;
         if (property.Value.Type == JTokenType.Object)
             result.ReferredSingle = true;
-        if (hasTimestamps && !result.HasTimestamps)
-        {
-            result.HasTimestamps = true;
-            result.Properties.Add(new Property
-            {
-                Name = "Created",
-                BuiltInType = BuiltInType.DateTime
-            });
-            result.Properties.Add(new Property
-            {
-                Name = "Updated",
-                BuiltInType = BuiltInType.DateTime
-            });
-        }
         switch (property.Value.Type)
         {
             case JTokenType.Array:

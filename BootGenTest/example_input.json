@@ -10,7 +10,6 @@
 				"houseNumber": "42"
 			},
 			"tasks": [
-				//timestamps
 				{
 					"title": "Task Title",
 					"description": "Task description",

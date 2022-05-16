@@ -18,6 +18,7 @@ namespace BootGenTest
         {
             TestWithTemplates("templates", "example_input.json", "SampleOutput", new List<ClassSettings> {new ClassSettings {
                 Name = "Task",
+                HasTimestamps = true,
                 PropertySettings = new List<PropertySettings> {
                     new PropertySettings {
                         Name = "Tags",
