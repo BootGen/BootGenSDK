@@ -34,35 +34,6 @@ namespace BootGenTest
             TestWithTemplates("templates", "example_input_kebab_case.json", "SampleOutputKebab");
         }
 
-
-        [TestMethod]
-        public void TestGenerateWrongAnnotation()
-        {
-            try
-            {
-                GenerateWithTemplates("templates", "example_input_wrong_annotation.json");
-                Assert.Fail();
-            }
-            catch (Exception e)
-            {
-                Assert.IsTrue(e.Message.StartsWith("Unrecognised annotation:"));
-            }
-        }
-
-        [TestMethod]
-        public void TestGenerateInvalidClassName()
-        {
-            try
-            {
-                GenerateWithTemplates("templates", "example_input_invalid_class_name.json");
-                Assert.Fail();
-            }
-            catch (Exception e)
-            {
-                Assert.IsTrue(e.Message.StartsWith("Invalid class name:"));
-            }
-        }
-
         [TestMethod]
         public void TestWithoutTemplates()
         {

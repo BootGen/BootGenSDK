@@ -102,6 +102,7 @@ namespace BootGenTest
                 PropertySettings = new List<PropertySettings> {
                     new PropertySettings {
                         Name = "Friends",
+                        ClassName = "User",
                         IsManyToMany = true
                     }
                 }
@@ -113,7 +114,7 @@ namespace BootGenTest
             AssertHasProperty(userClass, "UserName", BuiltInType.String);
             AssertHasProperty(userClass, "Email", BuiltInType.String);
             var property = AssertHasManyToManyProperty(userClass, "Friends");
-            Assert.AreEqual(property, property.MirrorProperty);
+            Assert.AreEqual(property.Class.Name, property.MirrorProperty.Class.Name);
 
             var resourceCollection = new ResourceCollection(dataModel);
             var pivotClass = dataModel.Classes.First(c => c.Name.Singular == "UserFriend");

@@ -75,7 +75,7 @@ public class DataModel
 
     private void ApplySettings()
     {
-        foreach (var cl in Classes) {
+        foreach (var cl in new List<ClassModel>(Classes)) {
             var classSettings = ClassSettings.FirstOrDefault(s => s.Name == cl.Name);
             if (classSettings == null)
                 continue;
@@ -99,8 +99,27 @@ public class DataModel
                 if (propertySettings == null)
                     continue;
                 property.IsManyToMany = propertySettings.IsManyToMany;
+                if (!string.IsNullOrEmpty(propertySettings.ClassName))
+                {
+                    var to = Classes.First(c => c.Name == propertySettings.ClassName);
+                    Merge(to, property.Class);
+                }
             }
         }
+    }
+
+    private void Merge(ClassModel to, ClassModel from)
+    {
+        foreach(var property in from.Properties) {
+            if (to.Properties.Any(p => p.Name == property.Name))
+                continue;
+            to.Properties.Add(property);
+        }
+        Classes.Remove(from);
+        foreach (var cl in Classes)
+            foreach(var property in cl.Properties)
+                if (property.Class == from)
+                    property.Class = to;
     }
 
     private void AddRelationships()
@@ -133,25 +152,6 @@ public class DataModel
                 throw new NamingException($"Array names must be plural nouns. Did you mean \"{suggestedName}\"?", suggestedName, property.Name, true);
             className = pluralizer.Singularize(property.Name).Capitalize();
             className.Plural = property.Name.Capitalize();
-            var data = property.Value as JArray;
-            foreach (JToken item in data)
-            {
-                if (item.Type != JTokenType.Comment)
-                    continue;
-                string comment = item.Value<string>().Trim();
-                if (comment.StartsWith("class:"))
-                {
-                    string name = comment.Split(":").Last().Trim();
-                    if (!provider.IsValidIdentifier(name))
-                    {
-                        throw new Exception($"Invalid class name: {name}");
-                    }
-                    className = name.Capitalize();
-                    className.Plural = pluralizer.Pluralize(property.Name).Capitalize();
-                    continue;
-                }
-                throw new Exception($"Unrecognised annotation: {comment}");
-            }
         }
         else
         {

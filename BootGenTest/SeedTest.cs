@@ -76,6 +76,7 @@ namespace BootGenTest
                 PropertySettings = new List<PropertySettings> {
                     new PropertySettings {
                         Name = "Friends",
+                        ClassName = "User",
                         IsManyToMany = true
                     }
                 }
