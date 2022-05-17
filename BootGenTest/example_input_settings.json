@@ -1,0 +1,10 @@
+{
+    "Task": {
+        "HasTimeStamps": true,
+        "PropertySettings": {
+            "Tags": {
+                "IsManyToMany": true
+            }
+        }
+    }
+}

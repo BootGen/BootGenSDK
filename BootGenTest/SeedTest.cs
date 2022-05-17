@@ -17,17 +17,7 @@ namespace BootGenTest
         {
             var data = JObject.Parse(File.ReadAllText("example_input.json"));
             var dataModel = new DataModel();
-            dataModel.ClassSettings["Task"] = new ClassSettings {
-                HasTimestamps = true,
-                PropertySettings = new Dictionary<string, PropertySettings> {
-                    {
-                        "Tags",
-                        new PropertySettings {
-                            IsManyToMany = true
-                        }
-                    }
-                }
-            };
+            dataModel.ClassSettings = JObject.Parse(File.ReadAllText("example_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
             var seedStore = new SeedDataStore(resourceCollection);
@@ -72,17 +62,7 @@ namespace BootGenTest
         {
             var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"));
             var dataModel = new DataModel();
-            dataModel.ClassSettings["User"] = new ClassSettings {
-                PropertySettings = new Dictionary<string, PropertySettings> {
-                    {
-                        "Friends",
-                        new PropertySettings {
-                        ClassName = "User",
-                            IsManyToMany = true
-                        }
-                    }
-                }
-            };
+            dataModel.ClassSettings = JObject.Parse(File.ReadAllText("example_recursive_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
             var seedStore = new SeedDataStore(resourceCollection);
