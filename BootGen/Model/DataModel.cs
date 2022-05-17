@@ -10,7 +10,7 @@ namespace BootGen;
 public class DataModel
 {
     public List<ClassModel> Classes { get; } = new List<ClassModel>();
-    public List<ClassSettings> ClassSettings { get; set; } = new List<ClassSettings>();
+    public Dictionary<string, ClassSettings> ClassSettings { get; set; } = new Dictionary<string, ClassSettings>();
     public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
     public Func<BuiltInType, string> TypeToString { get; init; } = AspNetCoreGenerator.ToCSharpType;
     public Dictionary<WarningType, HashSet<string>> Warnings { get; } = new Dictionary<WarningType, HashSet<string>>();
@@ -76,8 +76,7 @@ public class DataModel
     private void ApplySettings()
     {
         foreach (var cl in new List<ClassModel>(Classes)) {
-            var classSettings = ClassSettings.FirstOrDefault(s => s.Name == cl.Name);
-            if (classSettings == null)
+            if (!ClassSettings.TryGetValue(cl.Name, out var classSettings))
                 continue;
             if (classSettings.HasTimestamps)
             {
@@ -95,8 +94,7 @@ public class DataModel
             }
             foreach (var property in cl.Properties)
             {
-                var propertySettings = classSettings.PropertySettings.FirstOrDefault(p => p.Name == property.Name);
-                if (propertySettings == null)
+                if (!classSettings.PropertySettings.TryGetValue(property.Name, out var propertySettings))
                     continue;
                 property.IsManyToMany = propertySettings.IsManyToMany;
                 if (!string.IsNullOrEmpty(propertySettings.ClassName))

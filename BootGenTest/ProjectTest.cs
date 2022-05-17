@@ -16,16 +16,16 @@ namespace BootGenTest
         [TestMethod]
         public void TestGenerate()
         {
-            TestWithTemplates("templates", "example_input.json", "SampleOutput", new List<ClassSettings> {new ClassSettings {
-                Name = "Task",
+            TestWithTemplates("templates", "example_input.json", "SampleOutput", new Dictionary<string, ClassSettings> {{ "Task", new ClassSettings {
                 HasTimestamps = true,
-                PropertySettings = new List<PropertySettings> {
+                PropertySettings = new Dictionary<string, PropertySettings> {
+                    {"Tags",
                     new PropertySettings {
-                        Name = "Tags",
                         IsManyToMany = true
                     }
+                    }
                 }
-            }});
+            }}});
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace BootGenTest
             GenerateWithTemplates("does_not_exists", "example_input.json");
         }
 
-        private static void TestWithTemplates(string templateRoot, string fileName, string outputFolder, List<ClassSettings> classSettings = null)
+        private static void TestWithTemplates(string templateRoot, string fileName, string outputFolder, Dictionary<string, ClassSettings> classSettings = null)
         {
             VirtualDisk disk = GenerateWithTemplates(templateRoot, fileName, classSettings);
             if (Directory.Exists(outputFolder))
@@ -66,7 +66,7 @@ namespace BootGenTest
             }
         }
 
-        private static VirtualDisk GenerateWithTemplates(string templateRoot, string fileName, List<ClassSettings> classSettings = null)
+        private static VirtualDisk GenerateWithTemplates(string templateRoot, string fileName, Dictionary<string, ClassSettings> classSettings = null)
         {
             var data = JObject.Parse(File.ReadAllText(fileName));
             var dataModel = new DataModel();

@@ -18,16 +18,17 @@ namespace BootGenTest
         { 
             var data = JObject.Parse(File.ReadAllText("example_input.json"));
             var dataModel = new DataModel();
-            dataModel.ClassSettings.Add(new ClassSettings {
-                Name = "Task",
+            dataModel.ClassSettings["Task"] = new ClassSettings {
                 HasTimestamps = true,
-                PropertySettings = new List<PropertySettings> {
-                    new PropertySettings {
-                        Name = "Tags",
-                        IsManyToMany = true
+                PropertySettings = new Dictionary<string, PropertySettings> {
+                    {
+                        "Tags",
+                        new PropertySettings {
+                            IsManyToMany = true
+                        }
                     }
                 }
-            });
+            };
             dataModel.Load(data);
             var resourceCollection = new ResourceCollection(dataModel);
             Assert.AreEqual(5, dataModel.Classes.Count);
@@ -97,16 +98,17 @@ namespace BootGenTest
         {
             var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"));
             var dataModel = new DataModel();
-            dataModel.ClassSettings.Add(new ClassSettings {
-                Name = "User",
-                PropertySettings = new List<PropertySettings> {
-                    new PropertySettings {
-                        Name = "Friends",
+            dataModel.ClassSettings["User"] = new ClassSettings {
+                PropertySettings = new Dictionary<string, PropertySettings> {
+                    {
+                        "Friends",
+                        new PropertySettings {
                         ClassName = "User",
-                        IsManyToMany = true
+                            IsManyToMany = true
+                        }
                     }
                 }
-            });
+            };
             dataModel.Load(data);
             var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
             Assert.AreEqual(4, userClass.Properties.Count);

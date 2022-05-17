@@ -1,6 +1,5 @@
 public class PropertySettings
 {
-    public string Name { get; set; }
     public string ClassName { get; set; }
     public string VisibleName { get; set; }
     public bool IsReadOnly { get; set; }
