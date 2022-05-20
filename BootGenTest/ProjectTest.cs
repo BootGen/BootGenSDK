@@ -70,9 +70,7 @@ namespace BootGenTest
         {
             var data = JObject.Parse(File.ReadAllText(fileName));
             var dataModel = new DataModel();
-            if (classSettings != null)
-                dataModel.ClassSettings = classSettings;
-            dataModel.Load(data);
+            dataModel.Load(data, classSettings);
             var resourceCollection = new ResourceCollection(dataModel);
             var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Load(data);

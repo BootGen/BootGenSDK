@@ -10,7 +10,6 @@ namespace BootGen;
 public class DataModel
 {
     public List<ClassModel> Classes { get; } = new List<ClassModel>();
-    public Dictionary<string, ClassSettings> ClassSettings { get; set; } = new Dictionary<string, ClassSettings>();
     public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
     public Func<BuiltInType, string> TypeToString { get; init; } = AspNetCoreGenerator.ToCSharpType;
     public Dictionary<WarningType, HashSet<string>> Warnings { get; } = new Dictionary<WarningType, HashSet<string>>();
@@ -22,7 +21,7 @@ public class DataModel
         c.Id = Classes.Count;
         Classes.Add(c);
     }
-    public void Load(JObject jObject)
+    public void Load(JObject jObject, Dictionary<string, ClassSettings> settings = null)
     {
         foreach (var property in jObject.Properties())
         {
@@ -32,19 +31,20 @@ public class DataModel
         }
 
         CheckForEmptyClasses();
-        ApplySettings();
+        if (settings != null)
+            ApplySettings(settings);
         AddRelationships();
     }
 
     private void CheckForEmptyClasses()
     {
         foreach (var c in Classes)
-            if (c.Properties.Count == 1) {
+            if (c.AllProperties.Count == 1) {
                 AddWarning(WarningType.EmptyType, c.Name);
             }
-        Classes.RemoveAll(c => c.Properties.Count == 1);
+        Classes.RemoveAll(c => c.AllProperties.Count == 1);
         foreach (var c in Classes)
-            c.Properties.RemoveAll(p =>p.Class?.Properties.Count == 1);
+            c.AllProperties.RemoveAll(p =>p.Class?.AllProperties.Count == 1);
     }
 
     private void AddWarning(WarningType warningType, string name)
@@ -73,20 +73,20 @@ public class DataModel
         AddRelationships();
     }
 
-    private void ApplySettings()
+    private void ApplySettings(Dictionary<string, ClassSettings> settings)
     {
         foreach (var cl in new List<ClassModel>(Classes)) {
-            if (!ClassSettings.TryGetValue(cl.Name, out var classSettings))
+            if (!settings.TryGetValue(cl.Name, out var classSettings))
                 continue;
             if (classSettings.HasTimestamps)
             {
                 cl.HasTimestamps = true;
-                cl.Properties.Insert(1, new Property
+                cl.AllProperties.Insert(1, new Property
                 {
                     Name = "Created",
                     BuiltInType = BuiltInType.DateTime
                 });
-                cl.Properties.Insert(2, new Property
+                cl.AllProperties.Insert(2, new Property
                 {
                     Name = "Updated",
                     BuiltInType = BuiltInType.DateTime
@@ -96,13 +96,10 @@ public class DataModel
             {
                 if (!classSettings.PropertySettings.TryGetValue(property.Name, out var propertySettings))
                     continue;
-                if (propertySettings.IsHidden) {
-                    cl.Properties.Remove(property);
-                    continue;
-                }
                 property.IsManyToMany = propertySettings.IsManyToMany;
                 property.VisibleName = propertySettings.VisibleName ?? property.Name;
                 property.IsReadOnly = propertySettings.IsReadOnly;
+                property.IsHidden = propertySettings.IsHidden;
                 if (!string.IsNullOrEmpty(propertySettings.ClassName))
                 {
                     var to = Classes.First(c => c.Name == propertySettings.ClassName);
@@ -112,12 +109,40 @@ public class DataModel
         }
     }
 
+    public Dictionary<string, ClassSettings> GetSettings() {
+        var result = new Dictionary<string, ClassSettings>();
+
+        foreach (var cl in Classes)
+        {
+            var classSettings = new ClassSettings{
+                HasTimestamps = cl.HasTimestamps,
+                PropertySettings = new Dictionary<string, PropertySettings>()
+            };
+            result[cl.Name.Singular] = classSettings;
+            foreach (var property in cl.Properties)
+            {
+                var propertySettings = new PropertySettings();
+                propertySettings.IsManyToMany = property.IsManyToMany;
+                propertySettings.IsReadOnly = property.IsReadOnly;
+                propertySettings.IsHidden = property.IsHidden;
+                if (property.BuiltInType == BuiltInType.Object)
+                    if (!property.Class.Name.Equals(property.Noun))
+                        propertySettings.ClassName = property.Class.Name.Singular;
+                if (property.Name != property.VisibleName) {
+                    propertySettings.VisibleName = property.VisibleName;
+                }
+                classSettings.PropertySettings[property.Name] = propertySettings;
+            }
+        }
+        return result;
+    }
+
     private void Merge(ClassModel to, ClassModel from)
     {
         foreach(var property in from.Properties) {
-            if (to.Properties.Any(p => p.Name == property.Name))
+            if (to.AllProperties.Any(p => p.Name == property.Name))
                 continue;
-            to.Properties.Add(property);
+            to.AllProperties.Add(property);
         }
         Classes.Remove(from);
         foreach (var cl in Classes)
@@ -269,7 +294,7 @@ public class DataModel
                 BuiltInType = builtInType,
                 IsCollection = isCollection
             };
-            model.Properties.Add(prop);
+            model.AllProperties.Add(prop);
             if (prop.IsCollection)
             {
                 prop.Noun = pluralizer.Singularize(propertyName);
@@ -279,7 +304,7 @@ public class DataModel
             {
                 prop.Class = Parse(property);
                 if (prop.Class == null) {
-                    model.Properties.Remove(prop);
+                    model.AllProperties.Remove(prop);
                     continue;
                 }
                 if (prop.IsCollection)
@@ -333,7 +358,7 @@ public class DataModel
                     IsServerOnly = true,
                     Noun = c.Name
                 };
-                property.Class.Properties.Add(referenceProperty);
+                property.Class.AllProperties.Add(referenceProperty);
             }
             referenceProperty.MirrorProperty = property;
             property.MirrorProperty = referenceProperty;
@@ -351,7 +376,7 @@ public class DataModel
                 continue;
             if (!c.Properties.Any(p => p.Name == property.Name + ClassModel.IdName))
             {
-                c.Properties.Insert(propertyIdx + 1, new Property
+                c.AllProperties.Insert(propertyIdx + 1, new Property
                 {
                     Name = property.Name + ClassModel.IdName,
                     BuiltInType = BuiltInType.Int,
@@ -376,7 +401,7 @@ public class DataModel
             MirrorProperty = property
         };
         var child = property.Class;
-        child.Properties.Add(referenceProperty);
+        child.AllProperties.Add(referenceProperty);
 
         if (!child.Properties.Any(p => p.Name == parent.Name + ClassModel.IdName))
         {
@@ -387,7 +412,7 @@ public class DataModel
                 BuiltInType = BuiltInType.Int,
                 IsKey = true
             };
-            child.Properties.Add(idProperty);
+            child.AllProperties.Add(idProperty);
         }
     }
 }

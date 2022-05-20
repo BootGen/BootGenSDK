@@ -18,8 +18,8 @@ namespace BootGenTest
         { 
             var data = JObject.Parse(File.ReadAllText("example_input.json"));
             var dataModel = new DataModel();
-            dataModel.ClassSettings = JObject.Parse(File.ReadAllText("example_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
-            dataModel.Load(data);
+            var settings = JObject.Parse(File.ReadAllText("example_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
+            dataModel.Load(data, settings);
             var resourceCollection = new ResourceCollection(dataModel);
             Assert.AreEqual(5, dataModel.Classes.Count);
 
@@ -88,8 +88,8 @@ namespace BootGenTest
         {
             var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"));
             var dataModel = new DataModel();
-            dataModel.ClassSettings = JObject.Parse(File.ReadAllText("example_recursive_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
-            dataModel.Load(data);
+            var settings = JObject.Parse(File.ReadAllText("example_recursive_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
+            dataModel.Load(data, settings);
             var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
             Assert.AreEqual(4, userClass.Properties.Count);
             AssertHasProperty(userClass, "Id", BuiltInType.Int);
@@ -277,8 +277,9 @@ namespace BootGenTest
         { 
             var data = JObject.Parse(File.ReadAllText("example_input.json"));
             var dataModel = new DataModel();
-            dataModel.ClassSettings = JObject.Parse(File.ReadAllText("example_input_settings2.json")).ToObject<Dictionary<string, ClassSettings>>();
-            dataModel.Load(data);
+            var settings = JObject.Parse(File.ReadAllText("example_input_settings2.json")).ToObject<Dictionary<string, ClassSettings>>();
+            dataModel.Load(data, settings);
+            AssertSettingsEqual(settings, dataModel.GetSettings());
             var resourceCollection = new ResourceCollection(dataModel);
             Assert.AreEqual(5, dataModel.Classes.Count);
 
@@ -341,6 +342,15 @@ namespace BootGenTest
             Assert.AreEqual(1, tagResource.AlternateResources.Count);
             Assert.AreEqual(1, tagResource.NestedResources.Count);
             Assert.IsNotNull(tagResource.AlternateResources.First().Pivot);
+        }
+
+        private void AssertSettingsEqual(Dictionary<string, ClassSettings> settings1, Dictionary<string, ClassSettings> settings2)
+        {
+            foreach (var t in settings1) {
+                if (!settings2.TryGetValue(t.Key, out var settings))
+                    continue;
+                Assert.IsTrue(t.Value.LeftEquals(settings));
+            }
         }
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {

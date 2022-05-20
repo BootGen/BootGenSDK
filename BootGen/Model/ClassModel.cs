@@ -11,7 +11,8 @@ namespace BootGen
         static public string IdName { get; set; } = "Id";
         public int Id { get; set; }
         public Noun Name { get; set; }
-        public List<Property> Properties { get; }
+        internal List<Property> AllProperties { get; }
+        public List<Property> Properties => AllProperties.Where(p => !p.IsHidden).ToList();
         public bool IsServerOnly { get; set; }
         public bool HasTimestamps { get; set; }
         public bool IsPivot { get; set; }
@@ -28,7 +29,7 @@ namespace BootGen
         public ClassModel(string name)
         {
             Name = name;
-            Properties = new List<Property> {
+            AllProperties = new List<Property> {
                 new Property
                 {
                     Name = ClassModel.IdName,

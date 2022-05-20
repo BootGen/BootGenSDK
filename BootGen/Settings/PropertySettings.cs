@@ -1,4 +1,4 @@
-public class PropertySettings
+public struct PropertySettings
 {
     public string ClassName { get; set; }
     public string VisibleName { get; set; }

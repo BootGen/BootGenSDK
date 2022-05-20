@@ -21,6 +21,7 @@ namespace BootGen
         public bool IsManyToMany { get; set; }
         public bool IsClientReadonly { get; set; }
         public bool IsKey { get; set; }
+        public bool IsHidden { get; set; }
     }
     
 

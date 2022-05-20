@@ -47,23 +47,23 @@ namespace BootGen
                 IsServerOnly = true,
                 IsPivot = true
             };
-            pivotClass.Properties.Add(new Property {
+            pivotClass.AllProperties.Add(new Property {
                             Name = parent.Name.Plural + ClassModel.IdName,
                             BuiltInType = BuiltInType.Int,
                             IsKey = true
                         });
-            pivotClass.Properties.Add(new Property {
+            pivotClass.AllProperties.Add(new Property {
                             Name = parent.Name,
                             Noun = parent.Name,
                             BuiltInType = BuiltInType.Object,
                             Class = parent.Class
                         });
-            pivotClass.Properties.Add(new Property {
+            pivotClass.AllProperties.Add(new Property {
                             Name = resource.Name.Plural + ClassModel.IdName,
                             BuiltInType = BuiltInType.Int,
                             IsKey = true
                         });
-            pivotClass.Properties.Add(new Property {
+            pivotClass.AllProperties.Add(new Property {
                             Name = resource.Name,
                             Noun = resource.Name,
                             BuiltInType = BuiltInType.Object,

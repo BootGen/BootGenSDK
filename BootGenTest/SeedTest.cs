@@ -17,8 +17,8 @@ namespace BootGenTest
         {
             var data = JObject.Parse(File.ReadAllText("example_input.json"));
             var dataModel = new DataModel();
-            dataModel.ClassSettings = JObject.Parse(File.ReadAllText("example_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
-            dataModel.Load(data);
+            var settings = JObject.Parse(File.ReadAllText("example_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
+            dataModel.Load(data, settings);
             var resourceCollection = new ResourceCollection(dataModel);
             var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Load(data);
@@ -62,8 +62,8 @@ namespace BootGenTest
         {
             var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"));
             var dataModel = new DataModel();
-            dataModel.ClassSettings = JObject.Parse(File.ReadAllText("example_recursive_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
-            dataModel.Load(data);
+            var settings = JObject.Parse(File.ReadAllText("example_recursive_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
+            dataModel.Load(data, settings);
             var resourceCollection = new ResourceCollection(dataModel);
             var seedStore = new SeedDataStore(resourceCollection);
             seedStore.Load(data);
