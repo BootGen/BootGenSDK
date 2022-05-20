@@ -10,6 +10,8 @@ namespace BootGen
     {
         public Noun Noun { get; set; }
         public string Name { get; set; }
+        public string VisibleName { get; set; }
+        public bool IsReadOnly { get; set; }
         public BuiltInType BuiltInType { get; set; }
         public bool IsCollection { get; set; }
         public ClassModel Class { get; set; }

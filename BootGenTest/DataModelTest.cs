@@ -272,6 +272,76 @@ namespace BootGenTest
             Assert.AreEqual(1, dataModel.Warnings[WarningType.PrimitiveRoot].Count);
             Assert.AreEqual("Number", dataModel.Warnings[WarningType.PrimitiveRoot].First());
         }
+        [TestMethod]
+        public void TestLoadModelSettings()
+        { 
+            var data = JObject.Parse(File.ReadAllText("example_input.json"));
+            var dataModel = new DataModel();
+            dataModel.ClassSettings = JObject.Parse(File.ReadAllText("example_input_settings2.json")).ToObject<Dictionary<string, ClassSettings>>();
+            dataModel.Load(data);
+            var resourceCollection = new ResourceCollection(dataModel);
+            Assert.AreEqual(5, dataModel.Classes.Count);
+
+            var tagClass = dataModel.Classes.First(c => c.Name.Singular == "Tag");
+            Assert.AreEqual(4, tagClass.Properties.Count);
+            Assert.IsTrue(tagClass.ReferredPlural);
+            Assert.IsFalse(tagClass.ReferredSingle);
+            AssertHasProperty(tagClass, "Id", BuiltInType.Int);
+            AssertHasProperty(tagClass, "Name", BuiltInType.String);
+            AssertHasProperty(tagClass, "Color", BuiltInType.String);
+            AssertHasManyToManyProperty(tagClass, "Tasks");
+
+            var taskClass = dataModel.Classes.First(c => c.Name.Singular == "Task");
+            Assert.AreEqual(12, taskClass.Properties.Count);
+            Assert.IsTrue(taskClass.ReferredPlural);
+            Assert.IsFalse(taskClass.ReferredSingle);
+            AssertHasProperty(taskClass, "Id", BuiltInType.Int);
+            AssertHasProperty(taskClass, "Title", BuiltInType.String);
+            AssertHasProperty(taskClass, "Description", BuiltInType.String);
+            AssertHasProperty(taskClass, "Created", BuiltInType.DateTime);
+            AssertHasProperty(taskClass, "Updated", BuiltInType.DateTime);
+            AssertHasProperty(taskClass, "DueDate", BuiltInType.DateTime);
+            AssertHasProperty(taskClass, "Priority", BuiltInType.Int);
+            AssertHasProperty(taskClass, "IsOpen", BuiltInType.Bool);
+            AssertHasProperty(taskClass, "EstimatedHours", BuiltInType.Float);
+            AssertHasManyToManyProperty(taskClass, "Tags");
+            AssertHasProperty(taskClass, "User", BuiltInType.Object);
+            AssertHasProperty(taskClass, "UserId", BuiltInType.Int);
+            var tagProperty = taskClass.Properties.First(p => p.Name == "Tags");
+            Assert.IsTrue(tagProperty.IsReadOnly);
+            Assert.AreEqual("Super Tags", tagProperty.VisibleName);
+
+            var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
+            Assert.AreEqual(4, userClass.Properties.Count);
+            Assert.IsTrue(userClass.ReferredPlural);
+            Assert.IsFalse(userClass.ReferredSingle);
+            AssertHasProperty(userClass, "Id", BuiltInType.Int);
+            AssertHasProperty(userClass, "UserName", BuiltInType.String);
+            AssertHasProperty(userClass, "Email", BuiltInType.String);
+            AssertHasOneToManyProperty(userClass, "Tasks");
+
+
+            var addressClass = dataModel.Classes.First(c => c.Name.Singular == "Address");
+            Assert.AreEqual(5, addressClass.Properties.Count);
+            Assert.IsFalse(addressClass.ReferredPlural);
+            Assert.IsTrue(addressClass.ReferredSingle);
+            AssertHasProperty(addressClass, "Id", BuiltInType.Int);
+            AssertHasProperty(addressClass, "City", BuiltInType.String);
+            AssertHasProperty(addressClass, "Street", BuiltInType.String);
+            AssertHasProperty(addressClass, "Zip", BuiltInType.String);
+            AssertHasProperty(addressClass, "HouseNumber", BuiltInType.String);
+
+            var userResource = resourceCollection.RootResources.First(r => r.Class == userClass);
+            Assert.AreEqual(0, userResource.AlternateResources.Count);
+            Assert.AreEqual(1, userResource.NestedResources.Count);
+            var taskResource = resourceCollection.RootResources.First(r => r.Class == taskClass);
+            Assert.AreEqual(2, taskResource.AlternateResources.Count);
+            Assert.AreEqual(1, taskResource.NestedResources.Count);
+            var tagResource = resourceCollection.RootResources.First(r => r.Class == tagClass);
+            Assert.AreEqual(1, tagResource.AlternateResources.Count);
+            Assert.AreEqual(1, tagResource.NestedResources.Count);
+            Assert.IsNotNull(tagResource.AlternateResources.First().Pivot);
+        }
 
         private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
             Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{classModel.Name}.{propertyName} -> {type} is missing.");

@@ -1,0 +1,19 @@
+{
+    "Task": {
+        "HasTimeStamps": true,
+        "PropertySettings": {
+            "Tags": {
+                "IsManyToMany": true,
+                "IsReadOnly": true,
+                "VisibleName": "Super Tags"
+            }
+        }
+    },
+    "User" : {
+        "PropertySettings": {
+            "Address": {
+                "IsHidden": true
+            }
+        }
+    }
+}

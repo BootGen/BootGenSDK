@@ -92,11 +92,17 @@ public class DataModel
                     BuiltInType = BuiltInType.DateTime
                 });
             }
-            foreach (var property in cl.Properties)
+            foreach (var property in new List<Property>(cl.Properties))
             {
                 if (!classSettings.PropertySettings.TryGetValue(property.Name, out var propertySettings))
                     continue;
+                if (propertySettings.IsHidden) {
+                    cl.Properties.Remove(property);
+                    continue;
+                }
                 property.IsManyToMany = propertySettings.IsManyToMany;
+                property.VisibleName = propertySettings.VisibleName ?? property.Name;
+                property.IsReadOnly = propertySettings.IsReadOnly;
                 if (!string.IsNullOrEmpty(propertySettings.ClassName))
                 {
                     var to = Classes.First(c => c.Name == propertySettings.ClassName);
