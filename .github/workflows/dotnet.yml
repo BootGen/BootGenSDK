@@ -22,10 +22,10 @@ jobs:
       run: git lfs pull
     - name: Install dependencies
       run: dotnet restore
-      working-directory: ./BootGenTest
+      working-directory: ./BootGen.Test
     - name: Build
       run: dotnet build --configuration Release --no-restore
-      working-directory: ./BootGenTest
+      working-directory: ./BootGen.Test
     - name: Test
       run: dotnet test --no-restore --verbosity normal
       working-directory: ./BootGenTest
