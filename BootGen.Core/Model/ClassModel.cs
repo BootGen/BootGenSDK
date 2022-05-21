@@ -11,7 +11,7 @@ namespace BootGen
         static public string IdName { get; set; } = "Id";
         public int Id { get; set; }
         public Noun Name { get; set; }
-        internal List<Property> AllProperties { get; }
+        public List<Property> AllProperties { get; }
         public List<Property> Properties => AllProperties.Where(p => !p.IsHidden).ToList();
         public bool IsServerOnly { get; set; }
         public bool HasTimestamps { get; set; }

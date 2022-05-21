@@ -57,14 +57,14 @@ public class GeneratorBase : ScriptObject
         return template.Render(context);
     }
 
-    private TemplateContext CreateContext()
+    public TemplateContext CreateContext()
     {
         return new TemplateContext {
             TemplateLoader = new DiskTemplateLoader(Templates)
         };
     }
 
-    Template LoadTemplate(string templateFile) {
+    public Template LoadTemplate(string templateFile) {
         var template = Parse(templateFile);
         if (template == null) {
             Console.WriteLine($"File not found: {templateFile}");
@@ -92,23 +92,6 @@ public class GeneratorBase : ScriptObject
         context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
         context.SetValue(new ScriptVariableGlobal("class"), c);
         return template.Render(context);;
-    }
-
-    public void RenderResources(string folderName, Func<Resource, string> targetFileName, string templateFile, IEnumerable<Resource> resources)
-    {
-        var template = LoadTemplate(templateFile);
-        if (template == null) {
-            return;
-        }
-        foreach (var resource in resources)
-        {
-            var context = CreateContext();
-            context.PushGlobal(this);
-            context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
-            context.SetValue(new ScriptVariableGlobal("resource"), resource);
-            var renderedController = template.Render(context);
-            Disk.WriteText(folderName, targetFileName(resource), renderedController);
-        }
     }
 
     private Template Parse(string templateFile)

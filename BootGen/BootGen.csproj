@@ -28,7 +28,10 @@
     <GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="BootGenLogo.png" Pack="true" PackagePath="" />
+    <ProjectReference Include="..\BootGen.Core\BootGen.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../BootGenLogo.png" Pack="true" PackagePath="" />
     <None Include="../README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

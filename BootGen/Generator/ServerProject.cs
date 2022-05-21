@@ -28,14 +28,6 @@ namespace BootGen
             aspNetCoreGenerator.Templates = Templates;
             var pivotResources = ResourceCollection.NestedResources.Where(r => r.Pivot != null).ToList();
             var pivotClasses = pivotResources.Select(r => r.Pivot).Distinct().ToList();
-            var oasGenerator = new OASGenerator(disk);
-            oasGenerator.Templates = Templates;
-            oasGenerator.Render("", "restapi.yml", "oas3template.sbn", new Dictionary<string, object> {
-                {"resources", ResourceCollection.RootResources},
-                {"classes", DataModel.CommonClasses},
-                {"project_title", namespce},
-                {"base_url", baseUrl}
-            });
             aspNetCoreGenerator.RenderResources(Config.ControllerFolder, r => $"{FullName(r)}Controller.cs", "resourceController.sbn", ResourceCollection.RootResources.ToList());
             aspNetCoreGenerator.RenderResources(Config.ControllerFolder, r => $"{FullName(r)}Controller.cs", "nestedResourceController.sbn", ResourceCollection.NestedResources.Where(r => r.Pivot == null).ToList());
             aspNetCoreGenerator.RenderResources($"{Config.ServiceFolder}/Interfaces", r => $"I{FullName(r)}Service.cs", "resourceServiceInterface.sbn", ResourceCollection.RootResources.ToList());
