@@ -28,12 +28,12 @@ jobs:
       working-directory: ./BootGen.Test
     - name: Test
       run: dotnet test --no-restore --verbosity normal
-      working-directory: ./BootGenTest
+      working-directory: ./BootGen.Test
     - name: Coveralls
       run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
-      working-directory: ./BootGenTest
+      working-directory: ./BootGen.Test
     - name: Coveralls Upload
       uses: coverallsapp/github-action@v1.0.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: BootGenTest/coverage.info
+        path-to-lcov: BootGen.Test/coverage.info
