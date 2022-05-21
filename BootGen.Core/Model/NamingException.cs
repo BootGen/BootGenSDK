@@ -1,6 +1,6 @@
 using System;
 
-namespace BootGen;
+namespace BootGen.Core;
 
 public class NamingException : Exception {
     public string SuggestedName { get; }

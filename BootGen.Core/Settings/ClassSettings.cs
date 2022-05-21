@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 
+namespace BootGen.Core;
 public class ClassSettings
 {
     public Dictionary<string, PropertySettings> PropertySettings { get; set; }

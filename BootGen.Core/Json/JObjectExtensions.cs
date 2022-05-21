@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace BootGen;
+namespace BootGen.Core;
 public static class JObjectExtensions
 {
     public static JObject RenamingArrays(this JObject obj, string oldName, string newName)

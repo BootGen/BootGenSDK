@@ -1,3 +1,6 @@
+
+namespace BootGen.Core;
+
 public struct PropertySettings
 {
     public string ClassName { get; set; }

@@ -3,7 +3,7 @@ using Scriban;
 using Scriban.Parsing;
 using Scriban.Runtime;
 
-namespace BootGen;
+namespace BootGen.Core;
 
 public class DiskTemplateLoader : ITemplateLoader
 {

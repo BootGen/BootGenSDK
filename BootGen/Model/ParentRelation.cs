@@ -1,13 +1,11 @@
-namespace BootGen
+namespace BootGen;
+internal class ParentRelation
 {
-    internal class ParentRelation
+    public ParentRelation(Resource resource, string name = null)
     {
-        public ParentRelation(Resource resource, string name = null)
-        {
-            Resource = resource;
-            Name = name ?? resource.Name;
-        }
-        public string Name { get; set; }
-        public Resource Resource { get; set; }
+        Resource = resource;
+        Name = name ?? resource.Name;
     }
+    public string Name { get; set; }
+    public Resource Resource { get; set; }
 }

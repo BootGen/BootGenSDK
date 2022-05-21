@@ -5,13 +5,13 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using Pluralize.NET;
 
-namespace BootGen;
+namespace BootGen.Core;
 
 public class DataModel
 {
     public List<ClassModel> Classes { get; } = new List<ClassModel>();
     public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
-    public Func<BuiltInType, string> TypeToString { get; init; } = AspNetCoreGenerator.ToCSharpType;
+    public Func<BuiltInType, string> TypeToString { get; init; } = CSharpGenerator.ToCSharpType;
     public Dictionary<WarningType, HashSet<string>> Warnings { get; } = new Dictionary<WarningType, HashSet<string>>();
 
     private CodeDomProvider provider = CodeDomProvider.CreateProvider("C#");

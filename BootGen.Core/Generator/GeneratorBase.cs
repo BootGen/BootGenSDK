@@ -5,7 +5,7 @@ using Scriban;
 using Scriban.Runtime;
 using Scriban.Syntax;
 
-namespace BootGen;
+namespace BootGen.Core;
 public class GeneratorBase : ScriptObject
 {
     public string NameSpace { get; set; }
