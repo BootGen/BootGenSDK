@@ -46,6 +46,7 @@ public class RootResource : Resource
             IsServerOnly = true,
             IsPivot = true
         };
+        pivotClass.CreateId();
         pivotClass.AllProperties.Add(new Property {
                         Name = parent.Name.Plural + ClassModel.IdName,
                         BuiltInType = BuiltInType.Int,

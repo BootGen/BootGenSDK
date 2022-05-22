@@ -13,6 +13,7 @@ public class DataModel
     public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
     public Func<BuiltInType, string> TypeToString { get; init; } = CSharpGenerator.ToCSharpType;
     public Dictionary<WarningType, HashSet<string>> Warnings { get; } = new Dictionary<WarningType, HashSet<string>>();
+    public bool GenerateIds { get; set; } = true;
 
     private CodeDomProvider provider = CodeDomProvider.CreateProvider("C#");
 
@@ -39,12 +40,12 @@ public class DataModel
     private void CheckForEmptyClasses()
     {
         foreach (var c in Classes)
-            if (c.AllProperties.Count == 1) {
+            if (c.IsEmpty) {
                 AddWarning(WarningType.EmptyType, c.Name);
             }
-        Classes.RemoveAll(c => c.AllProperties.Count == 1);
+        Classes.RemoveAll(c => c.IsEmpty);
         foreach (var c in Classes)
-            c.AllProperties.RemoveAll(p =>p.Class?.AllProperties.Count == 1);
+            c.AllProperties.RemoveAll(p =>p.Class?.IsEmpty == true);
     }
 
     private void AddWarning(WarningType warningType, string name)
@@ -164,7 +165,8 @@ public class DataModel
         foreach (var c in Classes)
         {
             AddManyToManyMirrorProperties(c);
-            AddManyToOneParentReference(c);
+            if (GenerateIds)
+                AddManyToOneParentReference(c);
         }
     }
 
@@ -234,6 +236,8 @@ public class DataModel
         if (c == null)
         {
             c = new ClassModel(className);
+            if (GenerateIds)
+                c.CreateId();
             AddClass(c);
         }
         return c;
@@ -389,7 +393,7 @@ public class DataModel
     }
 
 
-    private static void AddOneToManyParentReference(ClassModel parent, Property property)
+    private  void AddOneToManyParentReference(ClassModel parent, Property property)
     {
         var referenceProperty = new Property
         {
@@ -403,7 +407,7 @@ public class DataModel
         var child = property.Class;
         child.AllProperties.Add(referenceProperty);
 
-        if (!child.Properties.Any(p => p.Name == parent.Name + ClassModel.IdName))
+        if (GenerateIds && !child.Properties.Any(p => p.Name == parent.Name + ClassModel.IdName))
         {
 
             var idProperty = new Property
