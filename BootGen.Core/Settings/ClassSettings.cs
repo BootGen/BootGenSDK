@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BootGen.Core;
 public class ClassSettings
 {
-    public Dictionary<string, PropertySettings> PropertySettings { get; set; }
+    public string Name { get; set; }
     public bool HasTimestamps { get; set; }
+    public List<PropertySettings> PropertySettings { get; set; }
 
     public bool LeftEquals(object obj)
     {
@@ -13,10 +15,11 @@ public class ClassSettings
             return false;
         if (other.HasTimestamps != HasTimestamps)
             return false;
+        var settingsDict = other.PropertySettings.ToDictionary(s => s.Name);
         foreach (var p in PropertySettings) {
-            if (!other.PropertySettings.TryGetValue(p.Key, out var settings))
+            if (!settingsDict.TryGetValue(p.Name, out var settings))
                 continue;
-            if (!p.Value.Equals(settings))
+            if (!p.Equals(settings))
                 return false;
         }
         return true;

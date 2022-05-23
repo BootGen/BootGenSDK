@@ -17,16 +17,19 @@ public class ProjectTest
     [TestMethod]
     public void TestGenerate()
     {
-        TestWithTemplates("templates", "example_input.json", "SampleOutput", new Dictionary<string, ClassSettings> {{ "Task", new ClassSettings {
-            HasTimestamps = true,
-            PropertySettings = new Dictionary<string, PropertySettings> {
-                {"Tags",
-                new PropertySettings {
-                    IsManyToMany = true
-                }
+        TestWithTemplates("templates", "example_input.json", "SampleOutput", new List<ClassSettings> {
+            new ClassSettings
+            {
+                Name = "Task",
+                HasTimestamps = true,
+                PropertySettings = new List<PropertySettings> {
+                    new PropertySettings {
+                        Name = "Tags",
+                        IsManyToMany = true
+                    }
                 }
             }
-        }}});
+        });
     }
 
     [TestMethod]
@@ -41,9 +44,9 @@ public class ProjectTest
         GenerateWithTemplates("does_not_exists", "example_input.json");
     }
 
-    private static void TestWithTemplates(string templateRoot, string fileName, string outputFolder, Dictionary<string, ClassSettings> classSettings = null)
+    private static void TestWithTemplates(string templateRoot, string fileName, string outputFolder, List<ClassSettings> settings = null)
     {
-        VirtualDisk disk = GenerateWithTemplates(templateRoot, fileName, classSettings);
+        VirtualDisk disk = GenerateWithTemplates(templateRoot, fileName, settings);
         if (Directory.Exists(outputFolder))
             Directory.Delete(outputFolder, true);
 
@@ -67,11 +70,11 @@ public class ProjectTest
         }
     }
 
-    private static VirtualDisk GenerateWithTemplates(string templateRoot, string fileName, Dictionary<string, ClassSettings> classSettings = null)
+    private static VirtualDisk GenerateWithTemplates(string templateRoot, string fileName, List<ClassSettings> settings = null)
     {
         var data = JObject.Parse(File.ReadAllText(fileName));
         var dataModel = new DataModel();
-        dataModel.Load(data, classSettings);
+        dataModel.Load(data, settings);
         var resourceCollection = new ResourceCollection(dataModel);
         var seedStore = new SeedDataStore(resourceCollection);
         seedStore.Load(data);

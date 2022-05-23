@@ -22,7 +22,7 @@ public class DataModel
         c.Id = Classes.Count;
         Classes.Add(c);
     }
-    public void Load(JObject jObject, Dictionary<string, ClassSettings> settings = null)
+    public void Load(JObject jObject, List<ClassSettings> settings = null)
     {
         foreach (var property in jObject.Properties())
         {
@@ -74,10 +74,11 @@ public class DataModel
         AddRelationships();
     }
 
-    private void ApplySettings(Dictionary<string, ClassSettings> settings)
+    private void ApplySettings(List<ClassSettings> settings)
     {
+        var classSettingsDict = settings.ToDictionary(s => s.Name);
         foreach (var cl in new List<ClassModel>(Classes)) {
-            if (!settings.TryGetValue(cl.Name, out var classSettings))
+            if (!classSettingsDict.TryGetValue(cl.Name, out var classSettings))
                 continue;
             if (classSettings.HasTimestamps)
             {
@@ -93,9 +94,10 @@ public class DataModel
                     BuiltInType = BuiltInType.DateTime
                 });
             }
+            var propSettingsDict = classSettings.PropertySettings.ToDictionary(s => s.Name);
             foreach (var property in new List<Property>(cl.Properties))
             {
-                if (!classSettings.PropertySettings.TryGetValue(property.Name, out var propertySettings))
+                if (!propSettingsDict.TryGetValue(property.Name, out var propertySettings))
                     continue;
                 property.IsManyToMany = propertySettings.IsManyToMany;
                 property.VisibleName = propertySettings.VisibleName ?? property.Name;
@@ -110,29 +112,32 @@ public class DataModel
         }
     }
 
-    public Dictionary<string, ClassSettings> GetSettings() {
-        var result = new Dictionary<string, ClassSettings>();
+    public List<ClassSettings> GetSettings() {
+        var result = new List<ClassSettings>();
 
         foreach (var cl in Classes)
         {
             var classSettings = new ClassSettings{
+                Name = cl.Name.Singular,
                 HasTimestamps = cl.HasTimestamps,
-                PropertySettings = new Dictionary<string, PropertySettings>()
+                PropertySettings = new List<PropertySettings>()
             };
-            result[cl.Name.Singular] = classSettings;
+            result.Add(classSettings);
             foreach (var property in cl.Properties)
             {
-                var propertySettings = new PropertySettings();
-                propertySettings.IsManyToMany = property.IsManyToMany;
-                propertySettings.IsReadOnly = property.IsReadOnly;
-                propertySettings.IsHidden = property.IsHidden;
+                var propertySettings = new PropertySettings {
+                    Name = property.Name,
+                    IsManyToMany = property.IsManyToMany,
+                    IsReadOnly = property.IsReadOnly,
+                    IsHidden = property.IsHidden
+                };
                 if (property.BuiltInType == BuiltInType.Object)
                     if (!property.Class.Name.Equals(property.Noun))
                         propertySettings.ClassName = property.Class.Name.Singular;
                 if (property.Name != property.VisibleName) {
                     propertySettings.VisibleName = property.VisibleName;
                 }
-                classSettings.PropertySettings[property.Name] = propertySettings;
+                classSettings.PropertySettings.Add(propertySettings);
             }
         }
         return result;

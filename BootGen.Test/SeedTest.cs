@@ -17,7 +17,7 @@ public class SeedTest
     {
         var data = JObject.Parse(File.ReadAllText("example_input.json"));
         var dataModel = new DataModel();
-        var settings = JObject.Parse(File.ReadAllText("example_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
+        var settings = JArray.Parse(File.ReadAllText("example_input_settings.json")).ToObject<List<ClassSettings>>();
         dataModel.Load(data, settings);
         var resourceCollection = new ResourceCollection(dataModel);
         var seedStore = new SeedDataStore(resourceCollection);
@@ -62,7 +62,7 @@ public class SeedTest
     {
         var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"));
         var dataModel = new DataModel();
-        var settings = JObject.Parse(File.ReadAllText("example_recursive_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
+        var settings = JArray.Parse(File.ReadAllText("example_recursive_input_settings.json")).ToObject<List<ClassSettings>>();
         dataModel.Load(data, settings);
         var resourceCollection = new ResourceCollection(dataModel);
         var seedStore = new SeedDataStore(resourceCollection);

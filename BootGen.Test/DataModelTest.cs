@@ -17,7 +17,7 @@ public class DataModelTest
     { 
         var data = JObject.Parse(File.ReadAllText("example_input.json"));
         var dataModel = new DataModel();
-        var settings = JObject.Parse(File.ReadAllText("example_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
+        var settings = JArray.Parse(File.ReadAllText("example_input_settings.json")).ToObject<List<ClassSettings>>();
         dataModel.Load(data, settings);
         var resourceCollection = new ResourceCollection(dataModel);
         Assert.AreEqual(5, dataModel.Classes.Count);
@@ -87,7 +87,7 @@ public class DataModelTest
     {
         var data = JObject.Parse(File.ReadAllText("example_recursive_input.json"));
         var dataModel = new DataModel();
-        var settings = JObject.Parse(File.ReadAllText("example_recursive_input_settings.json")).ToObject<Dictionary<string, ClassSettings>>();
+        var settings = JArray.Parse(File.ReadAllText("example_recursive_input_settings.json")).ToObject<List<ClassSettings>>();
         dataModel.Load(data, settings);
         var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
         Assert.AreEqual(4, userClass.Properties.Count);
@@ -276,7 +276,7 @@ public class DataModelTest
     { 
         var data = JObject.Parse(File.ReadAllText("example_input.json"));
         var dataModel = new DataModel();
-        var settings = JObject.Parse(File.ReadAllText("example_input_settings2.json")).ToObject<Dictionary<string, ClassSettings>>();
+        var settings = JArray.Parse(File.ReadAllText("example_input_settings2.json")).ToObject<List<ClassSettings>>();
         dataModel.Load(data, settings);
         AssertSettingsEqual(settings, dataModel.GetSettings());
         var resourceCollection = new ResourceCollection(dataModel);
@@ -343,12 +343,13 @@ public class DataModelTest
         Assert.IsNotNull(tagResource.AlternateResources.First().Pivot);
     }
 
-    private void AssertSettingsEqual(Dictionary<string, ClassSettings> settings1, Dictionary<string, ClassSettings> settings2)
+    private void AssertSettingsEqual(List<ClassSettings> settings1, List<ClassSettings> settings2)
     {
+        var settingsDict = settings2.ToDictionary(s => s.Name);
         foreach (var t in settings1) {
-            if (!settings2.TryGetValue(t.Key, out var settings))
+            if (!settingsDict.TryGetValue(t.Name, out var settings))
                 continue;
-            Assert.IsTrue(t.Value.LeftEquals(settings));
+            Assert.IsTrue(t.LeftEquals(settings));
         }
     }
 

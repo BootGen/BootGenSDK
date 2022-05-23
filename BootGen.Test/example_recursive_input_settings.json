@@ -1,10 +1,12 @@
-{
-    "User": {
-      "PropertySettings": {
-        "Friends": {
+[
+    {
+      "Name": "User",
+      "PropertySettings": [
+        {
+          "Name": "Friends",
           "ClassName": "User",
           "IsManyToMany": true
         }
-      }
+      ]
     }
-  }
+]

@@ -1,10 +1,12 @@
-{
-    "Task": {
+[
+    {
+        "Name": "Task",
         "HasTimeStamps": true,
-        "PropertySettings": {
-            "Tags": {
+        "PropertySettings": [
+            {
+                "Name": "Tags",
                 "IsManyToMany": true
             }
-        }
+        ]
     }
-}
+]

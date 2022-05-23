@@ -1,19 +1,23 @@
-{
-    "Task": {
+[
+    {
+        "Name": "Task",
         "HasTimeStamps": true,
-        "PropertySettings": {
-            "Tags": {
+        "PropertySettings": [
+            {
+                "Name": "Tags",
                 "IsManyToMany": true,
                 "IsReadOnly": true,
                 "VisibleName": "Super Tags"
             }
-        }
+        ]
     },
-    "User" : {
-        "PropertySettings": {
-            "Address": {
+    {
+        "Name": "User",
+        "PropertySettings": [
+            {
+                "Name": "Address",
                 "IsHidden": true
             }
-        }
+        ]
     }
-}
+]
