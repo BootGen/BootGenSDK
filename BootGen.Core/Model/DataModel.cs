@@ -100,7 +100,8 @@ public class DataModel
                 if (!propSettingsDict.TryGetValue(property.Name, out var propertySettings))
                     continue;
                 property.IsManyToMany = propertySettings.IsManyToMany;
-                property.VisibleName = propertySettings.VisibleName ?? property.Name;
+                if (propertySettings.VisibleName != null)
+                    property.VisibleName = propertySettings.VisibleName;
                 property.IsReadOnly = propertySettings.IsReadOnly;
                 property.IsHidden = propertySettings.IsHidden;
                 if (!string.IsNullOrEmpty(propertySettings.ClassName))
@@ -127,6 +128,7 @@ public class DataModel
             {
                 var propertySettings = new PropertySettings {
                     Name = property.Name,
+                    VisibleName = property.VisibleName,
                     IsManyToMany = property.IsManyToMany,
                     IsReadOnly = property.IsReadOnly,
                     IsHidden = property.IsHidden
@@ -134,9 +136,6 @@ public class DataModel
                 if (property.BuiltInType == BuiltInType.Object)
                     if (!property.Class.Name.Equals(property.Noun))
                         propertySettings.ClassName = property.Class.Name.Singular;
-                if (property.Name != property.VisibleName) {
-                    propertySettings.VisibleName = property.VisibleName;
-                }
                 classSettings.PropertySettings.Add(propertySettings);
             }
         }

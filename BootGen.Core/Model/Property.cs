@@ -3,7 +3,17 @@ namespace BootGen.Core;
 public class Property
 {
     public Noun Noun { get; set; }
-    public string Name { get; set; }
+    private string _name;
+
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            _name = value;
+            VisibleName = value.ToWords();
+        }
+    }
     public string VisibleName { get; set; }
     public bool IsReadOnly { get; set; }
     public BuiltInType BuiltInType { get; set; }
