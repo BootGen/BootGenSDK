@@ -25,11 +25,7 @@ public class DataModel
     public void Load(JObject jObject, List<ClassSettings> settings = null)
     {
         foreach (var property in jObject.Properties())
-        {
-            var model = Parse(property);
-            if (model != null)
-                model.IsRoot = true;
-        }
+            Parse(property);
 
         CheckForEmptyClasses();
         if (settings != null)
@@ -58,7 +54,7 @@ public class DataModel
         names.Add(name);
     }
 
-    public void LoadRootObject(string name, JObject jObject)
+    public void LoadRootObject(string name, JObject jObject, List<ClassSettings> settings = null)
     {
         var property = new JProperty(name, jObject);
         var model = Parse(property);
@@ -71,6 +67,8 @@ public class DataModel
             }
         }
         CheckForEmptyClasses();
+        if (settings != null)
+            ApplySettings(settings);
         AddRelationships();
     }
 
@@ -95,7 +93,7 @@ public class DataModel
                 });
             }
             var propSettingsDict = classSettings.PropertySettings.ToDictionary(s => s.Name);
-            foreach (var property in new List<Property>(cl.Properties))
+            foreach (var property in new List<Property>(cl.JsonProperties))
             {
                 if (!propSettingsDict.TryGetValue(property.Name, out var propertySettings))
                     continue;
@@ -113,18 +111,21 @@ public class DataModel
         }
     }
 
-    public List<ClassSettings> GetSettings() {
+    public List<ClassSettings> GetSettings()
+    {
         var result = new List<ClassSettings>();
 
         foreach (var cl in Classes)
         {
+            if (cl.IsRoot)
+                continue;
             var classSettings = new ClassSettings{
                 Name = cl.Name.Singular,
                 HasTimestamps = cl.HasTimestamps,
                 PropertySettings = new List<PropertySettings>()
             };
             result.Add(classSettings);
-            foreach (var property in cl.Properties)
+            foreach (var property in cl.JsonProperties)
             {
                 var propertySettings = new PropertySettings {
                     Name = property.Name,
