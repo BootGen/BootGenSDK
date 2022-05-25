@@ -6,7 +6,6 @@
             {
                 "Name": "Tags",
                 "IsManyToMany": true,
-                "IsReadOnly": true,
                 "VisibleName": "Super Tags"
             }
         ]

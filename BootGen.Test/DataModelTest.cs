@@ -308,7 +308,6 @@ public class DataModelTest
         AssertHasProperty(taskClass, "User", BuiltInType.Object);
         AssertHasProperty(taskClass, "UserId", BuiltInType.Int);
         var tagProperty = taskClass.Properties.First(p => p.Name == "Tags");
-        Assert.IsTrue(tagProperty.IsReadOnly);
         Assert.AreEqual("Super Tags", tagProperty.VisibleName);
 
         var userClass = dataModel.Classes.First(c => c.Name.Singular == "User");
