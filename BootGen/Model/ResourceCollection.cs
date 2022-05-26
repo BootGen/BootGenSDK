@@ -16,25 +16,25 @@ public class ResourceCollection
     {
         DataModel = dataModel;
 
-        var classes = new List<ClassModel>(DataModel.Classes);
+        var classes = new List<Class>(DataModel.Classes);
         foreach (var c in classes)
             AddRootResource(c);
         foreach (var c in classes)
             AddNestedResources(c);
     }
 
-    public void AddRootResource(ClassModel c)
+    public void AddRootResource(Class @class)
     {
         var resource = new RootResource();
-        resource.Name = c.Name;
-        resource.Class = c;
+        resource.Name = @class.Name;
+        resource.Class = @class;
         resource.DataModel = DataModel;
         RootResources.Add(resource);
     }
-    public void AddNestedResources(ClassModel c)
+    public void AddNestedResources(Class @class)
     {
-        var resource = RootResources.First(r => r.Class == c);
-        foreach (var property in c.Properties)
+        var resource = RootResources.First(r => r.Class == @class);
+        foreach (var property in @class.Properties)
         {
             if (!property.IsCollection || property.BuiltInType != BuiltInType.Object)
                 continue;

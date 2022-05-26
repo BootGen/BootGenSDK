@@ -7,7 +7,7 @@ namespace BootGen;
 public abstract class Resource
 {
     public Noun Name { get; set; }
-    public ClassModel Class { get; set; }
+    public Class Class { get; set; }
     public bool HasTimestamps  => Class.HasTimestamps;
     public bool IsReadonly { get; set; }
     internal DataModel DataModel { get; set; }
@@ -36,19 +36,19 @@ public class RootResource : Resource
         resource.Pivot = CreatePivot(this, resource, pivotName);
         return resource;
     }
-    private ClassModel CreatePivot(Resource parent, Resource resource, string name)
+    private Class CreatePivot(Resource parent, Resource resource, string name)
     {
         var pivotClass = DataModel.Classes.FirstOrDefault(c => c.Name == name);
         if (pivotClass != null)
             return pivotClass;
-        pivotClass = new ClassModel(name)
+        pivotClass = new Class(name)
         {
             IsServerOnly = true,
             IsPivot = true
         };
         pivotClass.CreateId();
         pivotClass.AllProperties.Add(new Property {
-                        Name = parent.Name.Plural + ClassModel.IdName,
+                        Name = parent.Name.Plural + Class.IdName,
                         BuiltInType = BuiltInType.Int,
                         IsKey = true
                     });
@@ -59,7 +59,7 @@ public class RootResource : Resource
                         Class = parent.Class
                     });
         pivotClass.AllProperties.Add(new Property {
-                        Name = resource.Name.Plural + ClassModel.IdName,
+                        Name = resource.Name.Plural + Class.IdName,
                         BuiltInType = BuiltInType.Int,
                         IsKey = true
                     });
@@ -80,6 +80,6 @@ public class NestedResource : Resource
     internal ParentRelation ParentRelation { get; set; }
     public Resource ParentResource => ParentRelation.Resource;
     public RootResource RootResource { get; set; }
-    public ClassModel Pivot { get; set; }
+    public Class Pivot { get; set; }
     public string ParentName =>  ParentRelation.Name;
 }

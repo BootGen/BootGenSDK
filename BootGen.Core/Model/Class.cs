@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace BootGen.Core;
 
-public class ClassModel
+public class Class
 {
     static public string IdName { get; } = "Id";
     public int Id { get; set; }
@@ -27,7 +27,7 @@ public class ClassModel
 
     public bool IsEmpty => AllProperties.All(p => p.Name == IdName);
 
-    public ClassModel(string name)
+    public Class(string name)
     {
         Name = name;
         AllProperties = new List<Property>();
@@ -37,7 +37,7 @@ public class ClassModel
     {
         AllProperties.Insert(0, new Property
             {
-                Name = ClassModel.IdName,
+                Name = Class.IdName,
                 BuiltInType = BuiltInType.Int,
                 IsClientReadonly = true,
                 IsKey = true

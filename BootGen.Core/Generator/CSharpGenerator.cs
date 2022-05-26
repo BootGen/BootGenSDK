@@ -63,11 +63,11 @@ public class CSharpGenerator : GeneratorBase
         }
     }
 
-    public static Property FirstReference(ClassModel pivot)
+    public static Property FirstReference(Class pivot)
     {
         return pivot.Properties.First(p => p.Class != null);
     }
-    public static Property SecondReference(ClassModel pivot)
+    public static Property SecondReference(Class pivot)
     {
         return pivot.Properties.Last(p => p.Class != null);
     }

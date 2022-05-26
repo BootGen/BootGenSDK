@@ -28,21 +28,21 @@ public class SeedDataStore
         this.resourceCollection = resourceCollection;
     }
 
-    private string GetNextId(ClassModel c)
+    private string GetNextId(Class @class)
     {
-        if (!NextClassIds.Keys.Contains(c.Id))
+        if (!NextClassIds.Keys.Contains(@class.Id))
         {
-            NextClassIds[c.Id] = 2;
+            NextClassIds[@class.Id] = 2;
             return 1.ToString();
         }
-        int id = NextClassIds[c.Id];
-        NextClassIds[c.Id] += 1;
+        int id = NextClassIds[@class.Id];
+        NextClassIds[@class.Id] += 1;
         return id.ToString();
     }
 
-    private SeedRecord ToSeedRecord(ClassModel c, JObject obj)
+    private SeedRecord ToSeedRecord(Class @class, JObject obj)
     {
-        var record = new SeedRecord { Name = c.Name };
+        var record = new SeedRecord { Name = @class.Name };
         foreach (var property in obj.Properties())
         {
             switch (property.Value.Type)
@@ -65,12 +65,12 @@ public class SeedDataStore
                     break;
             }
         }
-        if (c.HasTimestamps)
+        if (@class.HasTimestamps)
         {
             record.Set("Created", "DateTime.Now");
             record.Set("Updated", "DateTime.Now");
         }
-        record.Values.Insert(0, KeyValuePair.Create(ClassModel.IdName, GetNextId(c)));
+        record.Values.Insert(0, KeyValuePair.Create(Class.IdName, GetNextId(@class)));
         return record;
     }
 
@@ -83,9 +83,9 @@ public class SeedDataStore
         PushSeedDataToProperties(resource.Class);
     }
 
-    public List<SeedRecord> Get(ClassModel c)
+    public List<SeedRecord> Get(Class @class)
     {
-        Data.TryGetValue(c.Id, out var data);
+        Data.TryGetValue(@class.Id, out var data);
         return data.Select(t => t.SeedRecord).ToList();
     }
 
@@ -94,13 +94,13 @@ public class SeedDataStore
         return Data.SelectMany(i => i.Value).Select(t => t.SeedRecord).ToList();
     }
 
-    internal void PushSeedDataToProperties(ClassModel c)
+    internal void PushSeedDataToProperties(Class @class)
     {
-        foreach (var property in c.Properties)
+        foreach (var property in @class.Properties)
         {
             if (property.Class == null)
                 continue;
-            var seedDataList = new List<SeedData>(Data[c.Id]);
+            var seedDataList = new List<SeedData>(Data[@class.Id]);
             foreach (var item in seedDataList)
             {
                 if (SplitData(item, property))
@@ -125,7 +125,7 @@ public class SeedDataStore
         {
             SeedRecord record = ToSeedRecord(property.Class, obj);
             dataList.Add(new SeedData(obj, record));
-            item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + ClassModel.IdName, record.GetId()));
+            item.SeedRecord.Values.Add(new KeyValuePair<string, string>(property.Name + Class.IdName, record.GetId()));
             return true;
         }
         return false;
@@ -157,15 +157,15 @@ public class SeedDataStore
                         Name = nestedResource.Pivot.Name,
                         IsPivot = true,
                         Values = new List<KeyValuePair<string, string>> { 
-                            new KeyValuePair<string, string>(item.SeedRecord.Name.Plural + ClassModel.IdName, item.SeedRecord.GetId()),
-                            new KeyValuePair<string, string>(nestedResource.Name.Plural + ClassModel.IdName, record.GetId())
+                            new KeyValuePair<string, string>(item.SeedRecord.Name.Plural + Class.IdName, item.SeedRecord.GetId()),
+                            new KeyValuePair<string, string>(nestedResource.Name.Plural + Class.IdName, record.GetId())
                             }
                     };
                     pivotDataList.Add(new SeedData(null, pivotRecord));
                 }
                 else
                 {
-                    record.Values.Add(new KeyValuePair<string, string>(nestedResource.ParentRelation.Name + ClassModel.IdName, item.SeedRecord.GetId()));
+                    record.Values.Add(new KeyValuePair<string, string>(nestedResource.ParentRelation.Name + Class.IdName, item.SeedRecord.GetId()));
                 }
 
             }
@@ -174,12 +174,12 @@ public class SeedDataStore
         return false;
     }
 
-    private List<SeedData> GetDataList(ClassModel c)
+    private List<SeedData> GetDataList(Class @class)
     {
-        if (!Data.TryGetValue(c.Id, out var dataList))
+        if (!Data.TryGetValue(@class.Id, out var dataList))
         {
             dataList = new List<SeedData>();
-            Data.Add(c.Id, dataList);
+            Data.Add(@class.Id, dataList);
         }
 
         return dataList;
@@ -229,7 +229,7 @@ public class SeedRecord
 
     internal string GetId()
     {
-        return Values.FirstOrDefault(kvp => kvp.Key == ClassModel.IdName).Value;
+        return Values.FirstOrDefault(kvp => kvp.Key == Class.IdName).Value;
     }
 
     public string Get(string key)

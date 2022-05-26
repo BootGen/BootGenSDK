@@ -352,17 +352,17 @@ public class DataModelTest
         }
     }
 
-    private void AssertHasProperty(ClassModel classModel, string propertyName, BuiltInType type) {
-        Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{classModel.Name}.{propertyName} -> {type} is missing.");
+    private void AssertHasProperty(Class @class, string propertyName, BuiltInType type) {
+        Assert.IsNotNull(@class.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == type), $"{@class.Name}.{propertyName} -> {type} is missing.");
     }
 
-    private void AssertHasOneToManyProperty(ClassModel classModel, string propertyName) {
-        Assert.IsNotNull(classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == BuiltInType.Object && p.IsCollection && !p.IsManyToMany), $"{classModel.Name}.{propertyName} is missing.");
+    private void AssertHasOneToManyProperty(Class @class, string propertyName) {
+        Assert.IsNotNull(@class.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == BuiltInType.Object && p.IsCollection && !p.IsManyToMany), $"{@class.Name}.{propertyName} is missing.");
     }
 
-    private Property AssertHasManyToManyProperty(ClassModel classModel, string propertyName) {
-        var property = classModel.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == BuiltInType.Object && p.IsCollection && p.IsManyToMany);
-        Assert.IsNotNull(property, $"{classModel.Name}.{propertyName} is missing.");
+    private Property AssertHasManyToManyProperty(Class @class, string propertyName) {
+        var property = @class.Properties.FirstOrDefault(p => p.Name == propertyName && p.BuiltInType == BuiltInType.Object && p.IsCollection && p.IsManyToMany);
+        Assert.IsNotNull(property, $"{@class.Name}.{propertyName} is missing.");
         return property;
     }
 }

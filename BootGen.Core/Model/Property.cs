@@ -18,7 +18,7 @@ public class Property
     public bool IsReadOnly { get; set; }
     public BuiltInType BuiltInType { get; set; }
     public bool IsCollection { get; set; }
-    public ClassModel Class { get; set; }
+    public Class Class { get; set; }
     public bool IsServerOnly { get; set; }
     public Property MirrorProperty { get; set; }
     public bool IsParentReference { get; set; }

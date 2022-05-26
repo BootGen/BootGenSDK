@@ -73,7 +73,7 @@ public class GeneratorBase : ScriptObject
     }
 
 
-    public void RenderClasses(string folderName, Func<ClassModel, string> targetFileName, string templateFile, IEnumerable<ClassModel> classes)
+    public void RenderClasses(string folderName, Func<Class, string> targetFileName, string templateFile, IEnumerable<Class> classes)
     {
         var template = LoadTemplate(templateFile);
         if (template == null) {
@@ -85,12 +85,12 @@ public class GeneratorBase : ScriptObject
         }
     }
 
-    private string RenderClass(Template template, ClassModel c)
+    private string RenderClass(Template template, Class @class)
     {
         var context = CreateContext();
         context.PushGlobal(this);
         context.SetValue(new ScriptVariableGlobal("name_space"), NameSpace);
-        context.SetValue(new ScriptVariableGlobal("class"), c);
+        context.SetValue(new ScriptVariableGlobal("class"), @class);
         return template.Render(context);;
     }
 

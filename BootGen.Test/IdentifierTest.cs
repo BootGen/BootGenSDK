@@ -49,8 +49,8 @@ public class IdentifierTest
         Assert.AreEqual(BuiltInType.Int, Issues.Class.PropertyWithName("UserId").BuiltInType);
     }
 
-    private string GetPropertyList(ClassModel c)
+    private string GetPropertyList(Class @class)
     {
-        return c.Properties.Select(p => p.Name).Aggregate( (a, b) => $"{a}, {b}");
+        return @class.Properties.Select(p => p.Name).Aggregate( (a, b) => $"{a}, {b}");
     }
 }

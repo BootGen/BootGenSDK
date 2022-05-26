@@ -9,18 +9,18 @@ namespace BootGen.Core;
 
 public class DataModel
 {
-    public List<ClassModel> Classes { get; } = new List<ClassModel>();
-    public List<ClassModel> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
+    public List<Class> Classes { get; } = new List<Class>();
+    public List<Class> CommonClasses => Classes.Where(p => !p.IsServerOnly).ToList();
     public Func<BuiltInType, string> TypeToString { get; init; } = CSharpGenerator.ToCSharpType;
     public Dictionary<WarningType, HashSet<string>> Warnings { get; } = new Dictionary<WarningType, HashSet<string>>();
     public bool GenerateIds { get; set; } = true;
 
     private CodeDomProvider provider = CodeDomProvider.CreateProvider("C#");
 
-    public void AddClass(ClassModel c)
+    public void AddClass(Class @class)
     {
-        c.Id = Classes.Count;
-        Classes.Add(c);
+        @class.Id = Classes.Count;
+        Classes.Add(@class);
     }
     public void Load(JObject jObject, List<ClassSettings> settings = null)
     {
@@ -75,7 +75,7 @@ public class DataModel
     private void ApplySettings(List<ClassSettings> settings)
     {
         var classSettingsDict = settings.ToDictionary(s => s.Name);
-        foreach (var cl in new List<ClassModel>(Classes)) {
+        foreach (var cl in new List<Class>(Classes)) {
             if (!classSettingsDict.TryGetValue(cl.Name, out var classSettings))
                 continue;
             if (classSettings.HasTimestamps)
@@ -143,7 +143,7 @@ public class DataModel
         return result;
     }
 
-    private void Merge(ClassModel to, ClassModel from)
+    private void Merge(Class to, Class from)
     {
         foreach(var property in from.Properties) {
             if (to.AllProperties.Any(p => p.Name == property.Name))
@@ -175,7 +175,7 @@ public class DataModel
         }
     }
 
-    private ClassModel Parse(JProperty property)
+    private Class Parse(JProperty property)
     {
         if (!provider.IsValidIdentifier(property.Name))
             throw new FormatException($"\"{property.Name}\" is not a valid identifier.");
@@ -211,7 +211,7 @@ public class DataModel
                     }
                 }
         }
-        ClassModel result = GetClassModel(className);
+        Class result = GetClassModel(className);
         if (property.Value.Type == JTokenType.Array)
             result.ReferredPlural = true;
         if (property.Value.Type == JTokenType.Object)
@@ -224,31 +224,31 @@ public class DataModel
                 {
                     if (item.Type == JTokenType.Object)
                     {
-                        ExtendModel(result, (JObject)item);
+                        ExtendClass(result, (JObject)item);
                     }
                 }
                 break;
             case JTokenType.Object:
-                ExtendModel(result, property.Value as JObject);
+                ExtendClass(result, property.Value as JObject);
                 break;
         }
         return result;
     }
 
-    private ClassModel GetClassModel(Noun className)
+    private Class GetClassModel(Noun className)
     {
-        var c = Classes.FirstOrDefault(c => c.Name.Singular == className);
-        if (c == null)
+        var @class = Classes.FirstOrDefault(c => c.Name.Singular == className);
+        if (@class == null)
         {
-            c = new ClassModel(className);
+            @class = new Class(className);
             if (GenerateIds)
-                c.CreateId();
-            AddClass(c);
+                @class.CreateId();
+            AddClass(@class);
         }
-        return c;
+        return @class;
     }
 
-    private void ExtendModel(ClassModel model, JObject item)
+    private void ExtendClass(Class @class, JObject item)
     {
         var pluralizer = new Pluralizer();
         foreach (var property in item.Properties())
@@ -256,7 +256,7 @@ public class DataModel
             if (!provider.IsValidIdentifier(property.Name))
                 throw new FormatException($"\"{property.Name}\" is not a valid identifier.");
             var propertyName = property.Name.Capitalize();
-            var prop = model.Properties.FirstOrDefault(p => p.Name == propertyName);
+            var prop = @class.Properties.FirstOrDefault(p => p.Name == propertyName);
 
             if (property.Value.Type == JTokenType.Null)
                 continue;
@@ -279,7 +279,7 @@ public class DataModel
                         type1 = "array";
                         type2 = TypeToString(prop.BuiltInType);
                     }
-                    throw GetFormatException(model, propertyName, type1, type2);
+                    throw GetFormatException(@class, propertyName, type1, type2);
                 }
                 if (prop.BuiltInType != builtInType) {
                     if (prop.BuiltInType == BuiltInType.Float && builtInType == BuiltInType.Int) {
@@ -289,7 +289,7 @@ public class DataModel
                         prop.BuiltInType = BuiltInType.Float;
                         continue;
                     }
-                    throw GetFormatException(model, propertyName, TypeToString(prop.BuiltInType), TypeToString(builtInType));
+                    throw GetFormatException(@class, propertyName, TypeToString(prop.BuiltInType), TypeToString(builtInType));
                 }
                 if (builtInType == BuiltInType.Object) {
                     Parse(property);
@@ -303,7 +303,7 @@ public class DataModel
                 BuiltInType = builtInType,
                 IsCollection = isCollection
             };
-            model.AllProperties.Add(prop);
+            @class.AllProperties.Add(prop);
             if (prop.IsCollection)
             {
                 prop.Noun = pluralizer.Singularize(propertyName);
@@ -313,7 +313,7 @@ public class DataModel
             {
                 prop.Class = Parse(property);
                 if (prop.Class == null) {
-                    model.AllProperties.Remove(prop);
+                    @class.AllProperties.Remove(prop);
                     continue;
                 }
                 if (prop.IsCollection)
@@ -322,9 +322,9 @@ public class DataModel
         }
     }
 
-    private static FormatException GetFormatException(ClassModel model, string propertyName, string type1, string type2)
+    private static FormatException GetFormatException(Class @class, string propertyName, string type1, string type2)
     {
-        return new FormatException($"The \"{propertyName}\" property of the class \"{model.Name}\" has inconsistent type: {type1} and  {type2} is both used.");
+        return new FormatException($"The \"{propertyName}\" property of the class \"{@class.Name}\" has inconsistent type: {type1} and  {type2} is both used.");
     }
 
     private BuiltInType ConvertType(JTokenType type)
@@ -345,27 +345,27 @@ public class DataModel
                 return BuiltInType.Object;
         }
     }
-    private void AddManyToManyMirrorProperties(ClassModel c)
+    private void AddManyToManyMirrorProperties(Class @class)
     {
         var pluralizer = new Pluralizer();
-        var properties = new List<Property>(c.Properties);
+        var properties = new List<Property>(@class.Properties);
         foreach (var property in properties)
         {
             if (!property.IsManyToMany)
                 continue;
 
-            Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Class == c);
+            Property referenceProperty = property.Class.Properties.FirstOrDefault(p => p.Class == @class);
             if (referenceProperty == null)
             {
                 referenceProperty = new Property
                 {
-                    Name = c.Name.Plural,
+                    Name = @class.Name.Plural,
                     BuiltInType = BuiltInType.Object,
-                    Class = c,
+                    Class = @class,
                     IsCollection = true,
                     IsManyToMany = true,
                     IsServerOnly = true,
-                    Noun = c.Name
+                    Noun = @class.Name
                 };
                 property.Class.AllProperties.Add(referenceProperty);
             }
@@ -374,20 +374,20 @@ public class DataModel
         }
     }
 
-    public void AddManyToOneParentReference(ClassModel c)
+    public void AddManyToOneParentReference(Class @class)
     {
-        var properties = new List<Property>(c.Properties);
+        var properties = new List<Property>(@class.Properties);
         var propertyIdx = -1;
         foreach (var property in properties)
         {
             propertyIdx += 1;
             if (property.Class == null || property.IsCollection)
                 continue;
-            if (!c.Properties.Any(p => p.Name == property.Name + ClassModel.IdName))
+            if (!@class.Properties.Any(p => p.Name == property.Name + Class.IdName))
             {
-                c.AllProperties.Insert(propertyIdx + 1, new Property
+                @class.AllProperties.Insert(propertyIdx + 1, new Property
                 {
-                    Name = property.Name + ClassModel.IdName,
+                    Name = property.Name + Class.IdName,
                     BuiltInType = BuiltInType.Int,
                     IsKey = true
                 });
@@ -398,7 +398,7 @@ public class DataModel
     }
 
 
-    private  void AddOneToManyParentReference(ClassModel parent, Property property)
+    private  void AddOneToManyParentReference(Class parent, Property property)
     {
         var referenceProperty = new Property
         {
@@ -412,12 +412,12 @@ public class DataModel
         var child = property.Class;
         child.AllProperties.Add(referenceProperty);
 
-        if (GenerateIds && !child.Properties.Any(p => p.Name == parent.Name + ClassModel.IdName))
+        if (GenerateIds && !child.Properties.Any(p => p.Name == parent.Name + Class.IdName))
         {
 
             var idProperty = new Property
             {
-                Name = parent.Name + ClassModel.IdName,
+                Name = parent.Name + Class.IdName,
                 BuiltInType = BuiltInType.Int,
                 IsKey = true
             };
