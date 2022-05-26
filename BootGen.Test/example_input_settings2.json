@@ -15,6 +15,7 @@
         "PropertySettings": [
             {
                 "Name": "Address",
+                "VisibleName": "Address",
                 "IsHidden": true
             }
         ]

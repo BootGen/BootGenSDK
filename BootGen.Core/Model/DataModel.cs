@@ -93,7 +93,7 @@ public class DataModel
                 });
             }
             var propSettingsDict = classSettings.PropertySettings.ToDictionary(s => s.Name);
-            foreach (var property in new List<Property>(cl.JsonProperties))
+            foreach (var property in new List<Property>(cl.SettingsProperties))
             {
                 if (!propSettingsDict.TryGetValue(property.Name, out var propertySettings))
                     continue;
@@ -125,7 +125,7 @@ public class DataModel
                 PropertySettings = new List<PropertySettings>()
             };
             result.Add(classSettings);
-            foreach (var property in cl.JsonProperties)
+            foreach (var property in cl.SettingsProperties)
             {
                 var propertySettings = new PropertySettings {
                     Name = property.Name,
@@ -304,13 +304,16 @@ public class DataModel
                 IsCollection = isCollection
             };
             @class.AllProperties.Add(prop);
-            if (prop.IsCollection)
-            {
-                prop.Noun = pluralizer.Singularize(propertyName);
-                prop.Noun.Plural = propertyName;
-            }
             if (prop.BuiltInType == BuiltInType.Object)
             {
+                if (prop.IsCollection)
+                {
+                    prop.Noun = pluralizer.Singularize(propertyName);
+                    prop.Noun.Plural = propertyName;
+                } else {
+                    prop.Noun = propertyName;
+                    prop.Noun.Plural = pluralizer.Pluralize(propertyName);
+                }
                 prop.Class = Parse(property);
                 if (prop.Class == null) {
                     @class.AllProperties.Remove(prop);
