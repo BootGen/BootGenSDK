@@ -17,6 +17,8 @@ public class TypeScriptGenerator : GeneratorBase
             case BuiltInType.Bool:
                 return "boolean";
             case BuiltInType.String:
+            case BuiltInType.Uri:
+            case BuiltInType.Image:
                 return "string";
             case BuiltInType.DateTime:
                 return "Date";

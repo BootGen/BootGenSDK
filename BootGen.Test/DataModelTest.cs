@@ -341,6 +341,26 @@ public class DataModelTest
         Assert.AreEqual(1, tagResource.NestedResources.Count);
         Assert.IsNotNull(tagResource.AlternateResources.First().Pivot);
     }
+    [TestMethod]
+    public void TestLoadModelWithUri()
+    { 
+        var data = JObject.Parse(File.ReadAllText("example_input_uri.json"));
+        var dataModel = new DataModel();
+        dataModel.Load(data);
+        Assert.AreEqual(1, dataModel.Classes.Count);
+        var userClass = dataModel.Classes.First();
+        AssertHasProperty(userClass, "Webpage", BuiltInType.Uri);
+    }
+    [TestMethod]
+    public void TestLoadModelWithUri2()
+    { 
+        var data = JObject.Parse(File.ReadAllText("example_input_uri_string.json"));
+        var dataModel = new DataModel();
+        dataModel.Load(data);
+        Assert.AreEqual(1, dataModel.Classes.Count);
+        var userClass = dataModel.Classes.First();
+        AssertHasProperty(userClass, "Webpage", BuiltInType.String);
+    }
 
     private void AssertSettingsEqual(List<ClassSettings> settings1, List<ClassSettings> settings2)
     {

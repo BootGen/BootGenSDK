@@ -39,6 +39,9 @@ public class CSharpGenerator : GeneratorBase
                 return "DateTime";
             case BuiltInType.Object:
                 return "object";
+            case BuiltInType.Uri:
+            case BuiltInType.Image:
+                return "Uri";
             default:
                 return "int";
         }

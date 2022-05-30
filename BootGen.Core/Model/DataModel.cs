@@ -261,7 +261,7 @@ public class DataModel
             if (property.Value.Type == JTokenType.Null)
                 continue;
 
-            BuiltInType builtInType = ConvertType(property.Value.Type);
+            BuiltInType builtInType = ConvertType(property.Value);
             bool isCollection = property.Value.Type == JTokenType.Array;
             if (prop != null)
             {
@@ -287,6 +287,10 @@ public class DataModel
                     }
                     if (prop.BuiltInType == BuiltInType.Int && builtInType == BuiltInType.Float) {
                         prop.BuiltInType = BuiltInType.Float;
+                        continue;
+                    }
+                    if (prop.BuiltInType == BuiltInType.Uri && builtInType == BuiltInType.String) {
+                        prop.BuiltInType = BuiltInType.String;
                         continue;
                     }
                     throw GetFormatException(@class, propertyName, TypeToString(prop.BuiltInType), TypeToString(builtInType));
@@ -330,13 +334,16 @@ public class DataModel
         return new FormatException($"The \"{propertyName}\" property of the class \"{@class.Name}\" has inconsistent type: {type1} and  {type2} is both used.");
     }
 
-    private BuiltInType ConvertType(JTokenType type)
+    private BuiltInType ConvertType(JToken token)
     {
-        switch (type)
+        switch (token.Type)
         {
             case JTokenType.Boolean:
                 return BuiltInType.Bool;
             case JTokenType.String:
+                string stringValue = token.ToString();
+                if (stringValue.StartsWith("http://") || stringValue.StartsWith("https://"))
+                    return BuiltInType.Uri;
                 return BuiltInType.String;
             case JTokenType.Date:
                 return BuiltInType.DateTime;
@@ -344,6 +351,8 @@ public class DataModel
                 return BuiltInType.Int;
             case JTokenType.Float:
                 return BuiltInType.Float;
+            case JTokenType.Uri:
+                return BuiltInType.Uri;
             default:
                 return BuiltInType.Object;
         }

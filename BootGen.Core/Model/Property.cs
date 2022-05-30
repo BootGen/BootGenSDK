@@ -29,4 +29,4 @@ public class Property
 }
 
 
-public enum BuiltInType { String, Int, Float, Bool, DateTime, Object }
+public enum BuiltInType { String, Int, Float, Bool, DateTime, Object, Uri, Image }
