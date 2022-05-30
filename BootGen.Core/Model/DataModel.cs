@@ -102,6 +102,10 @@ public class DataModel
                     property.VisibleName = propertySettings.VisibleName;
                 property.IsReadOnly = propertySettings.IsReadOnly == true;
                 property.IsHidden = propertySettings.IsHidden;
+                if (property.BuiltInType == BuiltInType.Uri && propertySettings.ShowAsImage == true)
+                {
+                    property.BuiltInType = BuiltInType.Image;
+                }
                 if (!string.IsNullOrEmpty(propertySettings.ClassName))
                 {
                     var to = Classes.First(c => c.Name == propertySettings.ClassName);
@@ -134,6 +138,11 @@ public class DataModel
                     IsReadOnly = property.BuiltInType == BuiltInType.Object ? null : property.IsReadOnly,
                     IsHidden = property.IsHidden
                 };
+                if (property.BuiltInType == BuiltInType.Uri) {
+                    propertySettings.ShowAsImage = false;
+                } else if (property.BuiltInType == BuiltInType.Image) {
+                    propertySettings.ShowAsImage = true;
+                }
                 if (property.BuiltInType == BuiltInType.Object)
                     if (!property.Class.Name.Equals(property.Noun))
                         propertySettings.ClassName = property.Class.Name.Singular;

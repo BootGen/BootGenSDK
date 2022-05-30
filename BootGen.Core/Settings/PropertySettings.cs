@@ -9,4 +9,5 @@ public struct PropertySettings
     public bool? IsReadOnly { get; set; }
     public bool IsHidden { get; set; }
     public bool? IsManyToMany { get; set; }
+    public bool? ShowAsImage { get; set; }
 }
