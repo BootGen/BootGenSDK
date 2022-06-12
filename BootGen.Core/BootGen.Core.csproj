@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>BootGen.Core</PackageId>
-    <Version>2.1.4</Version>
+    <Version>2.1.5</Version>
     <Authors>Gabor Angyal</Authors>
     <Company>Code Sharp Kft.</Company>
     <Owner>Code Sharp Kft.</Owner>

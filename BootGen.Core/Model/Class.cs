@@ -20,7 +20,7 @@ public class Class
     public List<Property> AllProperties { get; }
     public List<Property> Properties => AllProperties.Where(p => !p.IsHidden).ToList();
     public List<Property> CommonProperties => Properties.Where(p => !p.IsServerOnly).ToList();
-    public List<Property> BaseProperties => CommonProperties.Where(p => !p.IsKey).ToList();
+    public List<Property> PrimitiveProperties => Properties.Where(p => p.BuiltInType != BuiltInType.Object && !p.IsKey).ToList();
     public List<Property> JsonProperties => Properties.Where(p => !p.IsKey && !p.IsParentReference).ToList();
     public List<Property> SettingsProperties => AllProperties.Where(p => !p.IsKey && !p.IsParentReference).ToList();
     public List<Property> ChildReferences => Properties.Where(p => p.BuiltInType == BuiltInType.Object && !p.IsParentReference).ToList();
